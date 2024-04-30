@@ -34,7 +34,7 @@ config = {
 
     "TRACKERS" : {
         # Which trackers do you want to upload to?
-        "default_trackers" : "BLU, BHD, AITHER, STC, STT, SN, THR, R4E, HP, ACM, PTP, LCD, LST, PTER, NBL, ANT, MTV",
+        "default_trackers" : "BLU, BHD, AITHER, STC, STT, SN, THR, R4E, HP, ACM, PTP, LCD, LST, PTER, NBL, ANT, MTV, FNP, ULCX, FNP",
 
         "BLU" : {
             "useAPI" : False, # Set to True if using BLU
@@ -188,6 +188,30 @@ config = {
             "announce_url" : "https://reelflix.xyz/announce/customannounceurl",
             # "anon" : False
         },
+
+	 "FNP" : {
+            "api_key" : "FNP api key",
+            "announce_url" : "https://fearnopeer.com/announce/customannounceurl",
+            # "anon" : False
+        },  
+	    
+	 "LDU" : {
+            "api_key" : "LDU api key",
+            "announce_url" : "https://theldu.net/announce/customannounceurl",
+            # "anon" : False
+        },
+	    
+        "ULCX" : {
+            "api_key" : "ULCX api key",
+            "announce_url" : "https://upload.cx/announce/customannounceurl",
+            # "anon" : False
+        },
+         "CP2P" : {
+            "api_key" : "CP2P api key",
+            "announce_url" : "https://cinemap2p.xyz/announce/customannounceurl",
+            # "anon" : False
+        },
+	    
         "MANUAL" : {
             # Uncomment and replace link with filebrowser (https://github.com/filebrowser/filebrowser) link to the Upload-Assistant directory, this will link to your filebrowser instead of uploading to uguu.se
             # "filebrowser" : "https://domain.tld/filebrowser/files/Upload-Assistant/"
