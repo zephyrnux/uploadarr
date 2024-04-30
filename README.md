@@ -13,7 +13,7 @@ A simple tool to take the work out of uploading.
   - Can re-use existing torrents instead of hashing new
   - Generates proper name for your upload using Mediainfo/BDInfo and TMDb/IMDb conforming to site rules
   - Checks for existing releases already on site
-  - Uploads to PTP/BLU/BHD/Aither/THR/STC/R4E(limited)/STT/HP/ACM/LCD/LST/NBL/ANT/FL/HUNO/RF/SN/FNP/ULCX/LDU
+  - Uploads to PTP/BLU/BHD/Aither/THR/STC/R4E(limited)/STT/HP/ACM/LCD/LST/NBL/ANT/FL/HUNO/RF/SN/FNP/ULCX/LDU/CP2P
   - Adds to your client with fast resume, seeding instantly (rtorrent/qbittorrent/deluge/watch folder)
   - ALL WITH MINIMAL INPUT!
   - Currently works with .mkv/.mp4/Blu-ray/DVD/HD-DVDs
@@ -30,8 +30,9 @@ A simple tool to take the work out of uploading.
    - **REQUIRES AT LEAST PYTHON 3.7 AND PIP3**
    - Needs [mono](https://www.mono-project.com/) on linux systems for BDInfo
    - Also needs MediaInfo and ffmpeg installed on your system
-      - On Windows systems, ffmpeg must be added to PATH (https://windowsloop.com/install-ffmpeg-windows-10/)
+      - On Windows systems, ffmpeg must be added to PATH I recomend using https://scoop.sh/ , alternatively follow this guide for manual installation (https://windowsloop.com/install-ffmpeg-windows-10/) 
       - On linux systems, get it from your favorite package manager
+      - On Mac OS either install in brew, or get static builds and place in `/usr/bin` or (better practice) create your own bin ex:`$HOME/.local/bin` then edit `$HOME/.zshrc` by adding export `PATH="$PATH:$HOME/.local/bin"`
    - Clone the repo to your system `git clone https://github.com/L4GSP1KE/Upload-Assistant.git`
    - Copy and Rename `data/example-config.py` to `data/config.py`
    - Edit `config.py` to use your information (more detailed information in the [wiki](https://github.com/L4GSP1KE/Upload-Assistant/wiki))
