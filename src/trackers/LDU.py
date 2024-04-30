@@ -24,7 +24,7 @@ class LDU():
         self.source_flag = 'LDU'
         self.upload_url = 'https://theldu.net/api/torrents/upload'
         self.search_url = 'https://theldu.net/api/torrents/filter'
-        self.signature = f"\n[center][size=6]Uploaded with Upload-Assistant[/size][/center]"
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Created by L4G's Upload Assistant[/url][/size][/center]"
         self.banned_groups = [""]
         pass
     
