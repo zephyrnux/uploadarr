@@ -24,18 +24,25 @@ class LDU():
         self.source_flag = 'LDU'
         self.upload_url = 'https://theldu.net/api/torrents/upload'
         self.search_url = 'https://theldu.net/api/torrents/filter'
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Created Upload-Assistant[/url] (v. CvT 0.1)[/size][/center]"
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]CvT's Upload-Assistant v. 0.2[/url][/size][/center]"
         self.banned_groups = [""]
         pass
     
-    async def get_cat_id(self, category_name, genres, keywords, service, edition):
+    async def get_cat_id(self, category_name, genres, keywords, service, edition, meta):
+        tag = self.get_language_tag(meta)
+        tags = tag.split(']')
+        tags = [t[1:] for t in tags if t]
         category_id = {
             'MOVIE': '1', 
             'TV': '2', 
             'Anime' : '8',
             }.get(category_name, '0')
         if category_name == 'MOVIE':
-            if '3D' in edition:
+            if not tags[0].isalpha():
+                category_id = '27'
+            elif tags[0] != 'ENG' and len(tags) > 1 and 'ENG' in tags[1]:
+                category_id = '22'
+            elif '3D' in edition:
                 category_id = '21'
             elif 'silent film' in map(str.strip, keywords.lower().split(',')):
                 category_id = '18'      
@@ -52,7 +59,11 @@ class LDU():
             else:
                 category_id = '1'                                                            
         elif category_name == 'TV':
-            if category_name == 'TV' and 'anime' in map(str.strip,keywords.lower().split(',')):    
+            if not tags[0].isalpha():
+                category_id = '31'
+            elif tags[0] != 'ENG' and len(tags) > 1 and 'ENG' in tags[1]:
+                category_id = '29'
+            elif category_name == 'TV' and 'anime' in map(str.strip,keywords.lower().split(',')):    
                 category_id = '9'
             else:
                 category_id = '2'
@@ -92,7 +103,7 @@ class LDU():
     async def upload(self, meta):
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
-        cat_id = await self.get_cat_id(meta['category'], meta.get('genres', ''), meta.get('keywords', ''), meta.get('service', ''), meta.get('edition', ''))
+        cat_id = await self.get_cat_id(meta['category'], meta.get('genres', ''), meta.get('keywords', ''), meta.get('service', ''), meta.get('edition', ''), meta)
         type_id = await self.get_type_id(meta['type'])
         resolution_id = await self.get_res_id(meta['resolution'])
         await common.unit3d_edit_desc(meta, self.tracker, self.signature)
@@ -109,7 +120,23 @@ class LDU():
         else:
             mi_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/MEDIAINFO.txt", 'r', encoding='utf-8').read()
             bd_dump = None
-        desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r').read()
+        
+        def add_trailer(): #Adding Trailer
+            key = meta.get("youtube", "")
+            if key:  
+                with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r') as file:
+                    lines = file.readlines()
+                for i, line in enumerate(lines):
+                    if '[/center]' in line:
+                        lines[i] = line.replace('[/center]', f'[/center]\n[center][youtube]{key}[/youtube][/center]')
+                        break
+                with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'w') as file:
+                    file.writelines(lines)
+            with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r') as file:
+                content = file.read()
+            return content
+
+        desc = add_trailer()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
         data = {
@@ -129,7 +156,6 @@ class LDU():
             'stream' : meta['stream'],
             'sd' : meta['sd'],
             'keywords' : meta['keywords'],
-            'genres' : meta['genres'],
             'personal_release' : int(meta.get('personalrelease', False)),
             'internal' : 0,
             'featured' : 0,
@@ -150,7 +176,7 @@ class LDU():
             data['season_number'] = meta.get('season_int', '0')
             data['episode_number'] = meta.get('episode_int', '0')
         headers = {
-            'User-Agent': f'Upload Assistant/2.1 ({platform.system()} {platform.release()})'
+            'User-Agent': f'Upload Assistant/v. CvT 0.2 ({platform.system()} {platform.release()})'
         }
         params = {
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip()
@@ -169,23 +195,33 @@ class LDU():
         open_torrent.close()
 
     def get_language_tag(self, meta):
+        audio_lang = []
         if 'mediainfo' in meta:
-            audio_language = next((x.get('Language_String3') for x in meta["mediainfo"]["media"]["track"] if x["@type"] == "Audio"), None)
-            if audio_language is not None:
-                audio_language = audio_language.upper()
-                language_tag = f"[{audio_language}]" if audio_language != "ENG" else ""
-
-            if audio_language != "ENG":
-                text_languages = [x.get('Language_String3') for x in meta["mediainfo"]["media"]["track"] if x["@type"] == "Text"]
-                if text_languages:
-                    if all(lang.upper() == "ENG" for lang in text_languages):
-                        language_tag += "[Subs ENG]"
+            audio_lang = list(dict.fromkeys(x.get('Language_String3') for x in meta["mediainfo"]["media"]["track"] if x["@type"] == "Audio" and 'Language_String3' in x))
+        if not audio_lang:
+            audio_lang.append('???')
+        lang_tag = f"[{' '.join(lang.upper() for lang in audio_lang)}]"
+        sub_lang = [x.get('Language_String3') for x in meta["mediainfo"]["media"]["track"] if x["@type"] == "Text"]
+        if not sub_lang:
+            sub_lang_tag = "[No Subs]"
+        else:
+            sub_lang = list(dict.fromkeys(sub_lang))  # Remove dupes + keep order
+            if 'eng' in sub_lang:
+                if len(sub_lang) > 1:
+                    sub_lang_tag = "[Subs ENG+]"
+                else:
+                    sub_lang_tag = "[Subs ENG]"
+            else:
+                if sub_lang[0] is None:
+                    sub_lang_tag = "[Subs ???]"
+                else:
+                    if len(sub_lang) > 1:
+                        sub_lang_tag = f"[Subs {sub_lang[0].upper()}+]"
                     else:
-                        if any(lang.upper() != "ENG" for lang in text_languages):
-                            language_tag += "[Subs ENG+]"
+                        sub_lang_tag = f"[Subs {sub_lang[0].upper()}]"
 
-            return language_tag if language_tag else ""
-        return ""
+
+            return lang_tag+sub_lang_tag
 
 
     def get_basename(self, meta):
@@ -324,7 +360,7 @@ class LDU():
         params = {
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip(),
             'tmdbId' : meta['tmdb'],
-            'categories[]' : await self.get_cat_id(meta['category'], meta.get('genres', ''), meta.get('keywords', ''), meta.get('service', ''), meta.get('edition', '')),
+            'categories[]' : await self.get_cat_id(meta['category'], meta.get('genres', ''), meta.get('keywords', ''), meta.get('service', ''), meta.get('edition', ''), meta),
             'types[]' : await self.get_type_id(meta['type']),
             'resolutions[]' : await self.get_res_id(meta['resolution']),
             'name' : ""
