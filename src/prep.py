@@ -689,9 +689,9 @@ class Prep():
                         "[cyan]{task.completed}/{task.total}",
                         TimeRemainingColumn()
                     ) as progress:
-                    screen_task = progress.add_task("[green]Saving Screens...", total=num_screens + 1)
+                    screen_task = progress.add_task("[green]Saving Screens...", total=num_screens)
                     ss_times = []
-                    for i in range(num_screens + 1):
+                    for i in range(num_screens):
                         image = f"{base_dir}/tmp/{folder_id}/{filename}-{i}.png"
                         try:
                             ss_times = self.valid_ss_time(ss_times, num_screens+1, length)
@@ -782,9 +782,9 @@ class Prep():
                     "[cyan]{task.completed}/{task.total}",
                     TimeRemainingColumn()
                 ) as progress:
-                    screen_task = progress.add_task("[green]Saving Screens...", total=num_screens + 1)
+                    screen_task = progress.add_task("[green]Saving Screens...", total=num_screens)
                     ss_times = []
-                    for i in range(num_screens + 1):
+                    for i in range(num_screens):
                         if n >= len(main_set):
                             n = 0
                         if n >= num_screens:
