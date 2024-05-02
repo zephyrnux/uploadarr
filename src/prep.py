@@ -921,8 +921,8 @@ class Prep():
                         TimeRemainingColumn()
                     ) as progress:
                         ss_times = []
-                        screen_task = progress.add_task("[green]Saving Screens...", total=num_screens + 1)
-                        for i in range(num_screens + 1):
+                        screen_task = progress.add_task("[green]Saving Screens...", total=num_screens)
+                        for i in range(num_screens):
                             image = os.path.abspath(f"{base_dir}/tmp/{folder_id}/{filename}-{i}.png")
                             if not os.path.exists(image) or retake != False:
                                 retake = False
