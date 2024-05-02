@@ -780,13 +780,14 @@ class PTP():
                 cover = cli_ui.ask_string("No Poster was found. Please input a link to a poster: \n", default="")
                 if "ptpimg" not in str(cover) and str(cover).endswith(('.jpg', '.png')):
                     cover = await self.ptpimg_url_rehost(cover)
+            yt_id = meta.get("youtube", ""),
             new_data = {
                 "title": tinfo.get("title", meta["imdb_info"].get("title", meta["title"])),
                 "year": tinfo.get("year", meta["imdb_info"].get("year", meta["year"])),
                 "image": cover,
                 "tags": tinfo.get("tags", ""),
                 "album_desc": tinfo.get("plot", meta.get("overview", "")),
-                "trailer": meta.get("youtube", ""),
+                "trailer": f'https://www.youtube.com/watch?v={yt_id}',
             }
             if new_data['year'] in ['', '0', 0, None] and meta.get('manual_year') not in [0, '', None]:
                 new_data['year'] = meta['manual_year']
