@@ -1,6 +1,6 @@
-# L4G's Upload Assistant
+# Upload Assistant (CvT Edition)
 
-A simple tool to take the work out of uploading.
+I have no clue what I'm doing so thought I'd fork it, bork it and, duct tape it back together to get people to sing my praises. Hopefully it works and makes your life simplier.
 
 ## What It Can Do:
   - Generates and Parses MediaInfo/BDInfo.
@@ -21,7 +21,7 @@ A simple tool to take the work out of uploading.
 
 
 ## Coming Soon:
-  - Auto-Mode
+  - Auto-Mode (This will require an overhaul of code so once this goes through it wont be compatible with L4G's UA)
 
 
   
