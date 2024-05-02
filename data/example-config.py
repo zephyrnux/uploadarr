@@ -34,8 +34,14 @@ config = {
 
     "TRACKERS" : {
         # Which trackers do you want to upload to?
-        "default_trackers" : "BLU, BHD, AITHER, STC, STT, SN, THR, R4E, HP, ACM, PTP, LCD, LST, PTER, NBL, ANT, MTV, FNP, ULCX, FNP",
+        "default_trackers" : "LDU",
 
+	"LDU" : {
+            "api_key" : "LDU_API_KEY",
+            "announce_url" : "https://theldu.net/announce/customannounceurl",
+            # "anon" : False
+        },    
+	    
         "BLU" : {
             "useAPI" : False, # Set to True if using BLU
             "api_key" : "BLU_API_KEY",
@@ -195,11 +201,6 @@ config = {
             # "anon" : False
         },  
 	    
-	 "LDU" : {
-            "api_key" : "LDU_API_KEY",
-            "announce_url" : "https://theldu.net/announce/customannounceurl",
-            # "anon" : False
-        },
 	    
         "ULCX" : {
             "api_key" : "ULCX_API_KEY",
