@@ -1158,7 +1158,7 @@ class Prep():
                 videos = movie.videos()
                 for each in videos.get('results', []):
                     if each.get('site', "") == 'YouTube' and each.get('type', "") == "Trailer":
-                        meta['youtube'] = f"https://www.youtube.com/watch?v={each.get('key')}"
+                        meta['youtube'] = f"{each.get('key')}"
                         break
             except Exception:
                 console.print('[yellow]Unable to grab videos from TMDb.')
@@ -1205,7 +1205,7 @@ class Prep():
                 videos = tv.videos()
                 for each in videos.get('results', []):
                     if each.get('site', "") == 'YouTube' and each.get('type', "") == "Trailer":
-                        meta['youtube'] = f"https://www.youtube.com/watch?v={each.get('key')}"
+                        meta['youtube'] = f"{each.get('key')}"
                         break
             except Exception:
                 console.print('[yellow]Unable to grab videos from TMDb.')
