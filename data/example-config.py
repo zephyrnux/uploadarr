@@ -6,10 +6,10 @@ config = {
         # If you change any of these options, remove the #
         # -----------------------
 
-        "tmdb_api" : "tmdb_api key",
-        "imgbb_api" : "imgbb api key",
-        "ptpimg_api" : "ptpimg api key",
-        "lensdump_api" : "lensdump api key",
+        "tmdb_api" : "tmdb_API_KEY",
+        "imgbb_api" : "imgbb_API_KEY",
+        "ptpimg_api" : "ptpimg_API_KEY",
+        "lensdump_api" : "lensdump_API_KEY",
 
         # Order of image hosts, and backup image hosts
         "img_host_1": "imgbb",
@@ -38,12 +38,12 @@ config = {
 
         "BLU" : {
             "useAPI" : False, # Set to True if using BLU
-            "api_key" : "BLU api key",
+            "api_key" : "BLU_API_KEY",
             "announce_url" : "https://blutopia.cc/announce/customannounceurl",
             # "anon" : False
         },
         "BHD" : {
-            "api_key" : "BHD api key",
+            "api_key" : "BHD_API_KEY",
             "announce_url" : "https://beyond-hd.me/announce/customannounceurl",
             "draft_default" : "True",
             # "anon" : False
@@ -58,24 +58,24 @@ config = {
         "PTP" : {
             "useAPI" : False, # Set to True if using PTP
             "add_web_source_to_desc" : True,
-            "ApiUser" : "ptp api user",
-            "ApiKey" : 'ptp api key',
+            "ApiUser" : "ptp_API_USER",
+            "ApiKey" : 'ptp_API_KEY',
             "username" : "",
             "password" : "",
             "announce_url" : ""
         },
         "AITHER" :{
-            "api_key" : "AITHER api key",
+            "api_key" : "AITHER_API_KEY",
             "announce_url" : "https://aither.cc/announce/customannounceurl",
             # "anon" : False
         },
         "R4E" :{
-            "api_key" : "R4E api key",
+            "api_key" : "R4E_API_KEY",
             "announce_url" : "https://racing4everyone.eu/announce/customannounceurl",
             # "anon" : False
         },
         "HUNO" : {
-            "api_key" : "HUNO api key",
+            "api_key" : "HUNO_API_KEY",
             "announce_url" : "https://hawke.uno/announce/customannounceurl",
             # "anon" : False
         },
@@ -88,17 +88,17 @@ config = {
             # 'otp_uri' : 'OTP URI, read the following for more information https://github.com/google/google-authenticator/wiki/Key-Uri-Format'
         },
         "STC" :{
-            "api_key" : "STC",
+            "api_key" : "STC_API_KEY",
             "announce_url" : "https://skipthecommericals.xyz/announce/customannounceurl",
             # "anon" : False
         },
         "STT" :{
-            "api_key" : "STC",
+            "api_key" : "STC_API_KEY",
             "announce_url" : "https://stt.xyz/announce/customannounceurl",
             # "anon" : False
         },
         "SN": {
-            "api_key": "6Z1tMrXzcYpIeSdGZueQWqb3BowlS6YuIoZLHe3dvIqkSfY0Ws5SHx78oGSTazG0jQ1agduSqe07FPPE8sdWTg",
+            "api_key": "SN_API_KEY",
             "announce_url": "https://tracker.swarmazon.club:8443/<YOUR_PASSKEY>/announce",
         },
         "HP" :{
@@ -107,7 +107,7 @@ config = {
             # "anon" : False
         },
         "ACM" :{
-            "api_key" : "ACM api key",
+            "api_key" : "ACM_API_KEY",
             "announce_url" : "https://asiancinema.me/announce/customannounceurl",
             # "anon" : False,
 
@@ -116,11 +116,11 @@ config = {
             # "internal_groups" : ["What", "Internal", "Groups", "Are", "You", "In"],
         },
         "NBL" : {
-            "api_key" : "NBL api key",
+            "api_key" : "NBL_API_KEY",
             "announce_url" : "https://nebulance.io/customannounceurl",
         },
         "ANT" :{
-            "api_key" : "ANT api key",
+            "api_key" : "ANT_API_KEY",
             "announce_url" : "https://anthelion.me/announce/customannounceurl",
             # "anon" : False
         },
@@ -129,23 +129,23 @@ config = {
             "password" : "password",
             "img_api" : "get this from the forum post",
             "announce_url" : "http://www.torrenthr.org/announce.php?passkey=yourpasskeyhere",
-            "pronfo_api_key" : "pronfo api key",
+            "pronfo_api_key" : "pronfo_API_KEY",
             "pronfo_theme" : "pronfo theme code",
             "pronfo_rapi_id" : "pronfo remote api id",
             # "anon" : False
         },
         "LCD" : {
-            "api_key" : "LCD api key",
+            "api_key" : "LCD_API_KEY",
             "announce_url" : "https://locadora.cc/announce/customannounceurl",
             # "anon" : False
         },
         "LST" : {
-            "api_key" : "LST api key",
+            "api_key" : "LST_API_KEY",
             "announce_url" : "https://lst.gg/announce/customannounceurl",
             # "anon" : False
         },
         "LT" : {
-            "api_key" : "LT api key",
+            "api_key" : "LT_API_KEY",
             "announce_url" : "https://lat-team.com/announce/customannounceurl",
             # "anon" : False
         },
@@ -161,7 +161,7 @@ config = {
             "announce_key": "TL announce key",
         },
         "TDC" :{
-            "api_key" : "TDC api key",
+            "api_key" : "TDC_API_KEY",
             "announce_url" : "https://thedarkcommunity.cc/announce/customannounceurl",
             # "anon" : "False"
         },
@@ -173,7 +173,7 @@ config = {
             "announce_url" : "https://hdts-announce.ru/announce.php", #DO NOT EDIT THIS LINE
         },
         "OE" : {
-            "api_key" : "OE api key",
+            "api_key" : "OE_API_KEY",
             "announce_url" : "https://onlyencodes.cc/announce/customannounceurl",
             # "anon" : False
         },
@@ -184,30 +184,30 @@ config = {
             "anon": True
         },
         "RF" : {
-            "api_key" : "RF api key",
+            "api_key" : "RF_API_KEY",
             "announce_url" : "https://reelflix.xyz/announce/customannounceurl",
             # "anon" : False
         },
 
 	 "FNP" : {
-            "api_key" : "FNP api key",
+            "api_key" : "FNP_API_KEY",
             "announce_url" : "https://fearnopeer.com/announce/customannounceurl",
             # "anon" : False
         },  
 	    
 	 "LDU" : {
-            "api_key" : "LDU api key",
+            "api_key" : "LDU_API_KEY",
             "announce_url" : "https://theldu.net/announce/customannounceurl",
             # "anon" : False
         },
 	    
         "ULCX" : {
-            "api_key" : "ULCX api key",
+            "api_key" : "ULCX_API_KEY",
             "announce_url" : "https://upload.cx/announce/customannounceurl",
             # "anon" : False
         },
          "CP2P" : {
-            "api_key" : "CP2P api key",
+            "api_key" : "CP2P_API_KEY",
             "announce_url" : "https://cinemap2p.xyz/announce/customannounceurl",
             # "anon" : False
         },
