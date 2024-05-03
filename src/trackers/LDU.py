@@ -40,7 +40,7 @@ class LDU():
         if category_name == 'MOVIE':
             if not tags[0].isalpha():
                 category_id = '27'
-            elif tags[0] != 'ENG' and len(tags) > 1 and 'ENG' in tags[1]:
+            elif 'ENG' not in ''.join(tags):
                 category_id = '22'
             elif '3D' in edition:
                 category_id = '21'
@@ -61,7 +61,7 @@ class LDU():
         elif category_name == 'TV':
             if not tags[0].isalpha():
                 category_id = '31'
-            elif tags[0] != 'ENG' and len(tags) > 1 and 'ENG' in tags[1]:
+            elif 'ENG' not in ''.join(tags):
                 category_id = '29'
             elif category_name == 'TV' and 'anime' in map(str.strip,keywords.lower().split(',')):    
                 category_id = '9'
