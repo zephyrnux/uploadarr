@@ -7,6 +7,7 @@ import distutils.util
 import os
 import re
 import platform
+from datetime import datetime
 
 from src.trackers.COMMON import COMMON
 from src.console import console
@@ -29,21 +30,35 @@ class LDU():
         pass
     
     async def get_cat_id(self, category_name, genres, keywords, service, edition, meta):
+        adult = meta.get('adult', False)
+        release_date = meta.get('full_date', '')
+        if isinstance(release_date, str):
+            release_date = datetime.strptime(release_date, '%Y-%m-%d')
+        year = meta.get('year','')
         tag = self.get_language_tag(meta)
-        tags = tag.split(']')
-        tags = [t[1:] for t in tags if t]
+        if tag:
+            tags = tag.split(']')
+            tags = [t[1:] for t in tags if t]
         category_id = {
             'MOVIE': '1', 
             'TV': '2', 
             'Anime' : '8',
-            }.get(category_name, '0')
+            }.get(category_name, '0') 
         if category_name == 'MOVIE':
-            if not tags[0].isalpha():
+            if adult == True and 'hentai' or 'animation'in map(str.strip,keywords.lower().split(',')):
+                category_id = '10'
+            elif adult == True:
+                category_id = '6'
+            elif tag and not tags[0].isalpha():
                 category_id = '27'
-            elif 'ENG' not in ''.join(tags):
+            elif tag and 'ENG' not in ''.join(tags):
                 category_id = '22'
             elif '3D' in edition:
                 category_id = '21'
+            elif release_date != '' and release_date < datetime(1927, 10, 1):
+                category_id = '18'
+            elif year != '' and year <= 1926:
+                category_id = '18'     
             elif 'silent film' in map(str.strip, keywords.lower().split(',')):
                 category_id = '18'      
             elif 'holiday' in map(str.strip, keywords.lower().split(',')):
@@ -59,9 +74,13 @@ class LDU():
             else:
                 category_id = '1'                                                            
         elif category_name == 'TV':
-            if not tags[0].isalpha():
+            if adult == True and 'hentai' or 'animation'in map(str.strip,keywords.lower().split(',')):
+                category_id = '10'
+            elif adult == True:
+                category_id = '6'            
+            elif tag and not tags[0].isalpha():
                 category_id = '31'
-            elif 'ENG' not in ''.join(tags):
+            elif tag and 'ENG' not in ''.join(tags):
                 category_id = '29'
             elif category_name == 'TV' and 'anime' in map(str.strip,keywords.lower().split(',')):    
                 category_id = '9'
