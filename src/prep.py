@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 from src.args import Args
 from src.console import console
 from src.exceptions import *
@@ -97,7 +97,7 @@ class Prep():
             meta['filelist'] = []
             try:
                 guess_name = bdinfo['title'].replace('-',' ')
-                filename = guessit(re.sub("[^0-9a-zA-Z\[\]]+", " ", guess_name), {"excludes" : ["country", "language"]})['title']
+                filename = guessit(re.sub(r"[^0-9a-zA-Z\[\]]+", " ", guess_name), {"excludes" : ["country", "language"]})['title']
                 untouched_filename = bdinfo['title']
                 try:
                     meta['search_year'] = guessit(bdinfo['title'])['year']
@@ -105,7 +105,7 @@ class Prep():
                     meta['search_year'] = ""
             except Exception:
                 guess_name = bdinfo['label'].replace('-',' ')
-                filename = guessit(re.sub("[^0-9a-zA-Z\[\]]+", " ", guess_name), {"excludes" : ["country", "language"]})['title']
+                filename = guessit(re.sub(r"[^0-9a-zA-Z\[\]]+", " ", guess_name), {"excludes" : ["country", "language"]})['title']
                 untouched_filename = bdinfo['label']
                 try:
                     meta['search_year'] = guessit(bdinfo['label'])['year']
@@ -164,7 +164,7 @@ class Prep():
             videopath, meta['filelist'] = self.get_video(videoloc, meta.get('mode', 'discord')) 
             video, meta['scene'], meta['imdb'] = self.is_scene(videopath, meta.get('imdb', None))
             guess_name = ntpath.basename(video).replace('-',' ')
-            filename = guessit(re.sub("[^0-9a-zA-Z\[\]]+", " ", guess_name), {"excludes" : ["country", "language"]}).get("title", guessit(re.sub("[^0-9a-zA-Z]+", " ", guess_name), {"excludes" : ["country", "language"]})["title"])
+            filename = guessit(re.sub(r"[^0-9a-zA-Z\[\]]+", " ", guess_name), {"excludes" : ["country", "language"]}).get("title", guessit(re.sub("[^0-9a-zA-Z]+", " ", guess_name), {"excludes" : ["country", "language"]})["title"])
             untouched_filename = os.path.basename(video)
             try:
                 meta['search_year'] = guessit(video)['year']
@@ -359,8 +359,8 @@ class Prep():
         
         meta['edition'], meta['repack'] = self.get_edition(meta['path'], bdinfo, meta['filelist'], meta.get('manual_edition'))
         if "REPACK" in meta.get('edition', ""):
-            meta['repack'] = re.search("REPACK[\d]?", meta['edition'])[0]
-            meta['edition'] = re.sub("REPACK[\d]?", "", meta['edition']).strip().replace('  ', ' ')
+            meta['repack'] = re.search(r"REPACK[\d]?", meta['edition'])[0]
+            meta['edition'] = re.sub(r"REPACK[\d]?", "", meta['edition']).strip().replace('  ', ' ')
         
         
         
@@ -449,7 +449,7 @@ class Prep():
     """
     def get_video(self, videoloc, mode):
         filelist = []
-        videoloc = os.path.abspath(videoloc)
+        videoloc = os.path.normpath(os.path.abspath(videoloc))
         if os.path.isdir(videoloc):
             globlist = glob.glob1(videoloc, "*.mkv") + glob.glob1(videoloc, "*.mp4") + glob.glob1(videoloc, "*.ts")
             for file in globlist:
@@ -470,38 +470,40 @@ class Prep():
 
 
 
-
-
     """
     Get and parse mediainfo
     """
     def exportInfo(self, video, isdir, folder_id, base_dir, export_text):
-        if os.path.exists(f"{base_dir}/tmp/{folder_id}/MEDIAINFO.txt") == False and export_text != False:
-            console.print("[bold yellow]Exporting MediaInfo...")
+        video = os.path.normpath(video)
+        try:
+            if os.path.exists(f"{base_dir}/tmp/{folder_id}/MEDIAINFO.txt") == False and export_text != False:
+                console.print("[bold yellow]Exporting MediaInfo...")
             #MediaInfo to text
-            if isdir == False:
-                os.chdir(os.path.dirname(video))
-            media_info = MediaInfo.parse(video, output="STRING", full=False, mediainfo_options={'inform_version' : '1'})
-            with open(f"{base_dir}/tmp/{folder_id}/MEDIAINFO.txt", 'w', newline="", encoding='utf-8') as export:
+                if isdir == False:
+                    os.chdir(os.path.dirname(video))
+                media_info = MediaInfo.parse(video, output="STRING", full=False, mediainfo_options={'inform_version' : '1'})
+                with open(f"{base_dir}/tmp/{folder_id}/MEDIAINFO.txt", 'w', newline="", encoding='utf-8') as export:
+                    export.write(media_info)
+                    export.close()
+                with open(f"{base_dir}/tmp/{folder_id}/MEDIAINFO_CLEANPATH.txt", 'w', newline="", encoding='utf-8') as export_cleanpath:
+                    export_cleanpath.write(media_info.replace(video, os.path.basename(video)))
+                    export_cleanpath.close()
+                console.print("[bold green]MediaInfo Exported.")
+
+            if os.path.exists(f"{base_dir}/tmp/{folder_id}/MediaInfo.json.txt") == False:
+                #MediaInfo to JSON
+                media_info = MediaInfo.parse(video, output="JSON", mediainfo_options={'inform_version' : '1'})
+                export = open(f"{base_dir}/tmp/{folder_id}/MediaInfo.json", 'w', encoding='utf-8')
                 export.write(media_info)
                 export.close()
-            with open(f"{base_dir}/tmp/{folder_id}/MEDIAINFO_CLEANPATH.txt", 'w', newline="", encoding='utf-8') as export_cleanpath:
-                export_cleanpath.write(media_info.replace(video, os.path.basename(video)))
-                export_cleanpath.close()
-            console.print("[bold green]MediaInfo Exported.")
-
-        if os.path.exists(f"{base_dir}/tmp/{folder_id}/MediaInfo.json.txt") == False:
-            #MediaInfo to JSON
-            media_info = MediaInfo.parse(video, output="JSON", mediainfo_options={'inform_version' : '1'})
-            export = open(f"{base_dir}/tmp/{folder_id}/MediaInfo.json", 'w', encoding='utf-8')
-            export.write(media_info)
-            export.close()
-        with open(f"{base_dir}/tmp/{folder_id}/MediaInfo.json", 'r', encoding='utf-8') as f:
-            mi = json.load(f)
+            with open(f"{base_dir}/tmp/{folder_id}/MediaInfo.json", 'r', encoding='utf-8') as f:
+                mi = json.load(f)
         
-        return mi
+            return mi
 
-
+        except FileNotFoundError:
+            console.print(f"[bold red]File not found: {video}")
+            sys.exit() 
 
 
     """
@@ -684,17 +686,21 @@ class Prep():
                     loglevel = 'quiet'
                     debug = True
                 with Progress(
-                        TextColumn("[bold green]Saving Screens..."),
-                        BarColumn(),
-                        "[cyan]{task.completed}/{task.total}",
-                        TimeRemainingColumn()
-                    ) as progress:
+                    TextColumn("[bold green]Saving Screens..."),
+                    BarColumn(),
+                    "[cyan]{task.completed}/{task.total}",
+                    TimeRemainingColumn()
+                ) as progress:
                     screen_task = progress.add_task("[green]Saving Screens...", total=num_screens)
                     ss_times = []
+                    smallest_image_path = None
+                    smallest_image_size = float('inf')
+
                     for i in range(num_screens):
                         image = f"{base_dir}/tmp/{folder_id}/{filename}-{i}.png"
+                        
                         try:
-                            ss_times = self.valid_ss_time(ss_times, num_screens+1, length)
+                            ss_times = self.valid_ss_time(ss_times, num_screens, length)
                             (
                                 ffmpeg
                                 .input(file, ss=ss_times[-1], skip_frame=keyframe)
@@ -707,30 +713,31 @@ class Prep():
                             console.print(traceback.format_exc())
                         
                         self.optimize_images(image)
-                        if os.path.getsize(Path(image)) <= 31000000 and self.img_host == "imgbb":
-                            i += 1
-                        elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", 'pixhost']:
-                            i += 1
-                        elif os.path.getsize(Path(image)) <= 75000:
-                            console.print("[bold yellow]Image is incredibly small, retaking")
-                            time.sleep(1)
-                        elif self.img_host == "ptpimg":
-                            i += 1
-                        elif self.img_host == "lensdump":
-                            i += 1
-                        else:
-                            console.print("[red]Image too large for your image host, retaking")
-                            time.sleep(1)
+                        
+                        try:
+                            if os.path.getsize(Path(image)) <= 31000000 and self.img_host == "imgbb":
+                                i += 1
+                            elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", 'pixhost']:
+                                i += 1
+                            elif os.path.getsize(Path(image)) <= 75000:
+                                console.print("[bold yellow]Image is incredibly small, retaking")
+                                time.sleep(1)
+                            elif self.img_host == "ptpimg":
+                                i += 1
+                            elif self.img_host == "lensdump":
+                                i += 1
+                            else:
+                                console.print("[red]Image too large for your image host, retaking")
+                                time.sleep(1)
+                        except Exception:
+                            pass
+                        
                         progress.advance(screen_task)
-                #remove smallest image
-                smallest = ""
-                smallestsize = 99 ** 99
-                for screens in glob.glob1(f"{base_dir}/tmp/{folder_id}/", f"{filename}-*"): 
-                    screensize = os.path.getsize(screens)
-                    if screensize < smallestsize:
-                        smallestsize = screensize
-                        smallest = screens
-                os.remove(smallest)       
+
+                    # Remove the smallest image
+                    smallest_image_path = min(glob.glob(f"{base_dir}/tmp/{folder_id}/{filename}-*"), key=os.path.getsize)
+                    os.remove(smallest_image_path)
+                    
         
     def dvd_screenshots(self, meta, disc_num, num_screens=None):
         if num_screens == None:
@@ -777,26 +784,32 @@ class Prep():
             looped = 0
             retake = False
             with Progress(
-                    TextColumn("[bold green]Saving Screens..."),
-                    BarColumn(),
-                    "[cyan]{task.completed}/{task.total}",
-                    TimeRemainingColumn()
-                ) as progress:
-                    screen_task = progress.add_task("[green]Saving Screens...", total=num_screens)
-                    ss_times = []
-                    for i in range(num_screens):
-                        if n >= len(main_set):
-                            n = 0
-                        if n >= num_screens:
-                            n -= num_screens
-                        image = f"{meta['base_dir']}/tmp/{meta['uuid']}/{meta['discs'][disc_num]['name']}-{i}.png"
-                        if not os.path.exists(image) or retake != False:
+                TextColumn("[bold green]Saving Screens..."),
+                BarColumn(),
+                "[cyan]{task.completed}/{task.total}",
+                TimeRemainingColumn()
+            ) as progress:
+                screen_task = progress.add_task("[green]Saving Screens...", total=num_screens)
+                ss_times = []
+                smallest_image_path = None
+                smallest_image_size = float('inf')
+                
+                for i in range(num_screens):
+                    if n >= len(main_set):
+                        n = 0
+                    if n >= num_screens:
+                        n -= num_screens
+                    image = f"{meta['base_dir']}/tmp/{meta['uuid']}/{meta['discs'][disc_num]['name']}-{i}.png"
+                    
+                    if not os.path.exists(image) or retake:
+                        try:
                             retake = False
                             loglevel = 'quiet'
                             debug = True
                             if bool(meta.get('debug', False)):
                                 loglevel = 'error'
                                 debug = False
+                                
                             def _is_vob_good(n, loops, num_screens):
                                 voblength = 300
                                 vob_mi = MediaInfo.parse(f"{meta['discs'][disc_num]['path']}/VTS_{main_set[n]}", output='JSON')
@@ -819,11 +832,12 @@ class Prep():
                                             voblength, n = _is_vob_good(n, loops, num_screens)
                                             return voblength, n
                                         else:
-                                            return 300, n
+                                            return 300, n                               
+                            
                             try:
                                 voblength, n = _is_vob_good(n, 0, num_screens)
                                 img_time = random.randint(round(voblength/5) , round(voblength - voblength/5))
-                                ss_times = self.valid_ss_time(ss_times, num_screens+1, voblength)
+                                ss_times = self.valid_ss_time(ss_times, num_screens, voblength)
                                 ff = ffmpeg.input(f"{meta['discs'][disc_num]['path']}/VTS_{main_set[n]}", ss=ss_times[-1])
                                 if w_sar != 1 or h_sar != 1:
                                     ff = ff.filter('scale', int(round(width * w_sar)), int(round(height * h_sar)))
@@ -836,8 +850,10 @@ class Prep():
                                 )
                             except Exception:
                                 console.print(traceback.format_exc())
+                            
                             self.optimize_images(image)
                             n += 1
+                            
                             try: 
                                 if os.path.getsize(Path(image)) <= 31000000 and self.img_host == "imgbb":
                                     i += 1
@@ -861,16 +877,23 @@ class Prep():
                                     console.print('[red]Failed to take screenshots')
                                     exit()
                                 looped += 1
-                        progress.advance(screen_task)
-            #remove smallest image
-            smallest = ""
-            smallestsize = 99**99
-            for screens in glob.glob1(f"{meta['base_dir']}/tmp/{meta['uuid']}/", f"{meta['discs'][disc_num]['name']}-*"): 
-                screensize = os.path.getsize(screens)
-                if screensize < smallestsize:
-                    smallestsize = screensize
-                    smallest = screens
-            os.remove(smallest)
+                            
+                            progress.advance(screen_task)
+                            
+                        except Exception:
+                            pass
+                    else:
+                        screenshot_size = os.path.getsize(image)
+                        if screenshot_size < smallest_image_size:
+                            smallest_image_size = screenshot_size
+                            smallest_image_path = image
+                    
+                    i += 1
+
+            # Remove the smallest image
+            if smallest_image_path:
+                os.remove(smallest_image_path)
+
 
     def screenshots(self, path, filename, folder_id, base_dir, meta, num_screens=None):
         if num_screens == None:
@@ -922,57 +945,60 @@ class Prep():
                     ) as progress:
                         ss_times = []
                         screen_task = progress.add_task("[green]Saving Screens...", total=num_screens)
-                        for i in range(num_screens):
-                            image = os.path.abspath(f"{base_dir}/tmp/{folder_id}/{filename}-{i}.png")
-                            if not os.path.exists(image) or retake != False:
-                                retake = False
+                        smallest_image_path = None
+                        smallest_image_size = float('inf')
+                        
+                        for _ in range(num_screens):
+                            image_path = os.path.abspath(f"{base_dir}/tmp/{folder_id}/{filename}-{i}.png")
+                            
+                            if not os.path.exists(image_path) or retake:
                                 try:
-                                    ss_times = self.valid_ss_time(ss_times, num_screens+1, length)
+                                    ss_times = self.valid_ss_time(ss_times, num_screens, length)
                                     ff = ffmpeg.input(path, ss=ss_times[-1])
                                     if w_sar != 1 or h_sar != 1:
                                         ff = ff.filter('scale', int(round(width * w_sar)), int(round(height * h_sar)))
                                     (
                                         ff
-                                        .output(image, vframes=1, pix_fmt="rgb24")
+                                        .output(image_path, vframes=1, pix_fmt="rgb24")
                                         .overwrite_output()
                                         .global_args('-loglevel', loglevel)
                                         .run(quiet=debug)
                                     )
-                                except Exception:
+                                except Exception as e:
                                     console.print(traceback.format_exc())
-    
-                                self.optimize_images(image)
-                                if os.path.getsize(Path(image)) <= 75000:
-                                    console.print("[yellow]Image is incredibly small, retaking")
-                                    retake = True
-                                    time.sleep(1)
-                                if os.path.getsize(Path(image)) <= 31000000 and self.img_host == "imgbb" and retake == False:
-                                    i += 1
-                                elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", 'pixhost'] and retake == False:
-                                    i += 1
-                                elif self.img_host in ["ptpimg", "lensdump"] and retake == False:
-                                    i += 1
-                                elif self.img_host == "freeimage.host":
-                                    console.print("[bold red]Support for freeimage.host has been removed. Please remove from your config")
-                                    exit()
-                                elif retake == True:
-                                    pass
-                                else:
-                                    console.print("[red]Image too large for your image host, retaking")
-                                    retake = True
-                                    time.sleep(1) 
+                                    self.optimize_images(image_path)
+                                    if os.path.getsize(Path(image_path)) <= 75000:
+                                        console.print("[yellow]Image is incredibly small, retaking")
+                                        retake = True
+                                        time.sleep(1)
+                                    elif os.path.getsize(Path(image_path)) <= 31000000 and self.img_host == "imgbb" and not retake:
+                                        i += 1
+                                    elif os.path.getsize(Path(image_path)) <= 10000000 and self.img_host in ["imgbox", 'pixhost'] and not retake:
+                                        i += 1
+                                    elif self.img_host in ["ptpimg", "lensdump"] and not retake:
+                                        i += 1
+                                    elif self.img_host == "freeimage.host":
+                                        console.print("[bold red]Support for freeimage.host has been removed. Please remove from your config")
+                                        exit()
+                                    elif retake:
+                                        pass
+                                    else:
+                                        console.print("[red]Image too large for your image host, retaking")
+                                        retake = True
+                                        time.sleep(1) 
                             else:
-                                i += 1
+                                screenshot_size = os.path.getsize(image_path)
+                                if screenshot_size < smallest_image_size:
+                                    smallest_image_size = screenshot_size
+                                    smallest_image_path = image_path
+
+                            i += 1
                             progress.advance(screen_task)
-                    #remove smallest image
-                    smallest = ""
-                    smallestsize = 99 ** 99
-                    for screens in glob.glob1(f"{base_dir}/tmp/{folder_id}/", f"{filename}-*"): 
-                        screensize = os.path.getsize(screens)
-                        if screensize < smallestsize:
-                            smallestsize = screensize
-                            smallest = screens
-                    os.remove(smallest)       
+                            
+                        # Remove the smallest image
+                        if smallest_image_path:
+                            os.remove(smallest_image_path)
+                        
 
     def valid_ss_time(self, ss_times, num_screens, length):
         valid_time = False
@@ -1022,9 +1048,6 @@ class Prep():
             type = "HDTV"
         elif is_disc != None:
             type = "DISC"
-        elif "dvdrip" in filename:
-            console.print("[bold red]DVDRip Detected, exiting")
-            exit()
         else:
             type = "ENCODE"
         return type
@@ -1137,7 +1160,12 @@ class Prep():
             response = movie.info()
             meta['title'] = response['title']
             if response['release_date']:
-                meta['year'] = datetime.strptime(response['release_date'],'%Y-%m-%d').year
+                try:
+                    meta['year'] = datetime.strptime(response['release_date'],'%Y-%m-%d').year
+                    full_date = datetime.strptime(response['release_date'],'%Y-%m-%d')
+                    meta['full_date'] = full_date.strftime('%Y-%m-%d')
+                except Exception:
+                    meta['full_date'] = ""
             else:
                 console.print('[yellow]TMDB does not have a release date, using year from filename instead (if it exists)')
                 meta['year'] = meta['search_year']
@@ -1172,6 +1200,7 @@ class Prep():
             meta['original_title'] = response.get('original_title', meta['title'])
             meta['keywords'] = self.get_keywords(movie)
             meta['genres'] = self.get_genres(response)
+            meta['adult'] = response['adult']
             meta['tmdb_directors'] = self.get_directors(movie)
             if meta.get('anime', False) == False:
                 meta['mal_id'], meta['aka'], meta['anime'] = self.get_anime(response, meta)
@@ -1188,6 +1217,7 @@ class Prep():
             else:
                 console.print('[yellow]TMDB does not have a release date, using year from filename instead (if it exists)')
                 meta['year'] = meta['search_year']
+            meta['full_date'] = datetime.strptime(response['release_date'],'%Y-%m-%d')     
             external = tv.external_ids()
             if meta.get('imdb', None) == None:
                 imdb_id = external.get('imdb_id', "0")
@@ -1219,6 +1249,7 @@ class Prep():
             meta['original_title'] = response.get('original_name', meta['title'])
             meta['keywords'] = self.get_keywords(tv)
             meta['genres'] = self.get_genres(response)
+            meta['adult'] = response['adult']
             meta['tmdb_directors'] = self.get_directors(tv)
             meta['mal_id'], meta['aka'], meta['anime'] = self.get_anime(response, meta)
             meta['poster'] = response.get('poster_path', '')
@@ -1369,7 +1400,7 @@ class Prep():
             result = {'title' : {}}
             difference = 0
             for anime in media:
-                search_name = re.sub("[^0-9a-zA-Z\[\]]+", "", tmdb_name.lower().replace(' ', ''))
+                search_name = re.sub(r"[^0-9a-zA-Z\[\]]+", "", tmdb_name.lower().replace(' ', ''))
                 for title in anime['title'].values():
                     if title != None:
                         title = re.sub(u'[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]+ (?=[A-Za-z ]+–)', "", title.lower().replace(' ', ''), re.U)
@@ -1906,7 +1937,7 @@ class Prep():
             repack = "RERIP"
         # if "HYBRID" in video.upper() and "HYBRID" not in title.upper():
         #     edition = "Hybrid " + edition
-        edition = re.sub("(REPACK\d?)?(RERIP)?(PROPER)?", "", edition, flags=re.IGNORECASE).strip()
+        edition = re.sub(r"(REPACK\d?)?(RERIP)?(PROPER)?", "", edition, flags=re.IGNORECASE).strip()
         bad = ['internal', 'limited', 'retail']
 
         if edition.lower() in bad:
@@ -1946,13 +1977,13 @@ class Prep():
             include = ["*.mkv", "*.mp4", "*.ts"]
         torrent = Torrent(path,
             trackers = ["https://fake.tracker"],
-            source = "L4G",
+            source = "CvT",
             private = True,
             exclude_globs = exclude or [],
             include_globs = include or [],
             creation_date = datetime.now(),
-            comment = "Created by L4G's Upload Assistant",
-            created_by = "L4G's Upload Assistant")
+            comment = "Created by Upload Assistant (CvT Edition)",
+            created_by = "Created by Upload Assistant (CvT Edition)")
         file_size = torrent.size
         if file_size < 268435456: # 256 MiB File / 256 KiB Piece Size
             piece_size = 18
@@ -1981,9 +2012,9 @@ class Prep():
         else:
             torrent_creation = self.config['DEFAULT'].get('torrent_creation', 'torf')
         if torrent_creation == 'torrenttools':
-            args = ['torrenttools', 'create', '-a', 'https://fake.tracker', '--private', 'on', '--piece-size', str(2**piece_size), '--created-by', "L4G's Upload Assistant", '--no-cross-seed','-o', f"{meta['base_dir']}/tmp/{meta['uuid']}/{output_filename}.torrent"]
+            args = ['torrenttools', 'create', '-a', 'https://fake.tracker', '--private', 'on', '--piece-size', str(2**piece_size), '--created-by', "Upload-Assistant (CvT Edition)", '--no-cross-seed','-o', f"{meta['base_dir']}/tmp/{meta['uuid']}/{output_filename}.torrent"]
             if not meta['is_disc']:
-                args.extend(['--include', '^.*\.(mkv|mp4|ts)$'])
+                args.extend(['--include', r'^.*\.(mkv|mp4|ts)$'])
             args.append(path)
             err = subprocess.call(args)
             if err != 0:
@@ -2010,7 +2041,7 @@ class Prep():
         cli_ui.info_progress("Hashing...", pieces_done, pieces_total)
 
     def create_random_torrents(self, base_dir, uuid, num, path):
-        manual_name = re.sub("[^0-9a-zA-Z\[\]\'\-]+", ".", os.path.basename(path))
+        manual_name = re.sub(r"[^0-9a-zA-Z\[\]\'\-]+", ".", os.path.basename(path))
         base_torrent = Torrent.read(f"{base_dir}/tmp/{uuid}/BASE.torrent")
         for i in range(1, int(num) + 1):
             new_torrent = base_torrent
@@ -2022,8 +2053,8 @@ class Prep():
             base_torrent = Torrent.read(torrentpath)
             base_torrent.creation_date = datetime.now()
             base_torrent.trackers = ['https://fake.tracker']
-            base_torrent.comment = "Created by L4G's Upload Assistant"
-            base_torrent.created_by = "Created by L4G's Upload Assistant"
+            base_torrent.comment = "Created by Upload Assistant (CvT Edition)"
+            base_torrent.created_by = "Created by Upload Assistant (CvT Edition)"
             #Remove Un-whitelisted info from torrent
             for each in list(base_torrent.metainfo['info']):
                 if each not in ('files', 'length', 'name', 'piece length', 'pieces', 'private', 'source'):
@@ -2031,7 +2062,7 @@ class Prep():
             for each in list(base_torrent.metainfo):
                 if each not in ('announce', 'comment', 'creation date', 'created by', 'encoding', 'info'):
                     base_torrent.metainfo.pop(each, None)
-            base_torrent.source = 'L4G'
+            base_torrent.source = 'CvT'
             base_torrent.private = True
             Torrent.copy(base_torrent).write(f"{base_dir}/tmp/{uuid}/BASE.torrent", overwrite=True)
 
@@ -2046,11 +2077,11 @@ class Prep():
         #     if custom_img_list == []:
         #         console.print('[yellow]Uploading Screens')   
         os.chdir(f"{meta['base_dir']}/tmp/{meta['uuid']}")
-        img_host = self.config['DEFAULT'][f'img_host_{img_host_num}']
-        if img_host != self.img_host and meta.get('imghost', None) == None:
-            img_host = self.img_host
-            i -= 1
-        elif img_host_num == 1 and meta.get('imghost') != img_host:
+        img_host = self.config['DEFAULT'][f'img_host_{img_host_num}']  
+        # if img_host != self.img_host and meta.get('imghost', None) == None:  ##CvT TEST
+        #     img_host = self.img_host
+        #     i -= 1
+        if img_host_num == 1 and meta.get('imghost') != img_host:
             img_host = meta.get('imghost')
             img_host_num = 0
         image_list = []
@@ -2111,7 +2142,7 @@ class Prep():
                             url = "https://api.pixhost.to/images"
                             data = {
                                 'content_type': '0',
-                                'max_th_size': 350,
+                                'max_th_size': 500,
                             }
                             files = {
                                 'img': ('file-upload[0]', open(image, 'rb')),
@@ -2199,7 +2230,7 @@ class Prep():
         os.chdir(chdir)
         image_list = []
         # image_glob = glob.glob("*.png")
-        async with pyimgbox.Gallery(thumb_width=350, square_thumbs=False) as gallery:
+        async with pyimgbox.Gallery(thumb_width=500, square_thumbs=False) as gallery:
             async for submission in gallery.add(image_glob):
                 if not submission['success']:
                     console.print(f"[red]There was an error uploading to imgbox: [yellow]{submission['error']}[/yellow][/red]")
@@ -2491,8 +2522,8 @@ class Prep():
                                     for lang, names in values.items():
                                         if lang == "jp":
                                             for name in names:
-                                                romaji_check = re.sub("[^0-9a-zA-Z\[\]]+", "", romaji.lower().replace(' ', ''))
-                                                name_check = re.sub("[^0-9a-zA-Z\[\]]+", "", name.lower().replace(' ', ''))
+                                                romaji_check = re.sub(r"[^0-9a-zA-Z\[\]]+", "", romaji.lower().replace(' ', ''))
+                                                name_check = re.sub(r"[^0-9a-zA-Z\[\]]+", "", name.lower().replace(' ', ''))
                                                 diff = SequenceMatcher(None, romaji_check, name_check).ratio()
                                                 if romaji_check in name_check:
                                                     if diff >= difference:
@@ -2505,8 +2536,8 @@ class Prep():
                                                         difference = diff
                                         if lang == "us":
                                             for name in names:
-                                                eng_check = re.sub("[^0-9a-zA-Z\[\]]+", "", eng_title.lower().replace(' ', ''))
-                                                name_check = re.sub("[^0-9a-zA-Z\[\]]+", "", name.lower().replace(' ', ''))
+                                                eng_check = re.sub(r"[^0-9a-zA-Z\[\]]+", "", eng_title.lower().replace(' ', ''))
+                                                name_check = re.sub(r"[^0-9a-zA-Z\[\]]+", "", name.lower().replace(' ', ''))
                                                 diff = SequenceMatcher(None, eng_check, name_check).ratio()
                                                 if eng_check in name_check:
                                                     if diff >= difference:
@@ -2606,7 +2637,7 @@ class Prep():
             'NATG': 'NATG', 'National Geographic': 'NATG', 'NBA': 'NBA', 'NBA TV': 'NBA', 'NBC': 'NBC', 'NF': 'NF', 'Netflix': 'NF', 
             'National Film Board': 'NFB', 'NFL': 'NFL', 'NFLN': 'NFLN', 'NFL Now': 'NFLN', 'NICK': 'NICK', 'Nickelodeon': 'NICK', 'NRK': 'NRK', 
             'Norsk Rikskringkasting': 'NRK', 'OnDemandKorea': 'ODK', 'Opto': 'OPTO', 'Oprah Winfrey Network': 'OWN', 'PA': 'PA', 'PBS': 'PBS', 
-            'PBSK': 'PBSK', 'PBS Kids': 'PBSK', 'PCOK': 'PCOK', 'Peacock': 'PCOK', 'PLAY': 'PLAY', 'PLUZ': 'PLUZ', 'Pluzz': 'PLUZ', 'PMNP': 'PMNP', 
+            'PBSK': 'PBSK', 'PBS Kids': 'PBSK', 'PCOK': 'PCOK', 'Peacock': 'PCOK', 'PLAY': 'PLAY', 'Player' : 'PL', 'PLUZ': 'PLUZ', 'Pluzz': 'PLUZ', 'PMNP': 'PMNP', 
             'PMNT': 'PMNT', 'PMTP' : 'PMTP', 'POGO': 'POGO', 'PokerGO': 'POGO', 'PSN': 'PSN', 'Playstation Network': 'PSN', 'PUHU': 'PUHU', 'QIBI': 'QIBI', 
             'RED': 'RED', 'YouTube Red': 'RED', 'RKTN': 'RKTN', 'Rakuten TV': 'RKTN', 'The Roku Channel': 'ROKU', 'RSTR': 'RSTR', 'RTE': 'RTE', 
             'RTE One': 'RTE', 'RUUTU': 'RUUTU', 'SBS': 'SBS', 'Science Channel': 'SCI', 'SESO': 'SESO', 'SeeSo': 'SESO', 'SHMI': 'SHMI', 'Shomi': 'SHMI', 'SKST' : 'SKST', 'SkyShowtime': 'SKST',
@@ -2679,7 +2710,7 @@ class Prep():
             
     
     def clean_filename(self, name):
-        invalid = '<>:"/\|?*'
+        invalid = r'<>:"/\|?*'
         for char in invalid:
             name = name.replace(char, '-')
         return name
@@ -2827,7 +2858,7 @@ class Prep():
                 generic.write(f"\nThumbnail Image:\n")
                 for each in meta['image_list']:
                     generic.write(f"{each['img_url']}\n")
-        title = re.sub("[^0-9a-zA-Z\[\]]+", "", meta['title'])
+        title = re.sub(r"[^0-9a-zA-Z\[\]]+", "", meta['title'])
         archive = f"{meta['base_dir']}/tmp/{meta['uuid']}/{title}"
         torrent_files = glob.glob1(f"{meta['base_dir']}/tmp/{meta['uuid']}","*.torrent")
         if isinstance(torrent_files, list) and len(torrent_files) > 1:
@@ -2837,7 +2868,7 @@ class Prep():
         try:
             if os.path.exists(f"{meta['base_dir']}/tmp/{meta['uuid']}/BASE.torrent"):
                 base_torrent = Torrent.read(f"{meta['base_dir']}/tmp/{meta['uuid']}/BASE.torrent")
-                manual_name = re.sub("[^0-9a-zA-Z\[\]\'\-]+", ".", os.path.basename(meta['path']))
+                manual_name = re.sub(r"[^0-9a-zA-Z\[\]\'\-]+", ".", os.path.basename(meta['path']))
                 Torrent.copy(base_torrent).write(f"{meta['base_dir']}/tmp/{meta['uuid']}/{manual_name}.torrent", overwrite=True)
                 # shutil.copy(os.path.abspath(f"{meta['base_dir']}/tmp/{meta['uuid']}/BASE.torrent"), os.path.abspath(f"{meta['base_dir']}/tmp/{meta['uuid']}/{meta['name'].replace(' ', '.')}.torrent").replace(' ', '.'))
             filebrowser = self.config['TRACKERS'].get('MANUAL', {}).get('filebrowser', None)
