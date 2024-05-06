@@ -3,40 +3,40 @@ from src.args import Args
 from src.clients import Clients
 from src.prep import Prep
 from src.trackers.COMMON import COMMON
-from src.trackers.HUNO import HUNO
-from src.trackers.BLU import BLU
-from src.trackers.BHD import BHD
-from src.trackers.AITHER import AITHER
-from src.trackers.STC import STC
-from src.trackers.R4E import R4E
-from src.trackers.THR import THR
-from src.trackers.STT import STT
-from src.trackers.HP import HP
-from src.trackers.PTP import PTP
-from src.trackers.SN import SN
 from src.trackers.ACM import ACM
-from src.trackers.HDB import HDB
-from src.trackers.LCD import LCD
-from src.trackers.TTG import TTG
-from src.trackers.LST import LST
-from src.trackers.FL import FL
-from src.trackers.LT import LT
-from src.trackers.NBL import NBL
+from src.trackers.AITHER import AITHER
 from src.trackers.ANT import ANT
-from src.trackers.PTER import PTER
-from src.trackers.MTV import MTV
-from src.trackers.JPTV import JPTV
-from src.trackers.TL import TL
-from src.trackers.TDC import TDC
-from src.trackers.HDT import HDT
-from src.trackers.RF import RF
-from src.trackers.OE import OE
+from src.trackers.BHD import BHD
 from src.trackers.BHDTV import BHDTV
-from src.trackers.RTF import RTF
-from src.trackers.LDU import LDU
-from src.trackers.FNP import FNP
-from src.trackers.ULCX import ULCX
+from src.trackers.BLU import BLU
 from src.trackers.CP2P import CP2P
+from src.trackers.FL import FL
+from src.trackers.FNP import FNP
+from src.trackers.HDB import HDB
+from src.trackers.HDT import HDT
+from src.trackers.HP import HP
+from src.trackers.HUNO import HUNO
+from src.trackers.JPTV import JPTV
+from src.trackers.LCD import LCD
+from src.trackers.LDU import LDU
+from src.trackers.LST import LST
+from src.trackers.LT import LT
+from src.trackers.MTV import MTV
+from src.trackers.NBL import NBL
+from src.trackers.OE import OE
+from src.trackers.PTER import PTER
+from src.trackers.PTP import PTP
+from src.trackers.R4E import R4E
+from src.trackers.RF import RF
+from src.trackers.RTF import RTF
+from src.trackers.SN import SN
+from src.trackers.STC import STC
+from src.trackers.STT import STT
+from src.trackers.TDC import TDC
+from src.trackers.THR import THR
+from src.trackers.TL import TL
+from src.trackers.TTG import TTG
+from src.trackers.ULCX import ULCX
 import json
 from pathlib import Path
 import asyncio
@@ -48,44 +48,35 @@ import logging
 import shutil
 import glob
 import cli_ui
-
+from packaging.version import Version
 from src.console import console
 from rich.markdown import Markdown
 from rich.style import Style
 
-
-
-cli_ui.setup(color='always', title="L4G's Upload Assistant")
+cli_ui.setup(color='always', title="Upload Assistant - LDU Mod")
 import traceback
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
-
 try:
     from data.config import config
 except:
-    if not os.path.exists(os.path.abspath(f"{base_dir}/data/config.py")):
-        try:
-            if os.path.exists(os.path.abspath(f"{base_dir}/data/config.json")):
-                with open(f"{base_dir}/data/config.json", 'r', encoding='utf-8-sig') as f:
-                    json_config = json.load(f)
-                    f.close()
-                with open(f"{base_dir}/data/config.py", 'w') as f:
-                    f.write(f"config = {json.dumps(json_config, indent=4)}")
-                    f.close()
-                cli_ui.info(cli_ui.green, "Successfully updated config from .json to .py")    
-                cli_ui.info(cli_ui.green, "It is now safe for you to delete", cli_ui.yellow, "data/config.json", "if you wish")    
-                from data.config import config
-            else:
-                raise NotImplementedError
-        except:
-            cli_ui.info(cli_ui.red, "We have switched from .json to .py for config to have a much more lenient experience")
-            cli_ui.info(cli_ui.red, "Looks like the auto updater didnt work though")
-            cli_ui.info(cli_ui.red, "Updating is just 2 easy steps:")
-            cli_ui.info(cli_ui.red, "1: Rename", cli_ui.yellow, os.path.abspath(f"{base_dir}/data/config.json"), cli_ui.red, "to", cli_ui.green, os.path.abspath(f"{base_dir}/data/config.py") )
-            cli_ui.info(cli_ui.red, "2: Add", cli_ui.green, "config = ", cli_ui.red, "to the beginning of", cli_ui.green, os.path.abspath(f"{base_dir}/data/config.py"))
-            exit()
-    else:
-        console.print(traceback.print_exc())
+    cli_ui.info(cli_ui.red, "It appears you have no config file, please ensure to configure and place /data/config.py")
+    exit()
+
+if 'version' not in config:
+    cli_ui.info(cli_ui.red, "Version not found in config. Please reconfigure from example-config.py, make sure to save it as config.py")
+    exit()
+minimum_version = Version('0.3.0')
+if Version(config.get('version')) < minimum_version:
+    cli_ui.info(cli_ui.red, f"Config version is too old. Minimum version is {minimum_version} but got {config.get('version')}, reconfigure example-config.py for your needs")
+    exit()
+try:
+    from data.example_config import example_config
+    if 'version' in example_config and Version(example_config.get('version')) > Version(config.get('version')):
+        cli_ui.info(cli_ui.yellow, "Config version out of date, upgrading is reccomended.")
+except:
+    pass
+
 client = Clients(config=config)
 parser = Args(config)
 
@@ -250,12 +241,12 @@ async def do_the_thing(base_dir):
         #######  Upload to Trackers  #######
         ####################################
         common = COMMON(config=config)
-        api_trackers = ['BLU', 'AITHER', 'STC', 'R4E', 'STT', 'RF', 'ACM','LCD','LST','HUNO', 'SN', 'LT', 'NBL', 'ANT', 'JPTV', 'TDC', 'OE', 'BHDTV', 'RTF', 'LDU', 'FNP', 'ULCX', 'CP2P']
-        http_trackers = ['HDB', 'TTG', 'FL', 'PTER', 'HDT', 'MTV']
+        api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'ULCX']
+        http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
         tracker_class_map = {
-            'BLU' : BLU, 'BHD': BHD, 'AITHER' : AITHER, 'STC' : STC, 'R4E' : R4E, 'THR' : THR, 'STT' : STT, 'HP' : HP, 'PTP' : PTP, 'RF' : RF, 'SN' : SN, 
-            'ACM' : ACM, 'HDB' : HDB, 'LCD': LCD, 'TTG' : TTG, 'LST' : LST, 'HUNO': HUNO, 'FL' : FL, 'LT' : LT, 'NBL' : NBL, 'ANT' : ANT, 'PTER': PTER, 'JPTV' : JPTV,
-            'TL' : TL, 'TDC' : TDC, 'HDT' : HDT, 'MTV': MTV, 'OE': OE, 'BHDTV': BHDTV, 'RTF':RTF, 'LDU':LDU, 'FNP':FNP, 'ULCX':ULCX, 'CP2P':CP2P}
+    'ACM': ACM, 'AITHER': AITHER, 'ANT': ANT, 'BHDTV': BHDTV, 'BLU': BLU, 'CP2P': CP2P, 'FNP': FNP, 'HUNO': HUNO, 'JPTV': JPTV, 'LCD': LCD, 'LDU': LDU, 'LST': LST, 'LT': LT, 'NBL': NBL, 'OE': OE,
+    'RF': RF, 'R4E': R4E, 'RTF': RTF, 'SN': SN, 'STC': STC, 'STT': STT, 'TDC': TDC, 'ULCX': ULCX, 'FL': FL, 'HDB': HDB, 'HDT': HDT, 'MTV': MTV, 'PTER': PTER, 'TTG': TTG, 'ULCX': ULCX
+}
 
         for tracker in trackers:
             if meta['name'].endswith('DUPE?'):
