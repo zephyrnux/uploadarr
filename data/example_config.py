@@ -17,7 +17,7 @@ config = {
         "img_host_1": "imgbb",
         "img_host_2": "ptpimg",
         "img_host_3": "imgbox",
-	    "img_host_4": "pixhost",
+	"img_host_4": "pixhost",
         "img_host_5": "lensdump",
 
         "screens" : "4",
@@ -109,7 +109,7 @@ config = {
             "username" : "username",
             "password" : "password",
             "my_announce_url": "https://hdts-announce.ru/announce.php?pid=<PASS_KEY/PID>",
-            "anon" : "False"
+            "anon" : False,
             "announce_url" : "https://hdts-announce.ru/announce.php", #DO NOT EDIT THIS LINE
         },
 
@@ -276,12 +276,12 @@ config = {
             "qbit_port" : "8080",
             "qbit_user" : "username",
             "qbit_pass" : "password",
-            # "torrent_storage_dir" : "path/to/BT_backup folder"
+            # "torrent_storage_dir" : "path/to/BT_backup folder",
             # "qbit_tag" : "tag",
-            # "qbit_cat" : "category"
+            # "qbit_cat" : "category",
             
             # Content Layout for adding .torrents: "Original"(recommended)/"Subfolder"/"NoSubfolder"
-            "content_layout" : "Original"
+            "content_layout" : "Original",
             
             # Enable automatic torrent management if listed path(s) are present in the path
                 # If using remote path mapping, use remote path
@@ -292,17 +292,17 @@ config = {
 
             # Remote path mapping (docker/etc.) CASE SENSITIVE
             # "local_path" : "E:\\downloads\\tv",
-            # "remote_path" : "/remote/downloads/tv"
+            # "remote_path" : "/remote/downloads/tv",
 
             # Set to True to verify certificate for HTTPS connections; for instance, if the connection is using a self-signed certificate.
-            "VERIFY_WEBUI_CERTIFICATE" : False
+            "VERIFY_WEBUI_CERTIFICATE" : False,
         },
 
         "rtorrent_sample" : {
             "torrent_client" : "rtorrent",
             "rtorrent_url" : "https://user:password@server.host.tld:443/username/rutorrent/plugins/httprpc/action.php",
             # "torrent_storage_dir" : "path/to/session folder",
-            # "rtorrent_label" : "Add this label to all uploads"
+            # "rtorrent_label" : "Add this label to all uploads",
 
             # Remote path mapping (docker/etc.) CASE SENSITIVE
             # "local_path" : "/LocalPath",
