@@ -31,7 +31,8 @@ class LT():
         self.source_flag = 'Lat-Team "Poder Latino"'
         self.upload_url = 'https://lat-team.com/api/torrents/upload'
         self.search_url = 'https://lat-team.com/api/torrents/filter'
-        self.signature = ''
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
+        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         pass
     
