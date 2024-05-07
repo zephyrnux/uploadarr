@@ -30,7 +30,8 @@ class PTER():
         self.ptgen_api = config['TRACKERS']['PTER'].get('ptgen_api').strip()
 
         self.ptgen_retry=3
-        self.signature = None
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
+        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
 
     async def validate_credentials(self, meta):
