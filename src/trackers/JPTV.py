@@ -31,7 +31,8 @@ class JPTV():
         self.source_flag = 'jptv.club'
         self.upload_url = 'https://jptv.club/api/torrents/upload'
         self.search_url = 'https://jptv.club/api/torrents/filter'
-        self.signature = None
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
+        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         pass
     
