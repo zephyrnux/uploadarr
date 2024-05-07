@@ -23,6 +23,8 @@ class SN():
         self.upload_url = 'https://swarmazon.club/api/upload.php'
         self.forum_link = 'https://swarmazon.club/php/forum.php?forum_page=2-swarmazon-rules'
         self.search_url = 'https://swarmazon.club/api/search.php'
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
+        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"        
         self.banned_groups = [""]
         pass
 
