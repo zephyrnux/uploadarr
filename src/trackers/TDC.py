@@ -26,7 +26,8 @@ class TDC():
         self.source_flag = 'TDC'
         self.upload_url = 'https://thedarkcommunity.cc/api/torrents/upload'
         self.search_url = 'https://thedarkcommunity.cc/api/torrents/filter'
-        self.signature = "Created by L4G's Upload Assistant"
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
+        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         pass
     
