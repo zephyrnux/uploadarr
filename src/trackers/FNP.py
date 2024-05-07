@@ -31,7 +31,8 @@ class FNP():
         self.source_flag = 'FnP'
         self.upload_url = 'https://fearnopeer.com/api/torrents/upload'
         self.search_url = 'https://fearnopeer.com/api/torrents/filter'
-        self.signature = f"\n[center][url=https://github.com/z-ink/Upload-Assistant]Created by L4G's Upload Assistant[/url][/center]"
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
+        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         pass
     
