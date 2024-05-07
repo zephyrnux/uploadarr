@@ -25,7 +25,8 @@ class LDU():
         self.source_flag = 'LDU'
         self.upload_url = 'https://theldu.net/api/torrents/upload'
         self.search_url = 'https://theldu.net/api/torrents/filter'
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]CvT's Upload-Assistant v. 0.2[/url][/size][/center]"
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
+        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         pass
     
@@ -125,13 +126,13 @@ class LDU():
         cat_id = await self.get_cat_id(meta['category'], meta.get('genres', ''), meta.get('keywords', ''), meta.get('service', ''), meta.get('edition', ''), meta)
         type_id = await self.get_type_id(meta['type'])
         resolution_id = await self.get_res_id(meta['resolution'])
-        await common.unit3d_edit_desc(meta, self.tracker, self.signature)
+        await common.unit3d_edit_desc(meta, self.tracker, self.signature, self.anon_signature)
         region_id = await common.unit3d_region_ids(meta.get('region'))
         distributor_id = await common.unit3d_distributor_ids(meta.get('distributor'))
-        if meta['anon'] == 0 and bool(distutils.util.strtobool(str(self.config['TRACKERS'][self.tracker].get('anon', "False")))) == False:
-            anon = 0
-        else:
+        if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', "False"):
             anon = 1
+        else:
+            anon = 0
 
         if meta['bdinfo'] != None:
             mi_dump = None
@@ -139,23 +140,8 @@ class LDU():
         else:
             mi_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/MEDIAINFO.txt", 'r', encoding='utf-8').read()
             bd_dump = None
-        
-        def add_trailer(): #Adding Trailer
-            key = meta.get("youtube", "")
-            if key:  
-                with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r') as file:
-                    lines = file.readlines()
-                for i, line in enumerate(lines):
-                    if '[/center]' in line:
-                        lines[i] = line.replace('[/center]', f'[/center]\n[center][youtube]{key}[/youtube][/center]')
-                        break
-                with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'w') as file:
-                    file.writelines(lines)
-            with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r') as file:
-                content = file.read()
-            return content
 
-        desc = add_trailer()
+        desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
         data = {
@@ -195,7 +181,7 @@ class LDU():
             data['season_number'] = meta.get('season_int', '0')
             data['episode_number'] = meta.get('episode_int', '0')
         headers = {
-            'User-Agent': f'Upload Assistant/v. CvT 0.2 ({platform.system()} {platform.release()})'
+            'User-Agent': f'Upload Assistant/v. CvT 0.3 ({platform.system()} {platform.release()})'
         }
         params = {
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip()
