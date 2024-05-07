@@ -33,7 +33,8 @@ class TL():
         self.tracker = 'TL'
         self.source_flag = 'TorrentLeech.org'
         self.upload_url = 'https://www.torrentleech.org/torrents/upload/apiupload'
-        self.signature = None
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
+        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         
         self.announce_key = self.config['TRACKERS'][self.tracker]['announce_key']
