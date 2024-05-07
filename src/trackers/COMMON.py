@@ -33,7 +33,7 @@ class COMMON():
             Torrent.copy(new_torrent).write(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]{meta['clean_name']}.torrent", overwrite=True)
     
     
-    async def unit3d_edit_desc(self, meta, tracker, signature, comparison=False, desc_header=""):
+    async def unit3d_edit_desc(self, meta, tracker, signature, anon_signature, comparison=False, desc_header=""):
         base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r', encoding='utf8').read()
         with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]DESCRIPTION.txt", 'w', encoding='utf8') as descfile:
             if desc_header != "":
@@ -63,8 +63,9 @@ class COMMON():
             desc = bbcode.convert_hide_to_spoiler(desc)
             if comparison == False:
                 desc = bbcode.convert_comparison_to_collapse(desc, 1000)
-        
-            desc = desc.replace('[img]', '[img=300]')
+
+            img_size = self.config["DEFAULT"]["img_size"]
+            desc = desc.replace('[img]', f"[img={img_size}")
             descfile.write(desc)
             images = meta['image_list']
             if len(images) > 0: 
@@ -72,11 +73,21 @@ class COMMON():
                 for each in range(len(images[:int(meta['screens'])])):
                     web_url = images[each]['web_url']
                     raw_url = images[each]['raw_url']
-                    descfile.write(f"[url={web_url}][img=350]{raw_url}[/img][/url]")
+                    img_size = self.config["DEFAULT"]["img_size"]
+                    descfile.write(f"[url={web_url}][img={img_size}]{raw_url}[/img][/url]")
                 descfile.write("[/center]")
+            add_trailer_enabled = self.config["DEFAULT"].get("add_trailer", False)    
+            if add_trailer_enabled and meta.get("category") == "MOVIE":
+                key = meta.get("youtube")
+                if key:
+                    descfile.write(f"\n[center][youtube]{key}[/youtube][/center]")
 
-            if signature != None:
-                descfile.write(signature)
+            if meta["anon"] != 0 or self.config["TRACKERS"][tracker].get("anon"):
+                if anon_signature is not None:
+                    descfile.write(anon_signature)
+            elif meta["anon"] == 0:
+                if signature is not None:
+                    descfile.write(signature)
             descfile.close()
         return 
     
