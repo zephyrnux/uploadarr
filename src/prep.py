@@ -1213,11 +1213,15 @@ class Prep():
             response = tv.info()
             meta['title'] = response['name']
             if response['first_air_date']:
-                meta['year'] = datetime.strptime(response['first_air_date'],'%Y-%m-%d').year
+                try:
+                    meta['year'] = datetime.strptime(response['first_air_date'],'%Y-%m-%d').year
+                    full_date = datetime.strptime(response['first_air_date'],'%Y-%m-%d')
+                    meta['full_date'] = full_date.strftime('%Y-%m-%d')
+                except Exception:
+                    meta['full_date'] = ""
             else:
                 console.print('[yellow]TMDB does not have a release date, using year from filename instead (if it exists)')
-                meta['year'] = meta['search_year']
-            meta['full_date'] = datetime.strptime(response['release_date'],'%Y-%m-%d')     
+                meta['year'] = meta['search_year']    
             external = tv.external_ids()
             if meta.get('imdb', None) == None:
                 imdb_id = external.get('imdb_id', "0")
@@ -2142,7 +2146,7 @@ class Prep():
                             url = "https://api.pixhost.to/images"
                             data = {
                                 'content_type': '0',
-                                'max_th_size': 500,
+                                'max_th_size': 350,
                             }
                             files = {
                                 'img': ('file-upload[0]', open(image, 'rb')),
@@ -2230,7 +2234,7 @@ class Prep():
         os.chdir(chdir)
         image_list = []
         # image_glob = glob.glob("*.png")
-        async with pyimgbox.Gallery(thumb_width=500, square_thumbs=False) as gallery:
+        async with pyimgbox.Gallery(thumb_width=350, square_thumbs=False) as gallery:
             async for submission in gallery.add(image_glob):
                 if not submission['success']:
                     console.print(f"[red]There was an error uploading to imgbox: [yellow]{submission['error']}[/yellow][/red]")
@@ -2637,7 +2641,7 @@ class Prep():
             'NATG': 'NATG', 'National Geographic': 'NATG', 'NBA': 'NBA', 'NBA TV': 'NBA', 'NBC': 'NBC', 'NF': 'NF', 'Netflix': 'NF', 
             'National Film Board': 'NFB', 'NFL': 'NFL', 'NFLN': 'NFLN', 'NFL Now': 'NFLN', 'NICK': 'NICK', 'Nickelodeon': 'NICK', 'NRK': 'NRK', 
             'Norsk Rikskringkasting': 'NRK', 'OnDemandKorea': 'ODK', 'Opto': 'OPTO', 'Oprah Winfrey Network': 'OWN', 'PA': 'PA', 'PBS': 'PBS', 
-            'PBSK': 'PBSK', 'PBS Kids': 'PBSK', 'PCOK': 'PCOK', 'Peacock': 'PCOK', 'PLAY': 'PLAY', 'Player' : 'PL', 'PLUZ': 'PLUZ', 'Pluzz': 'PLUZ', 'PMNP': 'PMNP', 
+            'PBSK': 'PBSK', 'PBS Kids': 'PBSK', 'PCOK': 'PCOK', 'Peacock': 'PCOK', 'PLAY': 'PLAY', 'PlayerPL' : 'PL','Player-PL' : 'PL', 'player.pl' : 'PL', 'PLUZ': 'PLUZ', 'Pluzz': 'PLUZ', 'PMNP': 'PMNP', 
             'PMNT': 'PMNT', 'PMTP' : 'PMTP', 'POGO': 'POGO', 'PokerGO': 'POGO', 'PSN': 'PSN', 'Playstation Network': 'PSN', 'PUHU': 'PUHU', 'QIBI': 'QIBI', 
             'RED': 'RED', 'YouTube Red': 'RED', 'RKTN': 'RKTN', 'Rakuten TV': 'RKTN', 'The Roku Channel': 'ROKU', 'RSTR': 'RSTR', 'RTE': 'RTE', 
             'RTE One': 'RTE', 'RUUTU': 'RUUTU', 'SBS': 'SBS', 'Science Channel': 'SCI', 'SESO': 'SESO', 'SeeSo': 'SESO', 'SHMI': 'SHMI', 'Shomi': 'SHMI', 'SKST' : 'SKST', 'SkyShowtime': 'SKST',
