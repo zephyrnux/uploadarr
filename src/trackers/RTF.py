@@ -28,6 +28,8 @@ class RTF():
         self.upload_url = 'https://retroflix.club/api/upload'
         self.search_url = 'https://retroflix.club/api/torrent'
         self.forum_link = 'https://retroflix.club/forums.php?action=viewtopic&topicid=3619'
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
+        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = []
         pass
 
