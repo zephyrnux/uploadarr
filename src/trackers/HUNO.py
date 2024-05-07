@@ -25,7 +25,8 @@ class HUNO():
         self.source_flag = 'HUNO'
         self.search_url = 'https://hawke.uno/api/torrents/filter'
         self.upload_url = 'https://hawke.uno/api/torrents/upload'
-        self.signature = "\n[center][url=https://github.com/L4GSP1KE/Upload-Assistant]Created by HUNO's Upload Assistant[/url][/center]"
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
+        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         pass
 
