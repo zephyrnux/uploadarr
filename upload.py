@@ -57,9 +57,11 @@ cli_ui.setup(color='always', title="Upload Assistant - LDU Mod")
 import traceback
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
-try:
+config_path = os.path.abspath(f"{base_dir}/data/config.py")
+
+if os.path.exists(config_path):
     from data.config import config
-except:
+else:
     cli_ui.info(cli_ui.red, "It appears you have no config file, please ensure to configure and place /data/config.py")
     exit()
 
@@ -76,7 +78,7 @@ try:
         cli_ui.info(cli_ui.yellow, "Config version out of date, upgrading is reccomended.")
 except:
     pass
-
+    
 client = Clients(config=config)
 parser = Args(config)
 
