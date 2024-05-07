@@ -31,7 +31,8 @@ class CP2P():
         self.source_flag = 'CP2P'
         self.upload_url = 'https://cinemap2p.xyz/api/torrents/upload'
         self.search_url = 'https://cinemap2p.xyz/api/torrents/filter'
-        self.signature = f"\n[center]uploded with love, seed plz[/center]"
+        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
+        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         pass
     
