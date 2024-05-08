@@ -5,6 +5,7 @@ import pprint
 from rich import print as Print
 from rich.prompt import Prompt
 from rich.console import Console
+from packaging import version
 
 class CustomPrettyPrinter(pprint.PrettyPrinter):
     def _format(self, object, stream, indent, allowance, context, level):
@@ -22,7 +23,7 @@ class CustomPrettyPrinter(pprint.PrettyPrinter):
                     self._format(value, stream, indent, allowance + 1, context, level + 1)
                 else:
                     stream.write(repr(value))
-                if i < len(object) - 1:  
+                if i < len(object) - 1:  # if not the last item
                     stream.write(',')
                     if level == 0 or 1 and isinstance(value, dict):
                         stream.write('\n\n')
@@ -71,7 +72,7 @@ def reconfigure():
 
 
     if os.path.exists(os.path.join(data_dir,'config.py')):
-        if current_config['version'] > base_config['version']:
+        if version.parse(current_config.get('version', '0')) > version.parse(base_config.get('version', '0')):
             console.print("[bold red]WARN[/bold red]: The current config file has a higher version number than the example config file.")
             console.print("[bold red]WARN[/bold red]: Continuing will [bold]downgrade[/bold] the configuration file and may cause [bold]incompatibility issues[/bold].")
             overwrite = Prompt.ask("Do you wish to continue?", choices=["y", "N"], default="N")
@@ -82,22 +83,22 @@ def reconfigure():
             if overwrite.lower() != 'y':
                 return
 
-    # Add additional TRACKERS 
+    # Add new blocks within 'TRACKERS' from the old config to the new config
     added_blocks = []
     for key in old_config['TRACKERS']:
         if key not in new_config['TRACKERS']:
             new_config['TRACKERS'][key] = old_config['TRACKERS'][key]
             added_blocks.append(key)
 
-    # Sort TRACKERS alphabetically
+    # Sort 'TRACKERS' alphabetically
     new_config['TRACKERS'] = dict(sorted(new_config['TRACKERS'].items(), key=operator.itemgetter(0)))
 
     write_config(os.path.join(data_dir,'config.py'), new_config)
 
-    Print('[bold green]Congratulations![/bold green] `config.py` was successfully updated.')
+    Print('[bold green]Congratulations![/bold green] config.py was successfully updated.')
     if added_blocks:
-        Print('[bold yellow]WARN[/bold yellow]: TRACKERS: [bold]' + '[/bold], [bold]'.join(added_blocks)+'[/bold] have been added despite not being support by default.') 
-        Print('[bold yellow]WARN[/bold yellow]: Please be sure to add them in `upload.py` and add the .py files into `/src/trackers` to enable them for use!')
+        Print('[bold yellow]WARN[/bold yellow]: The following [i]non-included[/i] TRACKERS: [bold]' + '[/bold], [bold]'.join(added_blocks)+'[/bold] were added.') 
+        Print('[bold yellow]WARN[/bold yellow]: Please be sure to add them in upload.py and add the .py files into /src/trackers')
         
 
 reconfigure()
