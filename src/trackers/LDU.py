@@ -50,7 +50,7 @@ class LDU():
                 category_id = '10'
             elif adult == True:
                 category_id = '6'
-            elif tag and not tags[0].isalpha():
+            elif tag and not all(char.isalpha() or char.isspace() for char in tags[0]):
                 category_id = '27'
             elif tag and 'ENG' not in ''.join(tags):
                 category_id = '22'
@@ -79,7 +79,7 @@ class LDU():
                 category_id = '10'
             elif adult == True:
                 category_id = '6'            
-            elif tag and not tags[0].isalpha():
+            elif tag and not all(char.isalpha() or char.isspace() for char in tags[0]):
                 category_id = '31'
             elif tag and 'ENG' not in ''.join(tags):
                 category_id = '29'
