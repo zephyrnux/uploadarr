@@ -62,20 +62,24 @@ config_path = os.path.abspath(f"{base_dir}/data/config.py")
 if os.path.exists(config_path):
     from data.config import config
 else:
-    cli_ui.info(cli_ui.red, "It appears you have no config file, please ensure to configure and place /data/config.py")
+    console.print("[bold red] It appears you have no config file, please ensure to configure and place `/data/config.py`")
     exit()
 
 if 'version' not in config:
-    cli_ui.info(cli_ui.red, "Version not found in config. Please reconfigure from example-config.py, make sure to save it as config.py")
+    console.print("[bold red]WARN[/bold red]: Version not found in config. ")
+    console.print("[bold green]RECOMMENDED ACTION[/bold green]:  Rename your `[bold]config.py[/bold]` to `[bold]old_config.py[/bold]` and run [bold]python3 reconfig.py[/bold] ")
+    console.print("[bold yellow]ALTERNATIVE ACTION[/bold yellow]: Reconfigure from `example-config.py`, and make sure to save it as `config.py`")
     exit()
 minimum_version = Version('0.3.0')
 if Version(config.get('version')) < minimum_version:
-    cli_ui.info(cli_ui.red, f"Config version is too old. Minimum version is {minimum_version} but got {config.get('version')}, reconfigure example-config.py for your needs")
+    console.print(f"[bold red]Config version is too old. Minimum version is {minimum_version} but got {config.get('version')}")
+    console.print("[bold green]RECOMMENDED ACTION[/bold green]: Rename your `[bold]config.py[/bold]` to `[bold]old_config.py[/bold]` and run [bold]python3 reconfig.py[/bold] ")
     exit()
 try:
     from data.example_config import example_config
     if 'version' in example_config and Version(example_config.get('version')) > Version(config.get('version')):
-        cli_ui.info(cli_ui.yellow, "Config version out of date, upgrading is reccomended.")
+        console.print("[bold yellow]WARN[/bold yellow]: Config version out of date, updating is reccomended.")
+        console.print("[bold yellow]WARN[/bold yellow]: Simply rename `[bold]config.py[/bold]` to `[bold]old_config.py[/bold]` and run `[bold]python3 reconfig.py[/bold]` ")
 except:
     pass
     
