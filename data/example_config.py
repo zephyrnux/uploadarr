@@ -286,7 +286,7 @@ config = {
             # Enable automatic torrent management if listed path(s) are present in the path
                 # If using remote path mapping, use remote path
                 # For using multiple paths, use a list ["path1", "path2"] 
-            # "automatic_management_paths" : ""
+            # "automatic_management_paths" : "",
 
 
 
