@@ -226,7 +226,7 @@ class LDU():
                         sub_lang_tag = f"[Subs {sub_lang[0].upper()}]"
 
 
-            return lang_tag+sub_lang_tag
+        return lang_tag+sub_lang_tag
 
 
     def get_basename(self, meta):
