@@ -23,7 +23,7 @@ class CustomPrettyPrinter(pprint.PrettyPrinter):
                     self._format(value, stream, indent, allowance + 1, context, level + 1)
                 else:
                     stream.write(repr(value))
-                if i < len(object) - 1:  # if not the last item
+                if i < len(object) - 1: 
                     stream.write(',')
                     if level == 0 or 1 and isinstance(value, dict):
                         stream.write('\n\n')
@@ -48,7 +48,7 @@ def write_config(file_path, config_dict):
 def replace_values(base_dict, old_dict):
     for key in old_dict:
         if key in base_dict:
-            if key == 'version':  # Skip the version key
+            if key == 'version': 
                 continue
             if isinstance(old_dict[key], dict):
                 replace_values(base_dict[key], old_dict[key])
@@ -83,14 +83,14 @@ def reconfigure():
             if overwrite.lower() != 'y':
                 return
 
-    # Add new blocks within 'TRACKERS' from the old config to the new config
+    # Add additional TRACKERS 
     added_blocks = []
     for key in old_config['TRACKERS']:
         if key not in new_config['TRACKERS']:
             new_config['TRACKERS'][key] = old_config['TRACKERS'][key]
             added_blocks.append(key)
 
-    # Sort 'TRACKERS' alphabetically
+    # Sort TRACKERS alphabetically
     new_config['TRACKERS'] = dict(sorted(new_config['TRACKERS'].items(), key=operator.itemgetter(0)))
 
     write_config(os.path.join(data_dir,'config.py'), new_config)
