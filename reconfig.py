@@ -89,9 +89,14 @@ def reconfigure():
         if key not in new_config['TRACKERS']:
             new_config['TRACKERS'][key] = old_config['TRACKERS'][key]
             added_blocks.append(key)
-
+    
+    default_value = new_config['TRACKERS'].pop('default_trackers', None)
+    
     # Sort TRACKERS alphabetically
     new_config['TRACKERS'] = dict(sorted(new_config['TRACKERS'].items(), key=operator.itemgetter(0)))
+    
+    if default_value is not None:
+        new_config['TRACKERS'] = {'default': default_value, **new_config['TRACKERS']}
 
     write_config(os.path.join(data_dir,'config.py'), new_config)
 
