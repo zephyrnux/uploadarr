@@ -44,7 +44,7 @@ class LDU():
             'MOVIE': '1', 
             'TV': '2', 
             'Anime' : '8',
-            'FANRES' : '12'
+            'FANRES' : '12',
             }.get(category_name, '0') 
         if category_name == 'MOVIE':
             if adult == True and 'hentai' or 'animation'in map(str.strip,keywords.lower().split(',')):
