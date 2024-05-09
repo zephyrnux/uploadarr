@@ -35,7 +35,7 @@ config = {
     },
 
     "TRACKERS" : {
-        # Which trackers do you want to upload to?
+        # Which trackers do you want to upload to? Ex: "LDU, RF, ULCX",
         "default_trackers" : "LDU",
 
         "LDU" : {
