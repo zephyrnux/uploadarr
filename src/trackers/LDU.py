@@ -205,7 +205,12 @@ class LDU():
     def get_language_tag(self, meta):
         audio_lang = []
         if 'mediainfo' in meta:
-            audio_lang = list(dict.fromkeys(x.get('Language_String3') for x in meta["mediainfo"]["media"]["track"] if x["@type"] == "Audio" and 'Language_String3' in x))
+            for x in meta["mediainfo"]["media"]["track"]:
+                if x["@type"] == "Audio":
+                    commentary_found = 'Title' in x and ('comment' in x['Title'].lower() or 'review' in x['Title'].lower())
+                    if not commentary_found and 'Language_String3' in x:
+                        audio_lang.append(x.get('Language_String3'))
+            audio_lang = list(dict.fromkeys(audio_lang))  # Remove dupes + keep order
         if not audio_lang:
             audio_lang.append('???')
         lang_tag = f"[{' '.join(lang.upper() for lang in audio_lang)}]"
