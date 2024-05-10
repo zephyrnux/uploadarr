@@ -30,8 +30,6 @@ class PTER():
         self.ptgen_api = config['TRACKERS']['PTER'].get('ptgen_api').strip()
 
         self.ptgen_retry=3
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
-        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
 
     async def validate_credentials(self, meta):
@@ -154,67 +152,6 @@ class PTER():
 
         return medium_id
 
-    async def edit_desc(self, meta):
-        base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r').read()
-        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'w') as descfile:
-            from src.bbcode import BBCODE
-            from src.trackers.COMMON import COMMON
-            common = COMMON(config=self.config)
-
-            if int(meta.get('imdb_id', '0').replace('tt', '')) != 0:
-                ptgen = await common.ptgen(meta, self.ptgen_api, self.ptgen_retry)
-                if ptgen.strip() != '':
-                    descfile.write(ptgen)   
-
-            
-            bbcode = BBCODE()
-            if meta.get('discs', []) != []:
-                discs = meta['discs']
-                for each in discs:
-                    if each['type'] == "BDMV":
-                        descfile.write(f"[hide=BDInfo]{each['summary']}[/hide]\n")
-                        descfile.write("\n")
-                        pass
-                    if each['type'] == "DVD":
-                        descfile.write(f"{each['name']}:\n")
-                        descfile.write(f"[hide=mediainfo][{each['vob_mi']}[/hide] [hide=mediainfo][{each['ifo_mi']}[/hide]\n")
-                        descfile.write("\n")
-            else:
-                mi = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/MEDIAINFO_CLEANPATH.txt", 'r', encoding='utf-8').read()
-                descfile.write(f"[hide=mediainfo]{mi}[/hide]")
-                descfile.write("\n")
-            desc = base
-            desc = bbcode.convert_code_to_quote(desc)
-            desc = bbcode.convert_spoiler_to_hide(desc)
-            desc = bbcode.convert_comparison_to_centered(desc, 1000)
-            desc = desc.replace('[img]', '[img]')
-            desc = re.sub("(\[img=\d+)]", "[img]", desc, flags=re.IGNORECASE)
-            descfile.write(desc)
-            
-            if self.rehost_images == True:
-                console.print("[green]Rehosting Images...")
-                images = await self.pterimg_upload(meta)
-                if len(images) > 0: 
-                    descfile.write("[center]")
-                    for each in range(len(images[:int(meta['screens'])])):
-                        web_url = images[each]['web_url']
-                        img_url = images[each]['img_url']
-                        descfile.write(f"[url={web_url}][img]{img_url}[/img][/url]")
-                    descfile.write("[/center]")  
-            else:
-                images = meta['image_list']
-                if len(images) > 0: 
-                    descfile.write("[center]")
-                    for each in range(len(images[:int(meta['screens'])])):
-                        web_url = images[each]['web_url']
-                        img_url = images[each]['img_url']
-                        descfile.write(f"[url={web_url}][img]{img_url}[/img][/url]")
-                    descfile.write("[/center]")
-            
-            if self.signature != None:
-                descfile.write("\n\n")
-                descfile.write(self.signature)
-            descfile.close()
 
     async def get_auth_token(self,meta):
         if not os.path.exists(f"{meta['base_dir']}/data/cookies"):
