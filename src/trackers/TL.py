@@ -33,8 +33,6 @@ class TL():
         self.tracker = 'TL'
         self.source_flag = 'TorrentLeech.org'
         self.upload_url = 'https://www.torrentleech.org/torrents/upload/apiupload'
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
-        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         
         self.announce_key = self.config['TRACKERS'][self.tracker]['announce_key']
@@ -80,7 +78,7 @@ class TL():
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         cat_id = await self.get_cat_id(common, meta)
-        await common.unit3d_edit_desc(meta, self.tracker, self.signature)
+        await common.unit3d_edit_desc(meta, self.tracker)
 
         open_desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'a+')
         
