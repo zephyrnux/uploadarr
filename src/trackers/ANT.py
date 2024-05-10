@@ -35,8 +35,6 @@ class ANT():
         self.banned_groups = ['Ozlem', 'RARBG', 'FGT', 'STUTTERSHIT', 'LiGaS', 'DDR', 'Zeus', 'TBS', 'aXXo', 'CrEwSaDe', 'DNL', 'EVO',
                               'FaNGDiNG0', 'HD2DVD', 'HDTime', 'iPlanet', 'KiNGDOM', 'NhaNc3', 'PRoDJi', 'SANTi', 'ViSiON', 'WAF', 'YIFY',
                               'YTS', 'MkvCage', 'mSD']
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
-        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         pass
 
     async def get_flags(self, meta):
