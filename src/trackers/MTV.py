@@ -28,8 +28,6 @@ class MTV():
         self.upload_url = 'https://www.morethantv.me/upload.php'
         self.forum_link = 'https://www.morethantv.me/wiki.php?action=article&id=73'
         self.search_url = 'https://www.morethantv.me/api/torznab'
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
-        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [
             '3LTON', 'mRS', 'CM8', 'BRrip', 'Leffe', 'aXXo', 'FRDS', 'XS', 'KiNGDOM', 'WAF', 'nHD', 
             'h65', 'CrEwSaDe', 'TM', 'ViSiON', 'x0r', 'PandaRG', 'HD2DVD', 'iPlanet', 'JIVE', 'ELiTE',
