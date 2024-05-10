@@ -31,8 +31,6 @@ class CP2P():
         self.source_flag = 'CP2P'
         self.upload_url = 'https://cinemap2p.xyz/api/torrents/upload'
         self.search_url = 'https://cinemap2p.xyz/api/torrents/filter'
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
-        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         pass
     
@@ -80,7 +78,7 @@ class CP2P():
         cat_id = await self.get_cat_id(meta['category'])
         type_id = await self.get_type_id(meta['type'])
         resolution_id = await self.get_res_id(meta['resolution'])
-        await common.unit3d_edit_desc(meta, self.tracker, self.signature)
+        await common.unit3d_edit_desc(meta, self.tracker)
         region_id = await common.unit3d_region_ids(meta.get('region'))
         distributor_id = await common.unit3d_distributor_ids(meta.get('distributor'))
         if meta['anon'] == 0 and bool(distutils.util.strtobool(str(self.config['TRACKERS'][self.tracker].get('anon', "False")))) == False:
@@ -180,19 +178,3 @@ class CP2P():
 
         return dupes
     
-    async def edit_desc(self, meta):
-        base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r').read()
-        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'w') as descfile:
-            from src.bbcode import BBCODE
-            bbcode = BBCODE()
-            desc = base
-            desc = bbcode.convert_pre_to_code(desc)
-            desc = bbcode.convert_hide_to_spoiler(desc)
-            desc = bbcode.convert_comparison_to_collapse(desc, 1000)
-            desc = desc.replace('[img=350]', '[img=500]')
-            descfile.write(desc)
-            images = meta['image_list']
-            if self.signature != None:
-                descfile.write(self.signature)
-            descfile.close()
-        return
