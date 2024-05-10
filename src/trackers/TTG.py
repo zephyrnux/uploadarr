@@ -28,9 +28,6 @@ class TTG():
         self.passan = str(config['TRACKERS']['TTG'].get('login_answer', '')).strip()
         self.uid = str(config['TRACKERS']['TTG'].get('user_id', '')).strip()
         self.passkey = str(config['TRACKERS']['TTG'].get('announce_url', '')).strip().split('/')[-1]
-        
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
-        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
 
 
@@ -330,17 +327,41 @@ class TTG():
             desc = desc.replace('[img]', '[img]')
             desc = re.sub("(\[img=\d+)]", "[img]", desc, flags=re.IGNORECASE)
             descfile.write(desc)
+            add_trailer_enabled = self.config["DEFAULT"].get("add_trailer", False)    
+            if add_trailer_enabled and meta.get("category") == "MOVIE":
+                key = meta.get("youtube")
+                if key:
+                    descfile.write("[center][youtube]{key}[/youtube][/center]")
+
+            img_size = self.config["DEFAULT"]["img_size"]
+            desc = desc.replace('[img]', f"[img={img_size}")
+            descfile.write(desc)
             images = meta['image_list']
             if len(images) > 0: 
-                descfile.write("[center]")
+                descfile.write(f"\n[center]")
                 for each in range(len(images[:int(meta['screens'])])):
                     web_url = images[each]['web_url']
-                    img_url = images[each]['img_url']
-                    descfile.write(f"[url={web_url}][img]{img_url}[/img][/url]")
+                    raw_url = images[each]['raw_url']
+                    img_size = self.config["DEFAULT"]["img_size"]
+                    descfile.write(f"[url={web_url}][img={img_size}]{raw_url}[/img][/url]")
                 descfile.write("[/center]")
-            if self.signature != None:
-                descfile.write("\n\n")
-                descfile.write(self.signature)
+
+            use_global_sigs = self.config["DEFAULT"].get("use_global_sigs", False)
+            if use_global_sigs:
+                signature = self.config["DEFAULT"].get("global_sig", "")
+                anon_signature = self.config["DEFAULT"].get("global_anon_sig", "")
+                if signature is None or anon_signature is None:
+                    print("[bold red]WARN[/red]: Global signatures are enabled but not provided in config.[/bold]")                
+            else:
+                signature = self.config["TRACKERS"][tracker].get("signature", "")
+                anon_signature = self.config["TRACKERS"][tracker].get("anon_signature", "")
+                if signature is None or anon_signature is None:
+                    print(f"[bold red]WARN[/red]: Global Signatures are turned off, but no signature is provided for selected tracker.[/bold]")
+        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]DESCRIPTION.txt", 'a', encoding='utf8') as descfile:
+            if meta["anon"] != 0 or self.config["TEAS"][tracker].get("anon"):
+                descfile.write("\n" + anon_signature)
+            elif meta["anon"] == 0:
+                descfile.write("\n" + signature)
             descfile.close()
 
     async def download_new_torrent(self, id, torrent_path):
