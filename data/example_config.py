@@ -82,7 +82,7 @@ config = {
             "announce_url" : "https://beyond-hd.me/announce/Custom_Announce_URL",
             "draft_default" : "True",
             "anon" : False,
-            "signature" : f"\n[center][b]PLEASE SEED BHD FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "signature" : f"\n[center][b]PLEASE SEED Beyond-HD FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",               
         },
         "BHDTV": {
@@ -98,7 +98,7 @@ config = {
             "api_key" : "BLU_API_KEY",
             "announce_url" : "https://blutopia.cc/announce/Custom_Announce_URL",
             "anon" : False,
-            "signature" : f"\n[center][b]PLEASE SEED BLU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "signature" : f"\n[center][b]PLEASE SEED Bluopia FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
@@ -106,7 +106,7 @@ config = {
             "api_key" : "CP2P_API_KEY",
             "announce_url" : "https://cinemap2p.xyz/announce/Custom_Announce_URL",
             "anon" : False,
-            "signature" : f"\n[center][b]PLEASE SEED CP2P FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "signature" : f"\n[center][b]PLEASE SEED CinemaP2P FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
@@ -114,7 +114,7 @@ config = {
             "api_key" : "FNP_API_KEY",
             "announce_url" : "https://fearnopeer.com/announce/Custom_Announce_URL",
             "anon" : False,
-            "signature" : f"\n[center][b]PLEASE SEED FNP FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "signature" : f"\n[center][b]PLEASE SEED FearNoPeer FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",                 
             }, 
 
@@ -122,7 +122,7 @@ config = {
             "api_key" : "HDB_API_KEY",
             "announce_url" : "https://https://hdbits.org/announce/Custom_Announce_URL",
             "anon" : False,
-            "signature" : f"\n[center][b]PLEASE SEED HDB FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "signature" : f"\n[center][b]PLEASE SEED HDBits FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
             }, 
 
@@ -138,7 +138,7 @@ config = {
             "api_key" : "HP_API_KEY",
             "announce_url" : "https://hidden-palace.net/announce/Custom_Announce_URL",
             "anon" : False,
-            "signature" : f"\n[center][b]PLEASE SEED HP FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "signature" : f"\n[center][b]PLEASE SEED Hidden-Place FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
@@ -162,6 +162,8 @@ config = {
             "api_key" : "LCD_API_KEY",
             "announce_url" : "https://locadora.cc/announce/Custom_Announce_URL",
             "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED LocaDora FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",  		
         },
 
         "LST" : {
