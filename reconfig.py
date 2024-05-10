@@ -62,9 +62,13 @@ data_dir = os.path.join(script_dir, 'data')
 def reconfigure():
     base_config = read_config(os.path.join(data_dir, 'example_config.py'))
     old_config = read_config(os.path.join(data_dir,'old_config.py'))
-    current_config = read_config(os.path.join(data_dir,'config.py'))
     new_config = copy.deepcopy(base_config)
     replace_values(new_config, old_config)
+
+    if os.path.exists(os.path.join(data_dir,'config.py')):
+        current_config = read_config(os.path.join(data_dir,'config.py'))
+    else:
+        current_config = {'version': '0'} 
 
     if not os.path.exists(os.path.join(data_dir, 'old_config.py')):
         console.print("[bold red]WARN[/bold red]: [bold]old_config.py[/bold] not found, please rename your old `config.py` to `old_config.py` and try again")
@@ -96,7 +100,7 @@ def reconfigure():
     new_config['TRACKERS'] = dict(sorted(new_config['TRACKERS'].items(), key=operator.itemgetter(0)))
     
     if default_value is not None:
-        new_config['TRACKERS'] = {'default': default_value, **new_config['TRACKERS']}
+        new_config['TRACKERS'] = {'default_trackers': default_value, **new_config['TRACKERS']}
 
     write_config(os.path.join(data_dir,'config.py'), new_config)
 
