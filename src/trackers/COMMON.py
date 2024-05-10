@@ -96,7 +96,7 @@ class COMMON():
                 if signature is None or anon_signature is None:
                     print(f"[bold red]WARN[/red]: Global Signatures are turned off, but no signature is provided for selected tracker.[/bold]")
         with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]DESCRIPTION.txt", 'a', encoding='utf8') as descfile:
-            if meta["anon"] != 0 or self.config["TEAS"][tracker].get("anon"):
+            if meta["anon"] != 0 or self.config["TRACKERS"][tracker].get("anon"):
                 descfile.write("\n" + anon_signature)
             elif meta["anon"] == 0:
                 descfile.write("\n" + signature)
