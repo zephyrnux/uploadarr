@@ -24,8 +24,6 @@ class R4E():
         self.config = config
         self.tracker = 'R4E'
         self.source_flag = 'R4E'
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
-        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         pass
     
@@ -34,7 +32,7 @@ class R4E():
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         cat_id = await self.get_cat_id(meta['category'], meta['tmdb'])
         type_id = await self.get_type_id(meta['resolution'])
-        await common.unit3d_edit_desc(meta, self.tracker, self.signature)
+        await common.unit3d_edit_desc(meta, self.tracker)
         name = await self.edit_name(meta)
         if meta['anon'] == 0 and bool(distutils.util.strtobool(str(self.config['TRACKERS']['R4E'].get('anon', "False")))) == False:
             anon = 0
