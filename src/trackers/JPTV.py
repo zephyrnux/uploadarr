@@ -31,8 +31,6 @@ class JPTV():
         self.source_flag = 'jptv.club'
         self.upload_url = 'https://jptv.club/api/torrents/upload'
         self.search_url = 'https://jptv.club/api/torrents/filter'
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
-        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         pass
     
@@ -89,7 +87,7 @@ class JPTV():
         cat_id = await self.get_cat_id(meta)
         type_id = await self.get_type_id(meta['type'])
         resolution_id = await self.get_res_id(meta['resolution'])
-        await common.unit3d_edit_desc(meta, self.tracker, self.signature)
+        await common.unit3d_edit_desc(meta, self.tracker)
         region_id = await common.unit3d_region_ids(meta.get('region'))
         distributor_id = await common.unit3d_distributor_ids(meta.get('distributor'))
         jptv_name = await self.edit_name(meta)
