@@ -51,7 +51,7 @@ class LDU():
                 category_id = '10'
             elif adult == True:
                 category_id = '6'
-            if '???' in tags[0]:
+            elif '???' in tags[0]:
                 category_id = '27'
             elif tag and 'ENG' not in ''.join(tags):
                 category_id = '22'
