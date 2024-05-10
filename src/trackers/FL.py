@@ -26,8 +26,6 @@ class FL():
         self.password = config['TRACKERS'][self.tracker].get('password', '').strip()
         self.fltools = config['TRACKERS'][self.tracker].get('fltools', {})
         self.uploader_name = config['TRACKERS'][self.tracker].get('uploader_name')
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
-        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
     
 
@@ -307,53 +305,6 @@ class FL():
             console.print(r.text)
         return
 
-
-
-    async def edit_desc(self, meta):
-        base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r').read()
-        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'w', newline='') as descfile:
-            from src.bbcode import BBCODE
-            bbcode = BBCODE()
-            
-            desc = base
-            desc = bbcode.remove_spoiler(desc)
-            desc = bbcode.convert_code_to_quote(desc)
-            desc = bbcode.convert_comparison_to_centered(desc, 900)
-            desc = desc.replace('[img]', '[img]').replace('[/img]', '[/img]')
-            desc = re.sub("(\[img=\d+)]", "[img]", desc, flags=re.IGNORECASE)
-            if meta['is_disc'] != 'BDMV':
-                url = "https://up.img4k.net/api/description"
-                data = {
-                    'mediainfo' : open(f"{meta['base_dir']}/tmp/{meta['uuid']}/MEDIAINFO_CLEANPATH.txt", 'r').read(),
-                }
-                if int(meta['imdb_id'].replace('tt', '')) != 0:
-                    data['imdbURL'] = f"tt{meta['imdb_id']}"
-                screen_glob = glob.glob1(f"{meta['base_dir']}/tmp/{meta['uuid']}", f"{meta['filename']}-*.png")
-                files = []
-                for screen in screen_glob:
-                    files.append(('images', (os.path.basename(screen), open(f"{meta['base_dir']}/tmp/{meta['uuid']}/{screen}", 'rb'), 'image/png')))
-                response = requests.post(url, data=data, files=files, auth=(self.fltools['user'], self.fltools['pass']))
-                final_desc = response.text.replace('\r\n', '\n')
-            else:
-                # BD Description Generator
-                final_desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/BD_SUMMARY_EXT.txt", 'r', encoding='utf-8').read()
-                if final_desc.strip() != "": # Use BD_SUMMARY_EXT and bbcode format it
-                    final_desc = final_desc.replace('[/pre][/quote]', f'[/pre][/quote]\n\n{desc}\n', 1)
-                    final_desc = final_desc.replace('DISC INFO:', '[pre][quote=BD_Info][b][color=#FF0000]DISC INFO:[/color][/b]').replace('PLAYLIST REPORT:', '[b][color=#FF0000]PLAYLIST REPORT:[/color][/b]').replace('VIDEO:', '[b][color=#FF0000]VIDEO:[/color][/b]').replace('AUDIO:', '[b][color=#FF0000]AUDIO:[/color][/b]').replace('SUBTITLES:', '[b][color=#FF0000]SUBTITLES:[/color][/b]')
-                    final_desc += "[/pre][/quote]\n" # Closed bbcode tags
-                    # Upload screens and append to the end of the description
-                    url = "https://up.img4k.net/api/description"
-                    screen_glob = glob.glob1(f"{meta['base_dir']}/tmp/{meta['uuid']}", f"{meta['filename']}-*.png")
-                    files = []
-                    for screen in screen_glob:
-                        files.append(('images', (os.path.basename(screen), open(f"{meta['base_dir']}/tmp/{meta['uuid']}/{screen}", 'rb'), 'image/png')))
-                    response = requests.post(url, files=files, auth=(self.fltools['user'], self.fltools['pass']))
-                    final_desc += response.text.replace('\r\n', '\n')
-            descfile.write(final_desc)
-
-            if self.signature != None:
-                descfile.write(self.signature)
-            descfile.close()
 
     
     async def get_ro_tracks(self, meta):
