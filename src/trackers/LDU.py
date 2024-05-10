@@ -51,13 +51,13 @@ class LDU():
                 category_id = '10'
             elif adult == True:
                 category_id = '6'
-            elif tag and not tags[0].isalpha():
+            if '???' in tags[0]:
                 category_id = '27'
             elif tag and 'ENG' not in ''.join(tags):
                 category_id = '22'
             elif '3D' in edition:
                 category_id = '21'
-            elif 'FANRES' or 'FANEDIT' or 'RESTORATION' in edition.upper():
+            elif 'FANRES' in edition.upper() or 'FANEDIT' in edition.upper() or 'RESTORATION' in edition.upper():
                 category_id = '12'
             elif release_date != '' and release_date < datetime(1927, 10, 1):
                 category_id = '18'
