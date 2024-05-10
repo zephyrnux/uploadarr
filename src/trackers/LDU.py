@@ -47,7 +47,7 @@ class LDU():
             'FANRES' : '12',
             }.get(category_name, '0') 
         if category_name == 'MOVIE':
-            if adult == True and 'hentai' or 'animation'in map(str.strip,keywords.lower().split(',')):
+            if adult and ('hentai' in map(str.strip, keywords.lower().split(',')) or 'animation' in map(str.strip, keywords.lower().split(','))):
                 category_id = '10'
             elif adult == True:
                 category_id = '6'
@@ -78,7 +78,7 @@ class LDU():
             else:
                 category_id = '1'                                                            
         elif category_name == 'TV':
-            if adult == True and 'hentai' or 'animation'in map(str.strip,keywords.lower().split(',')):
+            if adult and ('hentai' in map(str.strip, keywords.lower().split(',')) or 'animation' in map(str.strip, keywords.lower().split(','))):
                 category_id = '10'
             elif adult == True:
                 category_id = '6'            
