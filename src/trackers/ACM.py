@@ -31,8 +31,6 @@ class ACM():
         self.source_flag = 'AsianCinema'
         self.upload_url = 'https://asiancinema.me/api/torrents/upload'
         self.search_url = 'https://asiancinema.me/api/torrents/filter'
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
-        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = [""]
         pass
     
@@ -351,44 +349,3 @@ class ACM():
 
 
 
-    async def edit_desc(self, meta):
-        base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r').read()
-        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'w') as descfile:
-            from src.bbcode import BBCODE
-            # Add This line for all web-dls
-            if meta['type'] == 'WEBDL' and meta.get('service_longname', '') != '':
-                descfile.write(f"[center][b][color=#ff00ff][size=18]This release is sourced from {meta['service_longname']} and is not transcoded, just remuxed from the direct {meta['service_longname']} stream[/size][/color][/b][/center]")
-            bbcode = BBCODE()
-            if meta.get('discs', []) != []:
-                discs = meta['discs']
-                if discs[0]['type'] == "DVD":
-                    descfile.write(f"[spoiler=VOB MediaInfo][code]{discs[0]['vob_mi']}[/code][/spoiler]\n")
-                    descfile.write("\n")
-                if len(discs) >= 2:
-                    for each in discs[1:]:
-                        if each['type'] == "BDMV":
-                            # descfile.write(f"[spoiler={each.get('name', 'BDINFO')}][code]{each['summary']}[/code][/spoiler]\n")
-                            # descfile.write("\n")
-                            pass
-                        if each['type'] == "DVD":
-                            descfile.write(f"{each['name']}:\n")
-                            descfile.write(f"[spoiler={os.path.basename(each['vob'])}][code][{each['vob_mi']}[/code][/spoiler] [spoiler={os.path.basename(each['ifo'])}][code][{each['ifo_mi']}[/code][/spoiler]\n")
-                            descfile.write("\n")
-            desc = base
-            desc = bbcode.convert_pre_to_code(desc)
-            desc = bbcode.convert_hide_to_spoiler(desc)
-            desc = bbcode.convert_comparison_to_collapse(desc, 1000)
-            desc = desc.replace('[img]', '[img=300]')
-            descfile.write(desc)
-            images = meta['image_list']
-            if len(images) > 0: 
-                descfile.write("[center]")
-                for each in range(len(images[:int(meta['screens'])])):
-                    web_url = images[each]['web_url']
-                    img_url = images[each]['img_url']
-                    descfile.write(f"[url={web_url}][img=350]{img_url}[/img][/url]")
-                descfile.write("[/center]")
-            if self.signature != None:
-                descfile.write(self.signature)
-            descfile.close()
-        return
