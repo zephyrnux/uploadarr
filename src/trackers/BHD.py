@@ -24,8 +24,6 @@ class BHD():
         self.tracker = 'BHD'
         self.source_flag = 'BHD'
         self.upload_url = 'https://beyond-hd.me/api/upload/'
-        self.signature = f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size][/center]"
-        self.anon_signature = f"\n[center][size=6]we are anonymous[/size][/center]"
         self.banned_groups = ['Sicario', 'TOMMY', 'x0r', 'nikt0', 'FGT', 'd3g', 'MeGusta', 'YIFY', 'tigole', 'TEKNO3D', 'C4K', 'RARBG', '4K4U', 'EASports', 'ReaLHD']
         pass
     
@@ -122,10 +120,6 @@ class BHD():
         
         
 
-
-
-
-
     async def get_cat_id(self, category_name):
         category_id = {
             'MOVIE': '1', 
@@ -188,39 +182,6 @@ class BHD():
 
 
         
-    async def edit_desc(self, meta):
-        base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r').read()
-        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'w') as desc:
-            if meta.get('discs', []) != []:
-                discs = meta['discs']
-                if discs[0]['type'] == "DVD":
-                    desc.write(f"[spoiler=VOB MediaInfo][code]{discs[0]['vob_mi']}[/code][/spoiler]")
-                    desc.write("\n")
-                if len(discs) >= 2:
-                    for each in discs[1:]:
-                        if each['type'] == "BDMV":
-                            desc.write(f"[spoiler={each.get('name', 'BDINFO')}][code]{each['summary']}[/code][/spoiler]")
-                            desc.write("\n")
-                        elif each['type'] == "DVD":
-                            desc.write(f"{each['name']}:\n")
-                            desc.write(f"[spoiler={os.path.basename(each['vob'])}][code][{each['vob_mi']}[/code][/spoiler] [spoiler={os.path.basename(each['ifo'])}][code][{each['ifo_mi']}[/code][/spoiler]")
-                            desc.write("\n")
-                        elif each['type'] == "HDDVD":
-                            desc.write(f"{each['name']}:\n")
-                            desc.write(f"[spoiler={os.path.basename(each['largest_evo'])}][code][{each['evo_mi']}[/code][/spoiler]\n")
-                            desc.write("\n")
-            desc.write(base.replace("[img]", "[img width=300]"))
-            images = meta['image_list']
-            if len(images) > 0: 
-                desc.write("[center]")
-                for each in range(len(images[:int(meta['screens'])])):
-                    web_url = images[each]['web_url']
-                    img_url = images[each]['img_url']
-                    desc.write(f"[url={web_url}][img width=350]{img_url}[/img][/url]")
-                desc.write("[/center]")
-            desc.write(self.signature)
-            desc.close()
-        return
    
 
 
