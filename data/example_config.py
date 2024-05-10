@@ -1,5 +1,5 @@
 config = {
-    'version': '0.3.0',
+    'version': '0.4.0',
 
     "DEFAULT" : {
     
@@ -26,6 +26,9 @@ config = {
 
         "add_trailer" : True, # Adds Movie Trailer (Skips TV as season specifier not supported)
 
+        "use_global_sigs": True, # If False it will search for your tracker signature or anon_signature        
+        "global_sig": f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]", 
+        "global_anon_sig": f"\n[center][size=6]we are anonymous[/size][/center]",
         # The name of your default torrent client, set in the torrent client sections below
         "default_torrent_client" : "Client1",
 
@@ -39,15 +42,19 @@ config = {
         "default_trackers" : "LDU",
 
         "LDU" : {
-                "api_key" : "LDU_API_KEY",
-                "announce_url" : "https://theldu.net/announce/Custom_Announce_URL",
-                "anon" : False
+            "api_key" : "LDU_API_KEY",
+            "announce_url" : "https://theldu.net/announce/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]", #Only used if "use_global_sigs" : False,
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]", #Only used if "use_global_sigs" : False, AND your uploading as "anon" : True, or passing -a at upload
             },   
 
         "ACM" :{
             "api_key" : "ACM_API_KEY",
             "announce_url" : "https://asiancinema.me/announce/Custom_Announce_URL",
             "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED ACM FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",          
 
             # FOR INTERNAL USE ONLY:
             # "internal" : True,
@@ -57,20 +64,26 @@ config = {
         "AITHER" :{
             "api_key" : "AITHER_API_KEY",
             "announce_url" : "https://aither.cc/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED AITHER FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",                
         },
 
         "ANT" :{
             "api_key" : "ANT_API_KEY",
             "announce_url" : "https://anthelion.me/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED ANT FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",                
         },
 
         "BHD" : {
             "api_key" : "BHD_API_KEY",
             "announce_url" : "https://beyond-hd.me/announce/Custom_Announce_URL",
             "draft_default" : "True",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED BHD FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",               
         },
         "BHDTV": {
             "api_key": "found under https://www.bit-hdtv.com/my.php",
@@ -84,25 +97,33 @@ config = {
             "useAPI" : False, # Set to True if using BLU
             "api_key" : "BLU_API_KEY",
             "announce_url" : "https://blutopia.cc/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED BLU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
          "CP2P" : {
             "api_key" : "CP2P_API_KEY",
             "announce_url" : "https://cinemap2p.xyz/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED CP2P FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
         "FNP" : {
-                "api_key" : "FNP_API_KEY",
-                "announce_url" : "https://fearnopeer.com/announce/Custom_Announce_URL",
-                "anon" : False
+            "api_key" : "FNP_API_KEY",
+            "announce_url" : "https://fearnopeer.com/announce/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED FNP FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",                 
             }, 
 
         "HDB" : {
-                "api_key" : "HDB_API_KEY",
-                "announce_url" : "https://https://hdbits.org/announce/Custom_Announce_URL",
-                "anon" : False
+            "api_key" : "HDB_API_KEY",
+            "announce_url" : "https://https://hdbits.org/announce/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED HDB FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
             }, 
 
         "HDT" : {
@@ -116,37 +137,47 @@ config = {
         "HP" :{
             "api_key" : "HP_API_KEY",
             "announce_url" : "https://hidden-palace.net/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED HP FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
         "HUNO" : {
             "api_key" : "HUNO_API_KEY",
             "announce_url" : "https://hawke.uno/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED HUNO FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
         "JPTV" : {
-                "api_key" : "JPTV_API_KEY",
-                "announce_url" : "https://jptv.club/announce/Custom_Announce_URL",
-                "anon" : False
+            "api_key" : "JPTV_API_KEY",
+            "announce_url" : "https://jptv.club/announce/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED JPTV FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",                 
             }, 
 
         "LCD" : {
             "api_key" : "LCD_API_KEY",
             "announce_url" : "https://locadora.cc/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
         },
 
         "LST" : {
             "api_key" : "LST_API_KEY",
             "announce_url" : "https://lst.gg/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED LST FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",            
         },
 
         "LT" : {
             "api_key" : "LT_API_KEY",
             "announce_url" : "https://lat-team.com/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED LT FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
         "MTV": {
@@ -161,12 +192,17 @@ config = {
         "NBL" : {
             "api_key" : "NBL_API_KEY",
             "announce_url" : "https://nebulance.io/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED Nebulance FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
         "OE" : {
             "api_key" : "OE_API_KEY",
             "announce_url" : "https://onlyencodes.cc/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED OnlyEncodes FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
         "PTER" : {
@@ -191,41 +227,56 @@ config = {
         "R4E" :{
             "api_key" : "R4E_API_KEY",
             "announce_url" : "https://racing4everyone.eu/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED Racing4Everyone FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
         "RF" : {
             "api_key" : "RF_API_KEY",
             "announce_url" : "https://reelflix.xyz/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED ReelFliX FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
         "RTF": {
             "api_key": 'get_it_by_running_/api/ login command from https://retroflix.club/api/doc',
             "announce_url": "get from upload page",
             # "tag": "RetroFlix, nd",
-            "anon": True
+            "anon": True,
+            "signature" : f"\n[center][b]PLEASE SEED RetroFlix FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
         "SN": {
             "api_key": "SN_API_KEY",
             "announce_url": "https://tracker.swarmazon.club:8443/<YOUR_PASSKEY>/announce",
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED Swamazon FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]", 
         },
         "STC" :{
             "api_key" : "STC_API_KEY",
             "announce_url" : "https://skipthecommericals.xyz/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED SkipTheCommercials FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
         "STT" :{
             "api_key" : "STC_API_KEY",
             "announce_url" : "https://skipthetrailers.xyz/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED SkipTheTrailers FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
         "TDC" :{
             "api_key" : "TDC_API_KEY",
             "announce_url" : "https://thedarkcommunity.cc/announce/Custom_Announce_URL",
-            "anon" : "False"
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED DarkCommunity[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
 
         "THR" : {
@@ -236,7 +287,7 @@ config = {
             "pronfo_api_key" : "pronfo_API_KEY",
             "pronfo_theme" : "pronfo theme code",
             "pronfo_rapi_id" : "pronfo remote api id",
-            "anon" : False
+            "anon" : False,
         },
 
         "TL": {
@@ -246,7 +297,9 @@ config = {
         "ULCX" : {
             "api_key" : "ULCX_API_KEY",
             "announce_url" : "https://upload.cx/announce/Custom_Announce_URL",
-            "anon" : False
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED ULCX FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",            
         },
 	    
         "MANUAL" : {
@@ -306,7 +359,7 @@ config = {
 
             # Remote path mapping (docker/etc.) CASE SENSITIVE
             # "local_path" : "/LocalPath",
-            # "remote_path" : "/RemotePath"
+            # "remote_path" : "/RemotePath",
 
         },
         "deluge_sample" : {
@@ -323,7 +376,7 @@ config = {
         },
         "watch_sample" : {
             "torrent_client" : "watch",
-            "watch_folder" : "/Path/To/Watch/Folder"
+            "watch_folder" : "/Path/To/Watch/Folder",
         },
 
     },
