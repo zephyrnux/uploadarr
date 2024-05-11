@@ -70,7 +70,7 @@ if 'version' not in config:
     console.print("[bold green]RECOMMENDED ACTION[/bold green]:  Rename your `[bold]config.py[/bold]` to `[bold]old_config.py[/bold]` and run [bold]python3 reconfig.py[/bold] ")
     console.print("[bold yellow]ALTERNATIVE ACTION[/bold yellow]: Reconfigure from `example-config.py`, and make sure to save it as `config.py`")
     exit()
-minimum_version = Version('0.3.0')
+minimum_version = Version('0.4.0')
 if Version(config.get('version')) < minimum_version:
     console.print(f"[bold red]Config version is too old. Minimum version is {minimum_version} but got {config.get('version')}")
     console.print("[bold green]RECOMMENDED ACTION[/bold green]: Rename your `[bold]config.py[/bold]` to `[bold]old_config.py[/bold]` and run [bold]python3 reconfig.py[/bold] ")
