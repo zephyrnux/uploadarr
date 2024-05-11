@@ -26,6 +26,7 @@ from src.trackers.NBL import NBL
 from src.trackers.OE import OE
 from src.trackers.PTER import PTER
 from src.trackers.PTP import PTP
+from src.trackers.PTT import PTT
 from src.trackers.R4E import R4E
 from src.trackers.RF import RF
 from src.trackers.RTF import RTF
@@ -247,11 +248,11 @@ async def do_the_thing(base_dir):
         #######  Upload to Trackers  #######
         ####################################
         common = COMMON(config=config)
-        api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'ULCX']
+        api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'ULCX']
         http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
         tracker_class_map = {
     'ACM': ACM, 'AITHER': AITHER, 'ANT': ANT, 'BHDTV': BHDTV, 'BLU': BLU, 'CP2P': CP2P, 'FNP': FNP, 'HUNO': HUNO, 'JPTV': JPTV, 'LCD': LCD, 'LDU': LDU, 'LST': LST, 'LT': LT, 'NBL': NBL, 'OE': OE,
-    'RF': RF, 'R4E': R4E, 'RTF': RTF, 'SN': SN, 'STC': STC, 'STT': STT, 'TDC': TDC, 'ULCX': ULCX, 'FL': FL, 'HDB': HDB, 'HDT': HDT, 'MTV': MTV, 'PTER': PTER, 'TTG': TTG, 'ULCX': ULCX
+    'PTT': PTT, 'RF': RF, 'R4E': R4E, 'RTF': RTF, 'SN': SN, 'STC': STC, 'STT': STT, 'TDC': TDC, 'ULCX': ULCX, 'FL': FL, 'HDB': HDB, 'HDT': HDT, 'MTV': MTV, 'PTER': PTER, 'TTG': TTG, 'ULCX': ULCX
 }
 
         for tracker in trackers:
