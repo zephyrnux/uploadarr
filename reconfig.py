@@ -105,6 +105,7 @@ def reconfigure():
     write_config(os.path.join(data_dir,'config.py'), new_config)
 
     Print('[bold green]Congratulations![/bold green] config.py was successfully updated.')
+    Print('[bold yellow]WARN[/bold yellow]: It is recommended you double check your client settings.')
     if added_blocks:
         Print('[bold yellow]WARN[/bold yellow]: The following [i]non-included[/i] TRACKERS: [bold]' + '[/bold], [bold]'.join(added_blocks)+'[/bold] were added.') 
         Print('[bold yellow]WARN[/bold yellow]: Please be sure to add them in upload.py and add the .py files into /src/trackers')
