@@ -182,7 +182,7 @@ class LDU():
             data['season_number'] = meta.get('season_int', '0')
             data['episode_number'] = meta.get('episode_int', '0')
         headers = {
-            'User-Agent': f'Upload Assistant/v. CvT 0.3 ({platform.system()} {platform.release()})'
+            'User-Agent': f'Upload Assistant/v. CvT 0.4 ({platform.system()} {platform.release()})'
         }
         params = {
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip()
@@ -357,10 +357,11 @@ class LDU():
                 potential_missing = []
 
         parts = name.split()
-        bracket_index = parts.index('[')
-        sq_bracket = next((i for i, part in enumerate(parts[bracket_index+1:]) if part.strip()), None)
-        if sq_bracket is not None:
-            name = ' '.join(parts[:bracket_index+1]) + ' '.join(parts[bracket_index+1:])
+        if '[' in parts:        
+            bracket_index = parts.index('[')
+            sq_bracket = next((i for i, part in enumerate(parts[bracket_index+1:]) if part.strip()), None)
+            if sq_bracket is not None:
+                name = ' '.join(parts[:bracket_index+1]) + ' '.join(parts[bracket_index+1:])
         
         return ' '.join(name.split())
     
