@@ -132,7 +132,7 @@ class UNIT3D_TEMPLATE():
             data['season_number'] = meta.get('season_int', '0')
             data['episode_number'] = meta.get('episode_int', '0')
         headers = {
-            'User-Agent': f'Upload Assistant/2.1 ({platform.system()} {platform.release()})'
+            'User-Agent': f'Upload Assistant/ CvT Edition ({platform.system()} {platform.release()})'
         }
         params = {
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip()
@@ -150,8 +150,6 @@ class UNIT3D_TEMPLATE():
             console.print(data)
         open_torrent.close()
 
-
-   
 
 
     async def search_existing(self, meta):
