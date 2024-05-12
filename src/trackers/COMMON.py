@@ -69,7 +69,7 @@ class COMMON():
             if add_trailer_enabled and meta.get("category") == "MOVIE":
                 key = meta.get("youtube")
                 if key:
-                    descfile.write("[center][youtube]{key}[/youtube][/center]")
+                    descfile.write(f"[center][youtube]{key}[/youtube][/center]")
 
             img_size = self.config["DEFAULT"]["img_size"]
             desc = desc.replace('[img]', f"[img={img_size}")
