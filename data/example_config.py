@@ -272,7 +272,7 @@ config = {
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
         },
         "STT" :{
-            "api_key" : "STC_API_KEY",
+            "api_key" : "STT_API_KEY",
             "announce_url" : "https://skipthetrailers.xyz/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED SkipTheTrailers FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
