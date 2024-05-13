@@ -53,12 +53,25 @@ from packaging.version import Version
 from src.console import console
 from rich.markdown import Markdown
 from rich.style import Style
-
-cli_ui.setup(color='always', title="Upload Assistant - LDU Mod")
+from rich.prompt import Prompt
+import subprocess
 import traceback
 
-base_dir = os.path.abspath(os.path.dirname(__file__))
+cli_ui.setup(color='always', title="Upload Assistant - LDU Mod")
+
+
+base_dir = os.path.dirname(os.path.realpath(__file__))
 config_path = os.path.abspath(f"{base_dir}/data/config.py")
+old_config_path = os.path.abspath(f"{base_dir}/data/old_config.py")
+minimum_version = Version('0.4.0')
+
+def get_backup_name(path, suffix='_bu'):
+    base, ext = os.path.splitext(path)
+    counter = 1
+    while os.path.exists(path):
+        path = f"{base}{suffix}{counter}{ext}"
+        counter += 1
+    return path
 
 if os.path.exists(config_path):
     from data.config import config
@@ -66,20 +79,28 @@ else:
     console.print("[bold red] It appears you have no config file, please ensure to configure and place `/data/config.py`")
     exit()
 
-if 'version' not in config:
-    console.print("[bold red]WARN[/bold red]: Version not found in config. ")
-    console.print("[bold green]RECOMMENDED ACTION[/bold green]:  Rename your `[bold]config.py[/bold]` to `[bold]old_config.py[/bold]` and run [bold]python3 reconfig.py[/bold] ")
-    console.print("[bold yellow]ALTERNATIVE ACTION[/bold yellow]: Reconfigure from `example-config.py`, and make sure to save it as `config.py`")
-    exit()
-minimum_version = Version('0.4.0')
-if Version(config.get('version')) < minimum_version:
-    console.print(f"[bold red]Config version is too old. Minimum version is {minimum_version} but got {config.get('version')}")
-    console.print("[bold green]RECOMMENDED ACTION[/bold green]: Rename your `[bold]config.py[/bold]` to `[bold]old_config.py[/bold]` and run [bold]python3 reconfig.py[/bold] ")
-    exit()
+if 'version' not in config or Version(config.get('version')) < minimum_version:
+    console.print("[bold red]WARN[/bold red]: Version out of date, automatic upgrade in progress")
+    try:
+        if os.path.exists(old_config_path):
+            backup_name = get_backup_name(old_config_path)
+            shutil.move(old_config_path, backup_name)
+        shutil.move(config_path, old_config_path)
+    except Exception as e:
+        console.print("[bold red] Unable to proceed with automatic upgrade. Please rename `config.py` to `old_config.py` and run `python3 reconfig.py`")
+        console.print(f"Error: {str(e)}")
+        exit()
+
+    subprocess.run(["python3", "reconfig.py"])
+    console.print("Please double-check new config and ensure client settings were appropriately set.")
+    double_check = Prompt.ask("[bold yellow]CONFIRM[/bold yellow]: I have double checked `[bold]config.py[/bold]`, config is accurate.", choices=["y", "N"], default="N")
+    if double_check.lower() != 'y':
+        exit()
+
 try:
     from data.example_config import example_config
     if 'version' in example_config and Version(example_config.get('version')) > Version(config.get('version')):
-        console.print("[bold yellow]WARN[/bold yellow]: Config version out of date, updating is reccomended.")
+        console.print("[bold yellow]WARN[/bold yellow]: Config version out of date, updating is recommended.")
         console.print("[bold yellow]WARN[/bold yellow]: Simply rename `[bold]config.py[/bold]` to `[bold]old_config.py[/bold]` and run `[bold]python3 reconfig.py[/bold]` ")
 except:
     pass
