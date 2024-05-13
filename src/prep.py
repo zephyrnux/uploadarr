@@ -55,9 +55,6 @@ except KeyboardInterrupt:
     exit()
 
 
-
-
-
 class Prep():
     """
     Prepare for upload:
@@ -1885,11 +1882,16 @@ class Prep():
             codec = "VP9"
         elif format == "VC-1":
             codec = "VC-1"
+        elif format == "AV1":
+            codec = "AV1"    
         if format_profile == 'High 10':
             profile = "Hi10P"
         else:
             profile = ""
-        video_encode = f"{profile} {codec}"
+        if profile or codec:
+            video_encode = f"{profile} {codec}"
+        else:
+            video_encode = format
         video_codec = format
         if video_codec == "MPEG Video":
             video_codec = f"MPEG-{mi['media']['track'][1].get('Format_Version')}"
@@ -1928,7 +1930,10 @@ class Prep():
             if isinstance(manual_edition, list):
                 manual_edition = " ".join(manual_edition)
             edition = str(manual_edition)
-            
+        if manual_edition is not None and ("AI" in manual_edition.upper() or "UPSCALE" in manual_edition.upper()):
+            manual_edition = " AI UPSCALE"              
+        if "AI" in (video.upper() or edition.upper()) or "UPSCALE" in (video.upper() or edition.upper()):
+            edition = " AI UPSCALE"         
         if " REPACK " in (video or edition) or "V2" in video:
             repack = "REPACK"
         if " REPACK2 " in (video or edition) or "V3" in video:
@@ -2280,7 +2285,7 @@ class Prep():
             dvd_size = meta.get('dvd_size', "")
         else:
             video_codec = meta.get('video_codec', "")
-            video_encode = meta.get('video_encode', "")
+            video_encode = meta.get('video_encode', video_codec)
         edition = meta.get('edition', "")
 
         if meta['category'] == "TV":
