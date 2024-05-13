@@ -54,7 +54,8 @@ def replace_values(base_dict, old_dict):
                 replace_values(base_dict[key], old_dict[key])
             else:
                 base_dict[key] = old_dict[key]
-
+        else:
+            base_dict[key] = old_dict[key]
 console = Console()
 script_dir = os.path.dirname(os.path.realpath(__file__))
 data_dir = os.path.join(script_dir, 'data')
