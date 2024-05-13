@@ -90,15 +90,21 @@ class LDU():
                 category_id = '2'
         return category_id
 
-    async def get_type_id(self, type):
+    async def get_type_id(self, type, edition):
         type_id = {
             'DISC': '1', 
             'REMUX': '2',
             'WEBDL': '4', 
             'WEBRIP': '5', 
             'HDTV': '6',
-            'ENCODE': '3'
+            'ENCODE': '3',
+            'UPSCALE': '27',
             }.get(type, '0')
+        if type == 'ENCODE':
+            if 'upscale' in edition.lower() or 'ai' in edition.lower():
+                type_id = '27' 
+            else:
+                type_id = '3'    
         return type_id
 
     async def get_res_id(self, resolution):
@@ -125,7 +131,7 @@ class LDU():
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         cat_id = await self.get_cat_id(meta['category'], meta.get('genres', ''), meta.get('keywords', ''), meta.get('service', ''), meta.get('edition', ''), meta)
-        type_id = await self.get_type_id(meta['type'])
+        type_id = await self.get_type_id(meta['type'],meta['edition'])
         resolution_id = await self.get_res_id(meta['resolution'])
         await common.unit3d_edit_desc(meta, self.tracker)
         region_id = await common.unit3d_region_ids(meta.get('region'))
@@ -232,7 +238,7 @@ class LDU():
                         sub_lang_tag = f"[Subs {sub_lang[0].upper()}]"
 
 
-        return lang_tag+sub_lang_tag
+        return lang_tag+" "+sub_lang_tag
 
 
     def get_basename(self, meta):
@@ -275,14 +281,21 @@ class LDU():
             dvd_size = meta.get('dvd_size', "")
         else:
             video_codec = meta.get('video_codec', "")
-            video_encode = meta.get('video_encode', "")
+            video_encode = meta.get('video_encode', video_codec)
         edition = meta.get('edition', "")
 
         if meta['category'] == "TV":
-            if meta['search_year'] != "":
+            try:
                 year = meta['year']
-            else:
-                year = ""
+                if not year: 
+                    raise ValueError("No TMDB Year Found..trying IMDB")
+            except (KeyError, ValueError):
+                try:
+                    year = meta['imdb_info']['year']
+                    if not year:
+                        raise ValueError("No IMDB Year Found..")
+                except (KeyError, ValueError):
+                    year = ""
         if meta.get('no_season', False) == True:
             season = ''
         if meta.get('no_year', False) == True:
@@ -373,7 +386,7 @@ class LDU():
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip(),
             'tmdbId' : meta['tmdb'],
             'categories[]' : await self.get_cat_id(meta['category'], meta.get('genres', ''), meta.get('keywords', ''), meta.get('service', ''), meta.get('edition', ''), meta),
-            'types[]' : await self.get_type_id(meta['type']),
+            'types[]' : await self.get_type_id(meta['type'], meta['edition']),
             'resolutions[]' : await self.get_res_id(meta['resolution']),
             'name' : ""
         }
