@@ -271,7 +271,7 @@ async def do_the_thing(base_dir):
         #######  Upload to Trackers  #######
         ####################################
         common = COMMON(config=config)
-        api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TTR' 'ULCX']
+        api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TTR', 'ULCX']
         http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
         tracker_class_map = {
     'ACM': ACM, 'AITHER': AITHER, 'ANT': ANT, 'BHDTV': BHDTV, 'BLU': BLU, 'CP2P': CP2P, 'FL': FL, 'FNP': FNP, 'HDB': HDB, 'HDT': HDT, 'HUNO': HUNO, 'JPTV': JPTV, 'LCD': LCD, 'LDU': LDU,
