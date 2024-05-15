@@ -2,7 +2,6 @@
 # import discord
 import asyncio
 import requests
-import distutils.util
 import os
 import platform
 from src.trackers.COMMON import COMMON
@@ -206,10 +205,10 @@ class ACM():
         region_id = await common.unit3d_region_ids(meta.get('region'))
         distributor_id = await common.unit3d_distributor_ids(meta.get('distributor'))
         acm_name = await self.edit_name(meta)
-        if meta['anon'] == 0 and bool(distutils.util.strtobool(str(self.config['TRACKERS'][self.tracker].get('anon', "False")))) == False:
-            anon = 0
-        else:
+        if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
+        else:
+            anon = 0
 
         if meta['bdinfo'] != None:
             # bd_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/BD_SUMMARY_00.txt", 'r', encoding='utf-8').read()
