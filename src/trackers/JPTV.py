@@ -2,7 +2,6 @@
 # import discord
 import asyncio
 import requests
-import distutils.util
 import os
 import platform
 
@@ -91,10 +90,10 @@ class JPTV():
         region_id = await common.unit3d_region_ids(meta.get('region'))
         distributor_id = await common.unit3d_distributor_ids(meta.get('distributor'))
         jptv_name = await self.edit_name(meta)
-        if meta['anon'] == 0 and bool(distutils.util.strtobool(str(self.config['TRACKERS'][self.tracker].get('anon', "False")))) == False:
-            anon = 0
-        else:
+        if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
+        else:
+            anon = 0
 
         if meta['bdinfo'] != None:
             mi_dump = ""
