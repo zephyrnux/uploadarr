@@ -65,7 +65,7 @@ cli_ui.setup(color='always', title="Upload Assistant - LDU Mod")
 base_dir = os.path.dirname(os.path.realpath(__file__))
 config_path = os.path.abspath(f"{base_dir}/data/config.py")
 old_config_path = os.path.abspath(f"{base_dir}/data/old_config.py")
-minimum_version = Version('0.4.0')
+minimum_version = Version('0.4.3')
 
 def get_backup_name(path, suffix='_bu'):
     base, ext = os.path.splitext(path)
