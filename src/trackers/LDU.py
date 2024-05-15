@@ -3,9 +3,7 @@
 import asyncio
 import requests
 from difflib import SequenceMatcher
-import distutils.util
 import os
-import re
 import platform
 from datetime import datetime
 
