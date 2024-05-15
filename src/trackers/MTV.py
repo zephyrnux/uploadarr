@@ -8,7 +8,6 @@ import os
 import cli_ui
 import pickle
 import re
-import distutils.util
 from pathlib import Path
 from src.trackers.COMMON import COMMON
 
@@ -77,10 +76,10 @@ class MTV():
         mtv_name = await self.edit_name(meta)
 
         # anon
-        if meta['anon'] == 0 and bool(distutils.util.strtobool(str(self.config['TRACKERS'][self.tracker].get('anon', "False")))) == False:
-            anon = 0
-        else:
+        if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
+        else:
+            anon = 0
 
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r').read()
 
