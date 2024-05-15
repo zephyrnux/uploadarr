@@ -13,10 +13,18 @@ I have no clue what I'm doing so thought I'd fork it, bork it and, duct tape it 
   - Can re-use existing torrents instead of hashing new
   - Generates proper name for your upload using Mediainfo/BDInfo and TMDb/IMDb conforming to site rules
   - Checks for existing releases already on site
-  - Uploads to ACM/Aither/ANT/BHD/BLU/CP2P/FNP/FL/HUNO/HP/LCD/LDU/LST/NBL/PTP/PTT/RF/R4E(limited)/SN/STC/STT/THR/ULCX
   - Adds to your client with fast resume, seeding instantly (rtorrent/qbittorrent/deluge/watch folder)
   - ALL WITH MINIMAL INPUT!
   - Currently works with .mkv/.mp4/Blu-ray/DVD/HD-DVDs
+
+## Supported Sites
+|  ACM   | Aither |  ANT   |  BHD   |  BLU   |
+|  CP2P  |  FNP   |   FL   |  HUNO  |   HP   |
+|  LCD   |  LDU   |  LST   |  NBL   |  PTP   |
+|  PTT   |   RF   |  R4E   |  SN    |  STC   |
+|  STT   |  THR   |  TTR   | ULCX   |  UTP   |
+
+
 
 
 
