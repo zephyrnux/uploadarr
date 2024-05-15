@@ -4,15 +4,12 @@ import asyncio
 from torf import Torrent
 import requests
 from src.console import console
-import distutils.util
 from pprint import pprint
 import os
 import traceback
 from src.trackers.COMMON import COMMON
 from pymediainfo import MediaInfo
 
-
-# from pprint import pprint
 
 class BHDTV():
     """
@@ -53,11 +50,10 @@ class BHDTV():
         resolution_id = await self.get_res_id(meta['resolution'])
         # region_id = await common.unit3d_region_ids(meta.get('region'))
         # distributor_id = await common.unit3d_distributor_ids(meta.get('distributor'))
-        if meta['anon'] == 0 and bool(
-                distutils.util.strtobool(self.config['TRACKERS'][self.tracker].get('anon', "False"))) == False:
-            anon = 0
-        else:
+        if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
+        else:
+            anon = 0
 
         if meta['bdinfo'] != None:
             mi_dump = None
