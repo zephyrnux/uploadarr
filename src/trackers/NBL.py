@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-# import discord
 import asyncio
 import requests
-import distutils.util
-import os
 from guessit import guessit 
 
 from src.trackers.COMMON import COMMON
