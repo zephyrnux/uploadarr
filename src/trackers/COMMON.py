@@ -71,7 +71,8 @@ class COMMON():
                 if key:
                     descfile.write(f"[center][youtube]{key}[/youtube][/center]")
 
-            img_size = self.config["DEFAULT"]["img_size"]
+            img_size = self.config["DEFAULT"].get("img_size", 500)
+            inline_imgs = self.config["DEFAULT"].get("inline_imgs", 0)
             desc = desc.replace('[img]', f"[img={img_size}")
             descfile.write(desc)
             images = meta['image_list']
@@ -82,7 +83,15 @@ class COMMON():
                     raw_url = images[each]['raw_url']
                     img_size = self.config["DEFAULT"]["img_size"]
                     descfile.write(f"[url={web_url}][img={img_size}]{raw_url}[/img][/url]")
+                    if img_size and inline_imgs:
+                        try:
+                            inline_imgs = int(inline_imgs) 
+                            if each % inline_imgs == inline_imgs - 1:
+                                descfile.write("\n")
+                        except ValueError:
+                            print("[bold][red]WARN[/red]: Invalid value given for inline_imgs in config.[/bold]")
                 descfile.write("[/center]")
+
 
             use_global_sigs = self.config["DEFAULT"].get("use_global_sigs", False)
             if use_global_sigs:
