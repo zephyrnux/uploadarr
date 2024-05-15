@@ -18,11 +18,16 @@ I have no clue what I'm doing so thought I'd fork it, bork it and, duct tape it 
   - Currently works with .mkv/.mp4/Blu-ray/DVD/HD-DVDs
 
 ## Supported Sites
-|  ACM   | Aither |  ANT   |  BHD   |  BLU   |
-|  CP2P  |  FNP   |   FL   |  HUNO  |   HP   |
-|  LCD   |  LDU   |  LST   |  NBL   |  PTP   |
-|  PTT   |   RF   |  R4E   |  SN    |  STC   |
-|  STT   |  THR   |  TTR   | ULCX   |  UTP   |
+
+|      |      |      |     |      |
+|------|------|------|-----|------|
+| ACM  | Aither | ANT  | BHD | BLU  |
+| CP2P |  FNP   |  FL  | HUNO |  HP  |
+| LCD  |  LDU   | LST  | NBL  | PTP  |
+| PTT  |   RF   | R4E  |  SN  | STC  |
+| STT  |  THR   | TTR  |ULCX |  UTP |
+
+
 
 
 
