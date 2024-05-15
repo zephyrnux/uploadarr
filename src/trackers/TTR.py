@@ -147,7 +147,177 @@ class TTR():
             console.print(data)
         open_torrent.close()
 
+  def get_language_tag(self, meta):
+        audio_lang = []
+        if 'mediainfo' in meta:
+            for x in meta["mediainfo"]["media"]["track"]:
+                if x["@type"] == "Audio":
+                    commentary_found = 'Title' in x and ('comment' in x['Title'].lower() or 'review' in x['Title'].lower())
+                    if not commentary_found and 'Language_String3' in x:
+                        audio_lang.append(x.get('Language_String3'))
+            audio_lang = list(dict.fromkeys(audio_lang))  # Remove dupes + keep order
+        if not audio_lang:
+            audio_lang.append('???')
+        lang_tag = f"[{' '.join(lang.upper() for lang in audio_lang)}]"
+        sub_lang = [x.get('Language_String3') for x in meta["mediainfo"]["media"]["track"] if x["@type"] == "Text"]
+        if not sub_lang:
+            sub_lang_tag = "[No Subs]"
+        else:
+            sub_lang = list(dict.fromkeys(sub_lang))  # Remove dupes + keep order
+            if 'spa' in sub_lang:
+                if len(sub_lang) > 1:
+                    sub_lang_tag = "[Subs SPA+]"
+                else:
+                    sub_lang_tag = "[Subs SPA]"
+            else:
+                if sub_lang[0] is None:
+                    sub_lang_tag = "[Subs ???]"
+                else:
+                    if len(sub_lang) > 1:
+                        sub_lang_tag = f"[Subs {sub_lang[0].upper()}+]"
+                    else:
+                        sub_lang_tag = f"[Subs {sub_lang[0].upper()}]"
 
+
+        return lang_tag+" "+sub_lang_tag
+
+
+    def get_basename(self, meta):
+        path = next(iter(meta['filelist']), meta['path'])
+        return os.path.basename(path)
+   
+    async def get_name(self, meta):
+        # Have to agree with whoever made HUNO's script
+        # was easier to rebuild name with Prep.get_name() and mofidy 
+        # than to attempt to edit the name thereafter - thanks for the tip
+
+        basename = self.get_basename(meta)
+        type = meta.get('type', "")
+        title = meta.get('title',"")
+        alt_title = meta.get('aka', "")
+        year = meta.get('year', "")
+        resolution = meta.get('resolution', "")
+        if resolution == "OTHER":
+            resolution = ""
+        audio = meta.get('audio', "")
+        lang_tag = self.get_language_tag(meta)
+        service = meta.get('service', "")
+        season = meta.get('season', "")
+        episode = meta.get('episode', "")
+        part = meta.get('part', "")
+        repack = meta.get('repack', "")
+        three_d = meta.get('3D', "")
+        tag = meta.get('tag', "")
+        if tag == "":
+            tag = "- NOGRP"
+        source = meta.get('source', "")
+        uhd = meta.get('uhd', "")
+        hdr = meta.get('hdr', "")
+        episode_title = meta.get('episode_title', '')
+        if meta.get('is_disc', "") == "BDMV": #Disk
+            video_codec = meta.get('video_codec', "")
+            region = meta.get('region', "")
+        elif meta.get('is_disc', "") == "DVD":
+            region = meta.get('region', "")
+            dvd_size = meta.get('dvd_size', "")
+        else:
+            video_codec = meta.get('video_codec', "")
+            video_encode = meta.get('video_encode', video_codec)
+        edition = meta.get('edition', "")
+
+        if meta['category'] == "TV":
+            try:
+                year = meta['year']
+                if not year: 
+                    raise ValueError("No TMDB Year Found..trying IMDB")
+            except (KeyError, ValueError):
+                try:
+                    year = meta['imdb_info']['year']
+                    if not year:
+                        raise ValueError("No IMDB Year Found..")
+                except (KeyError, ValueError):
+                    year = ""
+        if meta.get('no_season', False) == True:
+            season = ''
+        if meta.get('no_year', False) == True:
+            year = ''
+        if meta.get('no_aka', False) == True:
+            alt_title = ''
+        if meta['debug']:
+            console.log("[cyan]get_name cat/type")
+            console.log(f"CATEGORY: {meta['category']}")
+            console.log(f"TYPE: {meta['type']}")
+            console.log("[cyan]get_name meta:")
+            console.log(meta)
+
+        #YAY NAMING FUN
+        if meta['category'] == "MOVIE": #MOVIE SPECIFIC
+            if type == "DISC": #Disk
+                if meta['is_disc'] == 'BDMV':
+                    name = f"{title} [{alt_title}] {year} {three_d} [{edition} {repack} {resolution} {region} {uhd} {source} {hdr} {video_codec} {audio}{tag}] {lang_tag}"
+                    potential_missing = ['edition', 'region', 'distributor']
+                elif meta['is_disc'] == 'DVD': 
+                    name = f"{title} {alt_title} {year} [{edition} {repack} {source} {dvd_size} {audio}{tag}] {lang_tag}"
+                    potential_missing = ['edition', 'distributor']
+                elif meta['is_disc'] == 'HDDVD':
+                    name = f"{title} {alt_title} {year} [{edition} {repack} {resolution} {source} {video_codec}] {audio}{tag}] {lang_tag}"
+                    potential_missing = ['edition', 'region', 'distributor']
+            elif type == "REMUX" and source in ("BluRay", "HDDVD"): #BluRay/HDDVD Remux
+                name = f"{title} {alt_title} {year} {three_d} [{edition} {repack} {resolution} {uhd} {source} REMUX {hdr} {video_codec} {audio}{tag}] {lang_tag}" 
+                potential_missing = ['edition', 'description']
+            elif type == "REMUX" and source in ("PAL DVD", "NTSC DVD", "DVD"): #DVD Remux
+                name = f"{title} {alt_title} {year} [{edition} {repack} {source} REMUX  {audio}{tag}] {lang_tag}" 
+                potential_missing = ['edition', 'description']
+            elif type == "ENCODE": #Encode
+                name = f"{title} {alt_title} {year} [{edition} {repack} {resolution} {uhd} {source} {audio} {hdr} {video_encode}{tag}] {lang_tag}"  
+                potential_missing = ['edition', 'description']
+            elif type == "WEBDL": #WEB-DL
+                name = f"{title} {alt_title} {year} [{edition} {repack} {resolution} {uhd} {service} WEB-DL {audio} {hdr} {video_encode}{tag}] {lang_tag}"
+                potential_missing = ['edition', 'service']
+            elif type == "WEBRIP": #WEBRip
+                name = f"{title} {alt_title} {year} [{edition} {repack} {resolution} {uhd} {service} WEBRip {audio} {hdr} {video_encode}{tag}] {lang_tag}"
+                potential_missing = ['edition', 'service']
+            elif type == "HDTV": #HDTV
+                name = f"{title} {alt_title} {year} [{edition} {repack} {resolution} {source} {audio} {video_encode}{tag}] {lang_tag}"
+                potential_missing = []
+        elif meta['category'] == "TV": #TV SPECIFIC
+            if type == "DISC": #Disk
+                if meta['is_disc'] == 'BDMV':
+                    name = f"{title} {year} {alt_title} {season}{episode} {three_d} [{edition} {repack} {resolution} {region} {uhd} {source} {hdr} {video_codec} {audio}{tag}] {lang_tag}"
+                    potential_missing = ['edition', 'region', 'distributor']
+                if meta['is_disc'] == 'DVD':
+                    name = f"{title} {alt_title} {season}{episode} {three_d} [{edition} {repack} {source} {dvd_size} {audio}{tag}] {lang_tag}"
+                    potential_missing = ['edition', 'distributor']
+                elif meta['is_disc'] == 'HDDVD':
+                    name = f"{title} {alt_title} {year} [{edition} {repack} {resolution} {source} {video_codec} {audio}{tag}] {lang_tag}"
+                    potential_missing = ['edition', 'region', 'distributor']
+            elif type == "REMUX" and source in ("BluRay", "HDDVD"): #BluRay Remux
+                name = f"{title} {year} {alt_title} {season}{episode} {episode_title} {part} [{three_d} {edition} {repack} {resolution} {uhd} {source} REMUX {hdr} {video_codec} {audio}{tag}] {lang_tag}" #SOURCE
+                potential_missing = ['edition', 'description']
+            elif type == "REMUX" and source in ("PAL DVD", "NTSC DVD"): #DVD Remux
+                name = f"{title} {year} {alt_title} {season}{episode} {episode_title} {part} [{edition} {repack} {source} REMUX {audio}{tag}] {lang_tag}" #SOURCE
+                potential_missing = ['edition', 'description']
+            elif type == "ENCODE": #Encode
+                name = f"{title} {year} {alt_title} {season}{episode} {episode_title} {part} [{edition} {repack} {resolution} {uhd} {source} {audio} {hdr} {video_encode}{tag}] {lang_tag}" #SOURCE
+                potential_missing = ['edition', 'description']
+            elif type == "WEBDL": #WEB-DL
+                name = f"{title} {year} {alt_title} {season}{episode} {episode_title} {part} [{edition} {repack} {resolution} {uhd} {service} WEB-DL {audio} {hdr} {video_encode}{tag}] {lang_tag}"
+                potential_missing = ['edition', 'service']
+            elif type == "WEBRIP": #WEBRip
+                name = f"{title} {year} {alt_title} {season}{episode} {episode_title} {part} [{edition} {repack} {resolution} {uhd} {service} WEBRip {audio} {hdr} {video_encode}{tag}] {lang_tag}"
+                potential_missing = ['edition', 'service']
+            elif type == "HDTV": #HDTV
+                name = f"{title} {year} {alt_title} {season}{episode} {episode_title} {part} [{edition} {repack} {resolution} {source} {audio} {video_encode}{tag}] {lang_tag}"
+                potential_missing = []
+
+        parts = name.split()
+        if '[' in parts:        
+            bracket_index = parts.index('[')
+            sq_bracket = next((i for i, part in enumerate(parts[bracket_index+1:]) if part.strip()), None)
+            if sq_bracket is not None:
+                name = ' '.join(parts[:bracket_index+1]) + ' '.join(parts[bracket_index+1:])
+        
+        return ' '.join(name.split())
 
     async def search_existing(self, meta):
         dupes = []
