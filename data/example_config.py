@@ -1,6 +1,11 @@
 config = {
-    'version': '0.4.3',
+    'version': '0.4.4',
+        # ------ THE LAST DIGITAL UNDERFROUND PRESENTS------#
+        #                 Special Recruitment :)            #
+        #         Apply today @ https://TheLDU.net          #
+        # ------------------------------------------------- #
 
+	
     "DEFAULT" : {
     
         # ------ READ THIS ------
@@ -23,7 +28,7 @@ config = {
         "screens" : "6",
         "img_size" : "500",  #Size in Description [img=350]
         "optimize_images" : True,  # Lossless PNG Compression (True/False)
-
+	#"inline_imgs": 3, #Uncomment and use this if you want to insert a line break after X images in description
         "add_trailer" : True, # Adds Movie Trailer (Skips TV as season specifier not supported)
 
         "use_global_sigs": True, # If False it will search for your tracker signature or anon_signature        
