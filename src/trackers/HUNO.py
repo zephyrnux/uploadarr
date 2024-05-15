@@ -3,7 +3,6 @@
 import asyncio
 import requests
 from difflib import SequenceMatcher
-import distutils.util
 import os
 import re
 import platform
@@ -36,10 +35,10 @@ class HUNO():
         cat_id = await self.get_cat_id(meta['category'])
         type_id = await self.get_type_id(meta)
         resolution_id = await self.get_res_id(meta['resolution'])
-        if meta['anon'] == 0 and bool(distutils.util.strtobool(self.config['TRACKERS']['HUNO'].get('anon', "False"))) == False:
-            anon = 0
-        else:
+        if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
+        else:
+            anon = 0
 
         # adding logic to check if its an encode or webrip and not HEVC as only HEVC encodes and webrips are allowed
         if meta['video_codec'] != "HEVC" and (meta['type'] == "ENCODE" or meta['type'] == "WEBRIP"):
