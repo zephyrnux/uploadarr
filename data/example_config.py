@@ -1,5 +1,5 @@
 config = {
-    'version': '0.4.1',
+    'version': '0.4.2',
 
     "DEFAULT" : {
     
@@ -317,6 +317,14 @@ config = {
             "signature" : f"\n[center][b]PLEASE SEED ULCX FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",            
         },
+
+        "UTP" : {
+            "api_key" : "UTP_API_KEY",
+            "announce_url" : "https://utp.to//announce/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED UTP FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",            
+        },	    
 	    
         "MANUAL" : {
             # Uncomment and replace link with filebrowser (https://github.com/filebrowser/filebrowser) link to the Upload-Assistant directory, this will link to your filebrowser instead of uploading to uguu.se
