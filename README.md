@@ -19,13 +19,14 @@ I have no clue what I'm doing so thought I'd fork it, bork it and, duct tape it 
 
 ## Supported Sites
 
-|      |      |      |     |      |
-|------|------|------|-----|------|
-| ACM  | Aither | ANT  | BHD | BLU  |
-| CP2P |  FNP   |  FL  | HUNO |  HP  |
-| LCD  |  LDU   | LST  | NBL  | PTP  |
-| PTT  |   RF   | R4E  |  SN  | STC  |
-| STT  |  THR   | TTR  |ULCX |  UTP |
+|      |      |      |     |      |      |     |      |
+|------|------|------|-----|------|------|-----|------|
+| ACM   | AITHER | ANT   | BHDTV | BLU   | CP2P  | FL    | FNP   |
+| HDB   | HDT    | HUNO  | JPTV  | LCD   | LDU   | LST   | LT    |
+| MTV   | NBL    | OE    | PTER  | PTT   | R4E   | RF    | RTF   |
+| SN    | STC    | STT   | TDC   | TL    | TTG   | TTR   | ULCX  |
+| UTP   |
+
 
 
 
