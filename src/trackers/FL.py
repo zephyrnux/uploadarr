@@ -3,7 +3,6 @@ import asyncio
 import re
 import os
 from pathlib import Path
-import distutils.util
 import json
 import glob
 import pickle
@@ -160,7 +159,7 @@ class FL():
             if int(meta.get('imdb_id', '').replace('tt', '')) != 0:
                 data['imdbid'] = meta.get('imdb_id', '').replace('tt', '')
                 data['description'] = meta['imdb_info'].get('genres', '')
-            if self.uploader_name not in ("", None) and bool(distutils.util.strtobool(str(self.config['TRACKERS'][self.tracker].get('anon', "False")))) == False:
+            if self.uploader_name and not self.config['TRACKERS'][self.tracker].get('anon', False):
                 data['epenis'] = self.uploader_name
             if has_ro_audio:
                 data['materialro'] = 'on'
