@@ -1,5 +1,5 @@
 config = {
-    'version': '0.4.2',
+    'version': '0.4.3',
 
     "DEFAULT" : {
     
@@ -29,6 +29,8 @@ config = {
         "use_global_sigs": True, # If False it will search for your tracker signature or anon_signature        
         "global_sig": f"\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]", 
         "global_anon_sig": f"\n[center][size=6]we are anonymous[/size][/center]",
+        "global_pr_sig": f"\n[center][size=6][b]Personal Release[/b][/size][/center]",
+        "global_anon_pr_sig": f"\n[center][size=6][b]Anonymous Personal Release[/b][/size][/center]",	    
         # The name of your default torrent client, set in the torrent client sections below
         "default_torrent_client" : "Client1",
 
