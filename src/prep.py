@@ -17,7 +17,6 @@ try:
     import re
     import math
     import sys
-    import distutils.util
     import asyncio
     from guessit import guessit
     import ntpath
@@ -2812,7 +2811,7 @@ class Prep():
                         else:
                             pass
                     elif key == 'personalrelease':
-                        meta[key] = bool(distutils.util.strtobool(str(value.get(key, 'False'))))
+                        meta[key] = bool(value.get(key, False))
                     elif key == 'template':
                         meta['desc_template'] = value.get(key)
                     else:
