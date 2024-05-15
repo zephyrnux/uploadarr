@@ -147,7 +147,7 @@ class TTR():
             console.print(data)
         open_torrent.close()
 
-  def get_language_tag(self, meta):
+    def get_language_tag(self, meta):
         audio_lang = []
         if 'mediainfo' in meta:
             for x in meta["mediainfo"]["media"]["track"]:
