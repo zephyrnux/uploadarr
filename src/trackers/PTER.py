@@ -7,7 +7,6 @@ from pathlib import Path
 import traceback
 import json
 import glob
-import distutils.util
 import cli_ui
 import pickle
 from unidecode import unidecode
@@ -226,7 +225,7 @@ class PTER():
         return image_list
 
     async def get_anon(self, anon):
-        if anon == 0 and bool(distutils.util.strtobool(str(self.config['TRACKERS'][self.tracker].get('anon', "False")))) == False:
+        if anon == 0 and not self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 'no'
         else:
             anon = 'yes'
