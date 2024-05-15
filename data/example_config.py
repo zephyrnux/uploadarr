@@ -301,7 +301,15 @@ config = {
         "TL": {
             "announce_key": "TL_announce_key",
         },
- 
+
+    	'TTR' : {
+	    'api_key' : 'TTR_API_KEY',
+	    'announce_url' : 'https://torrenteros.org/announce/Custom_Announce_URL',
+	    'anon' : 'False',
+	    'signature' : '\n[center][b]PLEASE SEED TorrentEros FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]',
+	    'anon_signature' : '\n[center][size=6]we are anonymous[/size][/center]'
+	},
+	    
         "ULCX" : {
             "api_key" : "ULCX_API_KEY",
             "announce_url" : "https://upload.cx/announce/Custom_Announce_URL",
