@@ -2,7 +2,6 @@ import cli_ui
 import requests
 import asyncio
 import re
-import distutils.util
 import os
 from pathlib import Path
 import time
@@ -33,7 +32,7 @@ class PTP():
         self.announce_url = config['TRACKERS']['PTP'].get('announce_url', '').strip() 
         self.username = config['TRACKERS']['PTP'].get('username', '').strip() 
         self.password = config['TRACKERS']['PTP'].get('password', '').strip()
-        self.web_source = distutils.util.strtobool(str(config['TRACKERS']['PTP'].get('add_web_source_to_desc', True))) 
+        self.web_source = config['TRACKERS']['PTP'].get('add_web_source_to_desc', True) 
         self.user_agent = f'Upload Assistant/2.1 ({platform.system()} {platform.release()})'
         self.banned_groups = ['aXXo', 'BRrip', 'CM8', 'CrEwSaDe', 'CTFOH', 'DNL', 'FaNGDiNG0', 'HD2DVD', 'HDTime', 'ION10', 'iPlanet', 'KiNGDOM', 'mHD', 'mSD', 'nHD', 'nikt0', 'nSD', 'NhaNc3', 'OFT', 'PRODJi', 'SANTi', 'STUTTERSHIT', 'ViSION', 'VXT', 'WAF', 'd3g', 'x0r', 'YIFY', 'BMDru']
     
