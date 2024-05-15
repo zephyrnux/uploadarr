@@ -37,6 +37,7 @@ from src.trackers.TDC import TDC
 from src.trackers.THR import THR
 from src.trackers.TL import TL
 from src.trackers.TTG import TTG
+from src.trackers.TTR import TTR
 from src.trackers.ULCX import ULCX
 import json
 from pathlib import Path
@@ -104,6 +105,7 @@ try:
         console.print("[bold yellow]WARN[/bold yellow]: Simply rename `[bold]config.py[/bold]` to `[bold]old_config.py[/bold]` and run `[bold]python3 reconfig.py[/bold]` ")
 except:
     pass
+
     
 client = Clients(config=config)
 parser = Args(config)
@@ -269,11 +271,11 @@ async def do_the_thing(base_dir):
         #######  Upload to Trackers  #######
         ####################################
         common = COMMON(config=config)
-        api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'ULCX']
+        api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TL', 'TTR' 'ULCX']
         http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
         tracker_class_map = {
-    'ACM': ACM, 'AITHER': AITHER, 'ANT': ANT, 'BHDTV': BHDTV, 'BLU': BLU, 'CP2P': CP2P, 'FNP': FNP, 'HUNO': HUNO, 'JPTV': JPTV, 'LCD': LCD, 'LDU': LDU, 'LST': LST, 'LT': LT, 'NBL': NBL, 'OE': OE,
-    'PTT': PTT, 'RF': RF, 'R4E': R4E, 'RTF': RTF, 'SN': SN, 'STC': STC, 'STT': STT, 'TDC': TDC, 'ULCX': ULCX, 'FL': FL, 'HDB': HDB, 'HDT': HDT, 'MTV': MTV, 'PTER': PTER, 'TTG': TTG, 'ULCX': ULCX
+    'ACM': ACM, 'AITHER': AITHER, 'ANT': ANT, 'BHDTV': BHDTV, 'BLU': BLU, 'CP2P': CP2P, 'FL': FL, 'FNP': FNP, 'HDB': HDB, 'HDT': HDT, 'HUNO': HUNO, 'JPTV': JPTV, 'LCD': LCD, 'LDU': LDU,
+    'LST': LST, 'LT': LT, 'MTV': MTV, 'NBL': NBL, 'OE': OE, 'PTER': PTER, 'PTT': PTT, 'R4E': R4E, 'RF': RF, 'RTF': RTF, 'SN': SN, 'STC': STC, 'STT': STT, 'TDC': TDC, 'TL': TL, 'TTG': TTG, 'TTR': TTR, 'ULCX': ULCX,
 }
 
         for tracker in trackers:
