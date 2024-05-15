@@ -91,14 +91,14 @@ class COMMON():
                 pr_signature = self.config["DEFAULT"].get("global_pr_sig")
                 anon_pr_sig = self.config["DEFAULT"].get("global_anon_pr_sig")
                 if signature is None or anon_signature is None or pr_signature is None or anon_pr_sig is None:
-                    print("[bold red]WARN[/red]: Global signatures are enabled but not provided in config.[/bold]")                
+                    print("[bold][red]WARN[/red]: Global signatures are enabled but not provided in config.[/bold]")                
             else:
                 signature = self.config["TRACKERS"][tracker].get("signature")
                 anon_signature = self.config["TRACKERS"][tracker].get("anon_signature")
                 pr_signature = self.config["TRACKERS"][tracker].get("pr_signature")
                 anon_pr_sig = self.config["TRACKERS"][tracker].get("anon_pr_signature")
                 if signature is None or anon_signature is None or pr_signature is None or anon_pr_sig is None:
-                    print(f"[bold red]WARN[/red]: Global Signatures are turned off, but no signature is provided for selected tracker.[/bold]")
+                    print(f"[bold][red]WARN[/red]: Global Signatures are turned off, but no signature is provided for selected tracker.[/bold]")
 
         with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]DESCRIPTION.txt", 'a', encoding='utf8') as descfile:
             if meta["personalrelease"]:
