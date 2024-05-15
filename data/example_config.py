@@ -49,6 +49,8 @@ config = {
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]", #Only used if "use_global_sigs" : False,
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]", #Only used if "use_global_sigs" : False, AND your uploading as "anon" : True, or passing -a at upload
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]", #Only used if "use_global_sigs" : False, AND -pr
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]", #Only used if "use_global_sigs" : False, AND your uploading as "anon" : True, or passing -a with -pr at upload
             },   
 
         "ACM" :{
@@ -57,7 +59,8 @@ config = {
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED ACM FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",          
-
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",
             # FOR INTERNAL USE ONLY:
             # "internal" : True,
             # "internal_groups" : ["What", "Internal", "Groups", "Are", "You", "In"],
@@ -68,7 +71,9 @@ config = {
             "announce_url" : "https://aither.cc/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED AITHER FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",                
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]", 
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "ANT" :{
@@ -76,7 +81,9 @@ config = {
             "announce_url" : "https://anthelion.me/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED ANT FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",                
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",  
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "BHD" : {
@@ -85,7 +92,9 @@ config = {
             "draft_default" : True,
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED BHD FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",               
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",   
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
         "BHDTV": {
             "api_key": "found under https://www.bit-hdtv.com/my.php",
@@ -101,7 +110,9 @@ config = {
             "announce_url" : "https://blutopia.cc/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED BLU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",   
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
          "CP2P" : {
@@ -109,7 +120,9 @@ config = {
             "announce_url" : "https://cinemap2p.xyz/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED CP2P FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]", 
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		 
         },
 
         "FNP" : {
@@ -117,7 +130,9 @@ config = {
             "announce_url" : "https://fearnopeer.com/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED FNP FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",                 
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",    
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
             }, 
 
         "HDB" : {
@@ -125,7 +140,9 @@ config = {
             "announce_url" : "https://https://hdbits.org/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED HDB FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",       
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
             }, 
 
         "HDT" : {
@@ -141,7 +158,9 @@ config = {
             "announce_url" : "https://hidden-palace.net/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED HP FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",      
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "HUNO" : {
@@ -149,7 +168,9 @@ config = {
             "announce_url" : "https://hawke.uno/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED HUNO FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",  
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "JPTV" : {
@@ -157,13 +178,19 @@ config = {
             "announce_url" : "https://jptv.club/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED JPTV FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",                 
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",  
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
             }, 
 
         "LCD" : {
             "api_key" : "LCD_API_KEY",
             "announce_url" : "https://locadora.cc/announce/Custom_Announce_URL",
             "anon" : False,
+            "signature" : f"\n[center][b]PLEASE SEED LCD FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",  
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",			
         },
 
         "LST" : {
@@ -171,7 +198,9 @@ config = {
             "announce_url" : "https://lst.gg/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED LST FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",            
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",     
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "LT" : {
@@ -179,7 +208,9 @@ config = {
             "announce_url" : "https://lat-team.com/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED LT FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "MTV": {
@@ -196,7 +227,9 @@ config = {
             "announce_url" : "https://nebulance.io/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED Nebulance FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]", 
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "OE" : {
@@ -204,7 +237,9 @@ config = {
             "announce_url" : "https://onlyencodes.cc/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED OnlyEncodes FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",     
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "PTER" : {
@@ -231,7 +266,9 @@ config = {
             "announce_url" : "https://polishtorrent.top/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED PolishTorrent FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",  
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "R4E" :{
@@ -239,7 +276,9 @@ config = {
             "announce_url" : "https://racing4everyone.eu/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED Racing4Everyone FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",   
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "RF" : {
@@ -247,7 +286,9 @@ config = {
             "announce_url" : "https://reelflix.xyz/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED ReelFliX FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",   
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "RTF": {
@@ -256,7 +297,9 @@ config = {
             # "tag": "RetroFlix, nd",
             "anon": True,
             "signature" : f"\n[center][b]PLEASE SEED RetroFlix FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",    
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "SN": {
@@ -265,20 +308,26 @@ config = {
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED Swamazon FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]", 
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
         "STC" :{
             "api_key" : "STC_API_KEY",
             "announce_url" : "https://skipthecommericals.xyz/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED SkipTheCommercials FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",   
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
         "STT" :{
             "api_key" : "STT_API_KEY",
             "announce_url" : "https://skipthetrailers.xyz/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED SkipTheTrailers FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",    
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "TDC" :{
@@ -286,7 +335,9 @@ config = {
             "announce_url" : "https://thedarkcommunity.cc/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED DarkCommunity[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",             
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",    
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "THR" : {
@@ -310,6 +361,8 @@ config = {
 	    'anon' : False,
 	    'signature' : '\n[center][b]PLEASE SEED TorrentEros FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]',
 	    'anon_signature' : '\n[center][size=6]we are anonymous[/size][/center]'
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
 	},
 	    
         "ULCX" : {
@@ -317,7 +370,9 @@ config = {
             "announce_url" : "https://upload.cx/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED ULCX FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",            
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",   
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },
 
         "UTP" : {
@@ -325,7 +380,9 @@ config = {
             "announce_url" : "https://utp.to//announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED UTP FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
-            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",            
+            "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",  
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
         },	    
 	    
         "MANUAL" : {
