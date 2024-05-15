@@ -80,7 +80,7 @@ config = {
         "BHD" : {
             "api_key" : "BHD_API_KEY",
             "announce_url" : "https://beyond-hd.me/announce/Custom_Announce_URL",
-            "draft_default" : "True",
+            "draft_default" : True,
             "anon" : False,
             "signature" : f"\n[center][b]PLEASE SEED BHD FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
             "anon_signature" : f"\n[center][size=6]we are anonymous[/size][/center]",               
