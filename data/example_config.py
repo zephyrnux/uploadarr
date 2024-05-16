@@ -366,7 +366,7 @@ config = {
 	    'anon' : False,
 	    'signature' : '\n[center][b]PLEASE SEED TorrentEros FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]',
 	    'anon_signature' : '\n[center][size=6]we are anonymous[/size][/center]',
-	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
+	    "pr_signature": f"\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED TTR FAMILY[/b][/center]\n[center][size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size][/center]",
 	    "anon_pr_signature": f"\n[center][size=6]this is an anonymous personal release[/size][/center]",		
 	},
 	    
