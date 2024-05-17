@@ -31,10 +31,6 @@ Hopefully it works and makes your life simplier.
 
 
 
-
-
-
-
 ## Coming Soon:
   - Auto-Mode 
 
@@ -56,18 +52,14 @@ Hopefully it works and makes your life simplier.
      
    
 
-   **Additional Resources are found in the [wiki](https://github.com/L4GSP1KE/Upload-Assistant/wiki)**
-   
-   Feel free to contact me if you need help, I'm not that hard to find.
-
 ## **Updating:**
   - To update first navigate into the Upload-Assistant directory: `cd Upload-Assistant`
   - Run a `git pull` to grab latest updates
-  - Run `python3 -m pip install --user -U -r requirements.txt` to ensure dependencies are up to date
+  - Run `python3 -m pip3 install --user -U -r requirements.txt` to ensure dependencies are up to date
 ## **CLI Usage:**
   
-  `python3 upload.py /downloads/path/to/content --args`
+  `python3 upload.py "/downloads/path/to/content" --args`
   
   Args are OPTIONAL, for a list of acceptable args, pass `--help`
 ## **Docker Usage:**
-  Visit our wonderful [docker usage wiki page](https://github.com/L4GSP1KE/Upload-Assistant/wiki/Docker)
+  Unsported as of right now, but you might be able to check [docker usage wiki page](https://github.com/L4GSP1KE/Upload-Assistant/wiki/Docker) for inspiration. 
