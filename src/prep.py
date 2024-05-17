@@ -45,6 +45,7 @@ try:
     import cli_ui
     from rich.progress import Progress, TextColumn, BarColumn, TimeRemainingColumn
     import platform
+
 except ModuleNotFoundError:
     console.print(traceback.print_exc())
     console.print('[bold red]Missing Module Found. Please reinstall required dependancies.')
@@ -1969,17 +1970,18 @@ class Prep():
     """
     def create_torrent(self, meta, path, output_filename, piece_size_max):
         piece_size_max = int(piece_size_max) if piece_size_max is not None else 0
-        if meta['isdir'] == True:
-            os.chdir(path)
-            globs = glob.glob1(path, "*.mkv") + glob.glob1(path, "*.mp4") + glob.glob1(path, "*.ts")
-            no_sample_globs = []
-            for file in globs:
-                if not file.lower().endswith('sample.mkv') or "!sample" in file.lower():
-                    no_sample_globs.append(os.path.abspath(f"{path}{os.sep}{file}"))
-            if len(no_sample_globs) == 1:
-                path = meta['filelist'][0]
-        if meta['is_disc']:
-            include, exclude = "", ""
+        if not meta['full_dir']:
+            if meta['isdir'] == True:
+                os.chdir(path)
+                globs = glob.glob1(path, "*.mkv") + glob.glob1(path, "*.mp4") + glob.glob1(path, "*.ts")
+                no_sample_globs = []
+                for file in globs:
+                    if not file.lower().endswith('sample.mkv') or "!sample" in file.lower():
+                        no_sample_globs.append(os.path.abspath(f"{path}{os.sep}{file}"))
+                if len(no_sample_globs) == 1:
+                    path = meta['filelist'][0]
+        if meta['full_dir'] or meta['is_disc']:
+            include, exclude = "", ['._*']
         else:
             exclude = ["*.*", "*sample.mkv", "!sample*.*"] 
             include = ["*.mkv", "*.mp4", "*.ts"]
@@ -2021,7 +2023,7 @@ class Prep():
             torrent_creation = self.config['DEFAULT'].get('torrent_creation', 'torf')
         if torrent_creation == 'torrenttools':
             args = ['torrenttools', 'create', '-a', 'https://fake.tracker', '--private', 'on', '--piece-size', str(2**piece_size), '--created-by', "Upload-Assistant (CvT Edition)", '--no-cross-seed','-o', f"{meta['base_dir']}/tmp/{meta['uuid']}/{output_filename}.torrent"]
-            if not meta['is_disc']:
+            if not meta['full_dir'] or meta['is_disc']:
                 args.extend(['--include', r'^.*\.(mkv|mp4|ts)$'])
             args.append(path)
             err = subprocess.call(args)
