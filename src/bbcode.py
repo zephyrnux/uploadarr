@@ -62,7 +62,7 @@ class BBCODE:
         # Remove Mediainfo Tags / Attempt to regex out mediainfo
         mediainfo_tags = re.findall(r"\[mediainfo\][\s\S]*?\[\/mediainfo\]",  desc)
         if len(mediainfo_tags) >= 1:
-            desc = re.sub("\[mediainfo\][\s\S]*?\[\/mediainfo\]", "", desc)
+            desc = re.sub(r"\[mediainfo\][\s\S]*?\[\/mediainfo\]", "", desc)
         elif is_disc != "BDMV":
             desc = re.sub(r"(^general\nunique)(.*?)^$", "", desc, flags=re.MULTILINE | re.IGNORECASE | re.DOTALL)
             desc = re.sub(r"(^general\ncomplete)(.*?)^$", "", desc, flags=re.MULTILINE | re.IGNORECASE | re.DOTALL)
@@ -226,20 +226,6 @@ class BBCODE:
         return desc, imagelist
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def convert_pre_to_code(self, desc):
         desc = desc.replace('[pre]', '[code]')
         desc = desc.replace('[/pre]', '[/code]')
@@ -297,7 +283,7 @@ class BBCODE:
 
 
     def convert_comparison_to_centered(self, desc, max_width):
-        comparisons = re.findall("\[comparison=[\s\S]*?\[\/comparison\]", desc)
+        comparisons = re.findall(r"\[comparison=[\s\S]*?\[\/comparison\]", desc)
         for comp in comparisons:
             line = []
             output = []
@@ -334,10 +320,10 @@ class BBCODE:
                         image_url = re.sub(r"\[img[\s\S]*\]", "", image.replace('[/img]', ''), flags=re.IGNORECASE)
                         comp_images.append(image_url)
                     if spoiler_hide == "spoiler":
-                        sources = re.match("\[spoiler[\s\S]*?\]", tag)[0].replace('[spoiler=', '')[:-1]
+                        sources = re.match(r"\[spoiler[\s\S]*?\]", tag)[0].replace('[spoiler=', '')[:-1]
                     elif spoiler_hide == "hide":
                         sources = re.match(r"\[hide[\s\S]*?\]", tag)[0].replace('[hide=', '')[:-1]
-                    sources = re.sub("comparison", "", sources, flags=re.IGNORECASE)
+                    sources = re.sub(r"comparison", "", sources, flags=re.IGNORECASE)
                     for each in ['vs', ',', '|']:
                         sources = sources.split(each)
                         sources = "$".join(sources)

@@ -21,8 +21,8 @@ class LDU():
         self.config = config
         self.tracker = 'LDU'
         self.source_flag = 'LDU'
-        self.upload_url = 'https://theldu.net/api/torrents/upload'
-        self.search_url = 'https://theldu.net/api/torrents/filter'
+        self.upload_url = 'https://theldu.to/api/torrents/upload'
+        self.search_url = 'https://theldu.to/api/torrents/filter'
         self.banned_groups = [""]
         pass
     
