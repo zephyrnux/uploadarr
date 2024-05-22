@@ -737,21 +737,20 @@ class Prep():
                     
         
     def dvd_screenshots(self, meta, disc_num, num_screens=None):
-        if num_screens == None:
+        if num_screens is None:
             num_screens = self.screens
         if num_screens == 0 or (len(meta.get('image_list', [])) >= num_screens and disc_num == 0):
             return
-        ifo_mi = MediaInfo.parse(f"{meta['discs'][disc_num]['path']}/VTS_{meta['discs'][disc_num]['main_set'][0][:2]}_0.IFO", mediainfo_options={'inform_version' : '1'})
+        ifo_mi = MediaInfo.parse(f"{meta['discs'][disc_num]['path']}/VTS_{meta['discs'][disc_num]['main_set'][0][:2]}_0.IFO", mediainfo_options={'inform_version': '1'})
         sar = 1
         for track in ifo_mi.tracks:
             if track.track_type == "Video":
-                length = float(track.duration)/1000
+                length = float(track.duration) / 1000
                 par = float(track.pixel_aspect_ratio)
                 dar = float(track.display_aspect_ratio)
                 width = float(track.width)
                 height = float(track.height)
         if par < 1:
-            # multiply that dar by the height and then do a simple width / height
             new_height = dar * height
             sar = width / new_height
             w_sar = 1
@@ -760,7 +759,7 @@ class Prep():
             sar = par
             w_sar = sar
             h_sar = 1
-        
+
         main_set_length = len(meta['discs'][disc_num]['main_set'])
         if main_set_length >= 3:
             main_set = meta['discs'][disc_num]['main_set'][1:-1]
@@ -770,12 +769,14 @@ class Prep():
             main_set = meta['discs'][disc_num]['main_set']
         n = 0
         os.chdir(f"{meta['base_dir']}/tmp/{meta['uuid']}")
-        i = 0        
-        if len(glob.glob(f"{meta['base_dir']}/tmp/{meta['uuid']}/{meta['discs'][disc_num]['name']}-*.png")) >= num_screens:
+        i = 0
+        existing_screenshots = glob.glob(f"{meta['base_dir']}/tmp/{meta['uuid']}/{meta['discs'][disc_num]['name']}-*.png")
+
+        if len(existing_screenshots) >= num_screens:
             i = num_screens
             console.print('[bold green]Reusing screenshots')
         else:
-            if bool(meta.get('ffdebug', False)) == True:
+            if meta.get('ffdebug', False):
                 loglevel = 'verbose'
                 debug = False
             looped = 0
@@ -790,14 +791,12 @@ class Prep():
                 ss_times = []
                 smallest_image_path = None
                 smallest_image_size = float('inf')
-                
                 for i in range(num_screens):
                     if n >= len(main_set):
                         n = 0
                     if n >= num_screens:
                         n -= num_screens
                     image = f"{meta['base_dir']}/tmp/{meta['uuid']}/{meta['discs'][disc_num]['name']}-{i}.png"
-                    
                     if not os.path.exists(image) or retake:
                         try:
                             retake = False
@@ -806,52 +805,54 @@ class Prep():
                             if bool(meta.get('debug', False)):
                                 loglevel = 'error'
                                 debug = False
-                                
-                            def _is_vob_good(n, loops, num_screens):
+                            def _is_vob_good(n, num_screens):
                                 voblength = 300
-                                vob_mi = MediaInfo.parse(f"{meta['discs'][disc_num]['path']}/VTS_{main_set[n]}", output='JSON')
-                                vob_mi = json.loads(vob_mi)
-                                try:
-                                    voblength = float(vob_mi['media']['track'][1]['Duration'])
-                                    return voblength, n
-                                except Exception:
+                                loops = 0
+                                while loops < 6:
+                                    vob_mi = MediaInfo.parse(f"{meta['discs'][disc_num]['path']}/VTS_{main_set[n]}", output='JSON')
+                                    vob_mi = json.loads(vob_mi)
                                     try:
-                                        voblength = float(vob_mi['media']['track'][2]['Duration'])
+                                        voblength = float(vob_mi['media']['track'][1]['Duration'])
                                         return voblength, n
                                     except Exception:
-                                        n += 1
-                                        if n >= len(main_set):
-                                            n = 0
-                                        if n >= num_screens:
-                                            n -= num_screens
-                                        if loops < 6:
-                                            loops = loops + 1
-                                            voblength, n = _is_vob_good(n, loops, num_screens)
+                                        try:
+                                            voblength = float(vob_mi['media']['track'][2]['Duration'])
                                             return voblength, n
-                                        else:
-                                            return 300, n                               
-                            
+                                        except Exception:
+                                            n += 1
+                                            if n >= len(main_set):
+                                                n = 0
+                                            if n >= num_screens:
+                                                n -= num_screens
+                                            loops += 1
+                                return 300, n
+
                             try:
-                                voblength, n = _is_vob_good(n, 0, num_screens)
-                                img_time = random.randint(round(voblength/5) , round(voblength - voblength/5))
-                                ss_times = self.valid_ss_time(ss_times, num_screens, voblength)
-                                ff = ffmpeg.input(f"{meta['discs'][disc_num]['path']}/VTS_{main_set[n]}", ss=ss_times[-1])
+                                voblength, n = _is_vob_good(n, num_screens)
+                                m = i
+                                min_time = 0.01 * voblength
+                                base_time = max(min_time, random.randint(round(voblength / 5), round(voblength - voblength / 5)))
+                                while True:
+                                    img_time = max(min_time, base_time / (2 ** m) + random.uniform(0, 20))
+                                    if img_time < voblength:
+                                        break
+                                ff = ffmpeg.input(f"{meta['discs'][disc_num]['path']}/VTS_{main_set[n]}", ss=img_time)
                                 if w_sar != 1 or h_sar != 1:
-                                    ff = ff.filter('scale', int(round(width * w_sar)), int(round(height * h_sar)))
+                                    ff = ff.filter('scale', int(round(width * w_sar)), int(round(height * h_sar))) 
                                 (
                                     ff
                                     .output(image, vframes=1, pix_fmt="rgb24")
                                     .overwrite_output()
                                     .global_args('-loglevel', loglevel)
                                     .run(quiet=debug)
-                                )
+                                )                           
                             except Exception:
                                 console.print(traceback.format_exc())
-                            
+
                             self.optimize_images(image)
                             n += 1
-                            
-                            try: 
+
+                            try:
                                 if os.path.getsize(Path(image)) <= 31000000 and self.img_host == "imgbb":
                                     i += 1
                                 elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", 'pixhost']:
@@ -874,9 +875,9 @@ class Prep():
                                     console.print('[red]Failed to take screenshots')
                                     exit()
                                 looped += 1
-                            
+
                             progress.advance(screen_task)
-                            
+
                         except Exception:
                             pass
                     else:
@@ -884,7 +885,7 @@ class Prep():
                         if screenshot_size < smallest_image_size:
                             smallest_image_size = screenshot_size
                             smallest_image_path = image
-                    
+
                     i += 1
 
             # Remove the smallest image
