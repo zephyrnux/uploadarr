@@ -1984,7 +1984,7 @@ class Prep():
         if meta['full_dir'] or meta['is_disc']:
             include, exclude = "", ['._*']
         else:
-            exclude = ["*.*", "*sample.mkv", "!sample*.*"] 
+            exclude = ["*.*", "*sample.mkv", "!sample*.*", "._*"] 
             include = ["*.mkv", "*.mp4", "*.ts"]
         torrent = Torrent(path,
             trackers = ["https://fake.tracker"],
