@@ -5,15 +5,15 @@
         ##          @ https://TheLDU.to/application            ##
         ##                                                     ##
         ##                              Ref: Uploadrr by CvT   ##
-        ##-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-##
+        ##-----------------------------------------------------##
 
 config = {
     'version': '1.0.0',
 	
     "DEFAULT" : {
 
-        "tmdb_api" : "TMDB_API_KEY",
-        "imgbb_api" : "imgbb_API_KEY",
+        "tmdb_api" : "TMDB_API_KEY", ## REQUIRED 
+        "imgbb_api" : "imgbb_API_KEY", # Recommended
         "ptpimg_api" : "ptpimg_API_KEY",
         "lensdump_api" : "lensdump_API_KEY",
 
@@ -30,18 +30,13 @@ config = {
 	    #"inline_imgs": 3, #Uncomment and use this if you want to insert a line break after X images in description
         "add_trailer" : True, # Adds Movie Trailer (Skips TV as season specifier not supported)
 
-        "descriptions_folder": None, # Specify a "path/to/folder" to find description files that auto-add. For use with -aid 
-        #(Expected format: Movie is "Nineteen.Eighty.Four.1984.Hybrid.1080p.BluRay.REMUX.AVC.DTS-HD.MA.1.0-EPSiLON.mkv" , txt file should be: "Nineteen.Eighty.Four.1984.Hybrid.1080p.BluRay.REMUX.AVC.DTS-HD.MA.1.0-EPSiLON.txt")
-        #For TV Season use `Folder.Name.of.Season.txt`
-
-        #"auto_delay": 600, # Uncomment to use: # of seconds between uploads. Default is no delay. 600 = 10 Minute delay. 
-
+        ### GOLBAL SIGNATURES ###
         "use_global_sigs": True, # If False it will use your tracker signatures       
         "global_sig": "\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]", 
         "global_anon_sig": "\n[center][url=https://github.com/z-ink/uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
         "global_pr_sig": "\n[center][size=6][b]Personal Release[/b][/size][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]", #personal realease signature
         "global_anon_pr_sig": "\n[center][url=https://github.com/z-ink/uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	 
-        
+
         # The name of your default torrent client, set in the torrent client sections below
         "default_torrent_client" : "Client1",
 
@@ -49,6 +44,17 @@ config = {
         "sfx_on_prompt" : True,
 
     },
+
+    "AUTO" :{  ####### AUTO / POWER USER SETTINGS ########
+        "description_folder" : None, # Specify a "path/to/folder" to find description files that auto-add. For use with -aid 
+                                     # Expected format: Movie is: "Nineteen.Eighty.Four.1984.Hybrid.1080p.BluRay.REMUX.AVC.DTS-HD.MA.1.0-EPSiLON.mkv" 
+                                     #       .txt file should be: "Nineteen.Eighty.Four.1984.Hybrid.1080p.BluRay.REMUX.AVC.DTS-HD.MA.1.0-EPSiLON.txt"
+                                     # For TV Season use `Folder.Name.of.Season.txt`
+
+        "delay" : 0, # Number of Seconds to delay bewteen your queued uploads 600 = 10 Min delay
+        "size_tolerance" : 1, # Dupe filtering. This is the size fuzz in percentage if less than 1% diffrence than it cacultates diffrence based on name.       
+        "dupe_similarity" : 80, # Name dupe filtering. 100 would only filter out an exact match
+    },         ###########################################   
 
     "TRACKERS" : {
         # Which trackers do you want to upload to? Ex: "LDU, RF, ULCX",
