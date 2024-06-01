@@ -96,8 +96,8 @@ if 'version' not in config or Version(config.get('version')) < minimum_version:
         exit()
 
     console.print("Please double-check new config and ensure client settings were appropriately set.")
-    double_check = Prompt.ask("[bold yellow]CONFIRM[/bold yellow]: I have double-checked `[bold]config.py[/bold]`, config is accurate.")
-    if double_check.lower() != 'y':
+    console.print(f"[bold yellow]WARN[/bold yellow]: After verification of config, rerun command.")
+    console.print(f"[dim green]Thanks for using Uploadrr :) ")
         exit()
 
 try:
