@@ -87,7 +87,7 @@ class HUNO():
                 data['internal'] = 0
 
         headers = {
-            'User-Agent': f'Upload Assistant/2.1 ({platform.system()} {platform.release()})'
+            'User-Agent': f'Uploadrr ({platform.system()} {platform.release()})'
         }
         params = {
             'api_token': tracker_config['api_key'].strip()
@@ -257,7 +257,7 @@ class HUNO():
 
 
     async def search_existing(self, meta):
-        dupes = []
+        dupes = {}
         console.print("[yellow]Searching for existing torrents on site...")
 
         params = {
@@ -276,10 +276,9 @@ class HUNO():
             response = requests.get(url=self.search_url, params=params)
             response = response.json()
             for each in response['data']:
-                result = [each][0]['attributes']['name']
-                # difference = SequenceMatcher(None, meta['clean_name'], result).ratio()
-                # if difference >= 0.05:
-                dupes.append(result)
+                result = each['attributes']['name']
+                size = each['attributes']['size']
+                dupes[result] = size
         except:
             console.print('[bold red]Unable to search for existing torrents on site. Either the site is down or your API key is incorrect')
             await asyncio.sleep(5)

@@ -309,7 +309,8 @@ class COMMON():
         if meta['debug']:
             console.log("[cyan]Pre-filtered dupes")
             console.log(dupes)
-        new_dupes = []
+        #new_dupes = []
+        new_dupes = {}
         for each in dupes:
             if meta.get('sd', 0) == 1:
                 remove_set = set()
@@ -379,5 +380,6 @@ class COMMON():
                     if re.search(x.replace("!", "", 1), search, flags=re.I) not in (None, False):
                         allow = False
             if allow and each not in new_dupes:
-                new_dupes.append(each)
+                #new_dupes.append(each)
+                new_dupes[each] = dupes[each]
         return new_dupes

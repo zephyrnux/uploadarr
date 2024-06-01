@@ -12,13 +12,6 @@ from pathlib import Path
 from src.trackers.COMMON import COMMON
 
 class MTV():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
 
     def __init__(self, config):
         self.config = config
@@ -222,7 +215,7 @@ class MTV():
         if meta['tag'] == "":
             mtv_name = f"{mtv_name}-NoGrp"
         mtv_name = ' '.join(mtv_name.split())
-        mtv_name = re.sub("[^0-9a-zA-ZÀ-ÿ. &+'\-\[\]]+", "", mtv_name)
+        mtv_name = re.sub(r"[^0-9a-zA-ZÀ-ÿ. &+'\-\[\]]+", "", mtv_name)
         mtv_name = mtv_name.replace(' ', '.').replace('..', '.')
         return mtv_name
     
@@ -527,7 +520,7 @@ class MTV():
         return
 
     async def search_existing(self, meta):
-        dupes = []
+        dupes = {}
         console.print("[yellow]Searching for existing torrents on site...")
         params = {
             't' : 'search',
@@ -550,13 +543,19 @@ class MTV():
                 response_xml = xml.etree.ElementTree.fromstring(rr.text)
                 for each in response_xml.find('channel').findall('item'):
                     result = each.find('title').text
-                    dupes.append(result)
+                    try:
+                        size = each.find('size').text
+                    except Exception:
+                        size = 0
+                    dupes[result] = size
+                # CvT: Flying blind, guessing size is can be found under 'size' , needed for size comparison   
             else:
                 if 'status_message' in rr:
                     console.print(f"[yellow]{rr.get('status_message')}")
                     await asyncio.sleep(5)
                 else:
                     console.print(f"[red]Site Seems to be down or not responding to API")
+                    console.print(f"[bold red] Posibility Uploadrr breaks support. Please report if issue repeats.")
         except:
             console.print(f"[red]Unable to search for existing torrents on site. Most likely the site is down.")
             dupes.append("FAILED SEARCH")

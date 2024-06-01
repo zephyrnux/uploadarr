@@ -99,7 +99,7 @@ class TL():
             'category' : cat_id
         }
         headers = {
-            'User-Agent': f'Upload Assistant/2.1 ({platform.system()} {platform.release()})'
+            'User-Agent': f'Uploadrr ({platform.system()} {platform.release()})'
         }
         
         if meta['debug'] == False:

@@ -192,7 +192,7 @@ class HDB():
         hdb_name = hdb_name.replace('Dubbed', '').replace('Dual-Audio', '')
         hdb_name = hdb_name.replace('REMUX', 'Remux')
         hdb_name = ' '.join(hdb_name.split())
-        hdb_name = re.sub("[^0-9a-zA-ZÀ-ÿ. :&+'\-\[\]]+", "", hdb_name)
+        hdb_name = re.sub(r"[^0-9a-zA-ZÀ-ÿ. :&+'\-\[\]]+", "", hdb_name)
         hdb_name = hdb_name.replace(' .', '.').replace('..', '.')
 
         return hdb_name 
@@ -302,7 +302,7 @@ class HDB():
 
 
     async def search_existing(self, meta):
-        dupes = []
+        dupes = {}
         console.print("[yellow]Searching for existing torrents on site...")
         url = "https://hdbits.org/api/torrents"
         data = {
@@ -321,8 +321,9 @@ class HDB():
             response = requests.get(url=url, data=json.dumps(data))
             response = response.json()
             for each in response['data']:
-                result = each['name']
-                dupes.append(result)
+                result = each['attributes']['name']
+                size = each['attributes']['size']
+                dupes[result] = size
         except:
             console.print('[bold red]Unable to search for existing torrents on site. Either the site is down or your passkey is incorrect')
             await asyncio.sleep(5)
@@ -431,7 +432,7 @@ class HDB():
             desc = bbcode.convert_code_to_quote(desc)
             desc = bbcode.convert_spoiler_to_hide(desc)
             desc = bbcode.convert_comparison_to_centered(desc, 1000)
-            desc = re.sub("(\[img=\d+)]", "[img]", desc, flags=re.IGNORECASE)
+            desc = re.sub(r"(\[img=\d+)]", "[img]", desc, flags=re.IGNORECASE)
             descfile.write(desc)
             if self.rehost_images == True:
                 console.print("[green]Rehosting Images...")

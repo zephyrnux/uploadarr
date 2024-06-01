@@ -12,13 +12,6 @@ from pymediainfo import MediaInfo
 
 
 class BHDTV():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
 
     def __init__(self, config):
         self.config = config
@@ -44,8 +37,6 @@ class BHDTV():
         else:
             # must be TV pack
             sub_cat_id = await self.get_type_tv_pack_id(meta['type'])
-
-
 
         resolution_id = await self.get_res_id(meta['resolution'])
         # region_id = await common.unit3d_region_ids(meta.get('region'))
@@ -210,3 +201,4 @@ class BHDTV():
         console.print(f"[red]Dupes must be checked Manually")
         return ['Dupes must be checked Manually']
         ### hopefully someone else has the time to implement this.
+        #CvT: No change here but this might break script. Unable to test or add support as I don't have an account here either.

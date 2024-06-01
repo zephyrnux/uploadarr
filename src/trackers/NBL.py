@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import requests
+import json
 from guessit import guessit 
 
 from src.trackers.COMMON import COMMON
@@ -8,19 +9,6 @@ from src.console import console
 
 
 class NBL():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
-
-    ###############################################################
-    ########                    EDIT ME                    ########
-    ###############################################################
-
-    # ALSO EDIT CLASS NAME ABOVE
 
     def __init__(self, config):
         self.config = config
@@ -67,31 +55,36 @@ class NBL():
             'category' : await self.get_cat_id(meta),
             'ignoredupes' : 'on'
         }
-        
+
         if meta['debug'] == False:
-            response = requests.post(url=self.upload_url, files=files, data=data)
             try:
-                if response.ok:
-                    response = response.json()
-                    console.print(response.get('message', response))
-                else:
-                    console.print(response)
-                    console.print(response.text)
-            except:
-                console.print_exception()
-                console.print("[bold yellow]It may have uploaded, go check")
-                return 
+                response = requests.post(url=self.upload_url, files=files, data=data)
+                response.raise_for_status()                
+                response_json = response.json()
+                success = response_json.get('success', False)
+                data = response_json.get('data', {})
+            except Exception as e:
+                console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
+            if success:
+                console.print(f"[bold green]Torrent uploaded successfully!")
+            else:
+                console.print(f"[bold red]Torrent upload failed.")
+
+            if 'name' in data and 'The name has already been taken.' in data['name']:
+                console.print(f"[red]Name has already been taken.")
+            if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
+                console.print(f"[red]Info hash has already been taken.")
+            return success
+        
         else:
             console.print(f"[cyan]Request Data:")
             console.print(data)
         open_torrent.close()
 
 
-   
-
 
     async def search_existing(self, meta):
-        dupes = []
+        dupes = {}
         console.print("[yellow]Searching for existing torrents on site...")
         if int(meta.get('tvmaze_id', 0)) != 0:
             search_term = {'tvmaze' : int(meta['tvmaze_id'])}
@@ -115,9 +108,19 @@ class NBL():
                 if meta['resolution'] in each['tags']:
                     if meta.get('tv_pack', 0) == 1:
                         if each['cat'] == "Season" and int(guessit(each['rls_name']).get('season', '1')) == int(meta.get('season_int')):
-                            dupes.append(each['rls_name'])
+                            result = each['rls_name']
+                            try:
+                                size = each ['rls_size']
+                            except Exception:
+                                size = 0
+                            dupes[result] = size      
                     elif int(guessit(each['rls_name']).get('episode', '0')) == int(meta.get('episode_int')):
-                        dupes.append(each['rls_name'])
+                            result = each['rls_name']
+                            try:
+                                size = each ['rls_size']
+                            except Exception:
+                                size = 0
+                            dupes[result] = size 
         except requests.exceptions.JSONDecodeError:
             console.print('[bold red]Unable to search for existing torrents on site. Either the site is down or your API key is incorrect')
             await asyncio.sleep(5)
@@ -127,7 +130,9 @@ class NBL():
             if e.args[0] == 'result':
                 console.print(f"Search Term: {search_term}")
                 console.print('[red]NBL API Returned an unexpected response, please manually check for dupes')
-                dupes.append("ERROR: PLEASE CHECK FOR EXISTING RELEASES MANUALLY")
+                result = "ERROR: PLEASE CHECK FOR EXISTING RELEASES MANUALLY"
+                size = 0
+                dupes[result] = size 
                 await asyncio.sleep(5)
             else:
                 console.print_exception()

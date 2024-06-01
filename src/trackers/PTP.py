@@ -33,7 +33,7 @@ class PTP():
         self.username = config['TRACKERS']['PTP'].get('username', '').strip() 
         self.password = config['TRACKERS']['PTP'].get('password', '').strip()
         self.web_source = config['TRACKERS']['PTP'].get('add_web_source_to_desc', True) 
-        self.user_agent = f'Upload Assistant/2.1 ({platform.system()} {platform.release()})'
+        self.user_agent = f'Uploadrr ({platform.system()} {platform.release()})'
         self.banned_groups = ['aXXo', 'BRrip', 'CM8', 'CrEwSaDe', 'CTFOH', 'DNL', 'FaNGDiNG0', 'HD2DVD', 'HDTime', 'ION10', 'iPlanet', 'KiNGDOM', 'mHD', 'mSD', 'nHD', 'nikt0', 'nSD', 'NhaNc3', 'OFT', 'PRODJi', 'SANTi', 'STUTTERSHIT', 'ViSION', 'VXT', 'WAF', 'd3g', 'x0r', 'YIFY', 'BMDru']
     
         self.sub_lang_map = {
@@ -79,8 +79,6 @@ class PTP():
             ("Ukrainian", "ukr", "uk") : 34,
             ("Vietnamese", "vie", "vi") : 25,
         }
-
-
 
 
     async def get_ptp_id_imdb(self, search_term, search_file_folder):

@@ -16,13 +16,7 @@ from src.console import console
 
 
 class THR():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
+
     def __init__(self, config):
         self.config = config
         self.username = config['TRACKERS']['THR'].get('username')
@@ -49,7 +43,7 @@ class THR():
                     return
                 else:
                     thr_name = thr_name_manually
-        torrent_name = re.sub("[^0-9a-zA-Z. '\-\[\]]+", " ", thr_name)
+        torrent_name = re.sub(r"[^0-9a-zA-Z. '\-\[\]]+", " ", thr_name)
 
 
         if meta.get('is_disc', '') == 'BDMV':
@@ -84,7 +78,7 @@ class THR():
             'tube' : meta.get('youtube', '')
         }
         headers = {
-            'User-Agent' : f'Upload Assistant/2.1 ({platform.system()} {platform.release()})'
+            'User-Agent' : f'Uploadrr ({platform.system()} {platform.release()})'
         }
         #If pronfo fails, put mediainfo into THR parser
         if meta.get('is_disc', '') != 'BDMV':
@@ -167,8 +161,6 @@ class THR():
 
 
 
-
-
     async def edit_torrent(self, meta):
         if os.path.exists(f"{meta['base_dir']}/tmp/{meta['uuid']}/BASE.torrent"):
             THR_torrent = Torrent.read(f"{meta['base_dir']}/tmp/{meta['uuid']}/BASE.torrent")
@@ -192,7 +184,7 @@ class THR():
             desc.write("[quote=Info]")
             name_aka = f"{meta['title']} {meta['aka']} {meta['year']}"
             name_aka = unidecode(name_aka)
-            # name_aka = re.sub("[^0-9a-zA-Z. '\-\[\]]+", " ", name_aka)
+            # name_aka = re.sub(r"[^0-9a-zA-Z. '\-\[\]]+", " ", name_aka)
             desc.write(f"Name: {' '.join(name_aka.split())}\n\n")
             desc.write(f"Overview: {meta['overview']}\n\n")
             desc.write(f"{res} / {meta['type']}{tag}\n\n")
@@ -267,8 +259,6 @@ class THR():
             desc.close()
         return pronfo
 
-   
-
 
     def search_existing(self, session, imdb_id):
         from bs4 import BeautifulSoup
@@ -276,13 +266,14 @@ class THR():
         search_url = f"https://www.torrenthr.org/browse.php?search={imdb_id}&blah=2&incldead=1"
         search = session.get(search_url)
         soup = BeautifulSoup(search.text, 'html.parser')
-        dupes = []
+        dupes = {}
         for link in soup.find_all('a', href=True):
             if link['href'].startswith('details.php'):
                 if link.get('onmousemove', False):
                     dupe = link['onmousemove'].split("','/images")
                     dupe = dupe[0].replace("return overlibImage('", "")
-                    dupes.append(dupe)
+                    size = 0
+                    dupes[dupe] = size
         return dupes
 
     def login(self, session):
@@ -293,7 +284,7 @@ class THR():
             'ssl' : 'yes'
         }
         headers = {
-            'User-Agent' : f'Upload Assistant/2.1 ({platform.system()} {platform.release()})'
+            'User-Agent' : f'Uploadrr ({platform.system()} {platform.release()})'
         }
         resp = session.post(url, headers=headers, data=payload)
         if resp.url == "https://www.torrenthr.org/index.php":

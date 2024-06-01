@@ -3,6 +3,7 @@
 import os
 import asyncio
 import requests
+import json
 import platform
 from pymediainfo import MediaInfo
 
@@ -11,19 +12,6 @@ from src.console import console
 
 
 class ANT():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
-
-    ###############################################################
-    # #######                    EDIT ME                    ##### #
-    ###############################################################
-
-    # ALSO EDIT CLASS NAME ABOVE
 
     def __init__(self, config):
         self.config = config
@@ -101,27 +89,39 @@ class ANT():
             # ID of "Scene?" checkbox on upload form is actually "censored"
             data['censored'] = 1
         headers = {
-            'User-Agent': f'Upload Assistant/2.1 ({platform.system()} {platform.release()})'
+            'User-Agent': f'Uploadrr ({platform.system()} {platform.release()})'
         }
-        if meta['debug'] is False:
-            response = requests.post(url=self.upload_url, files=files, data=data, headers=headers)
-            if response.status_code in [200, 201]:
-                response = response.json()
+        if meta['debug'] == False:
             try:
-                console.print(response)
-            except Exception:
-                console.print("It may have uploaded, go check")
-                return
+                response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
+                response.raise_for_status()                
+                response_json = response.json()
+                success = response_json.get('success', False)
+                data = response_json.get('data', {})
+            except Exception as e:
+                console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
+            if success:
+                console.print(f"[bold green]Torrent uploaded successfully!")
+            else:
+                console.print(f"[bold red]Torrent upload failed.")
+
+            if 'name' in data and 'The name has already been taken.' in data['name']:
+                console.print(f"[red]Name has already been taken.")
+            if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
+                console.print(f"[red]Info hash has already been taken.")
+            return success
+        
         else:
-            console.print("[cyan]Request Data:")
+            console.print(f"[cyan]Request Data:")
             console.print(data)
         open_torrent.close()
 
     async def edit_desc(self, meta):
         return
 
+
     async def search_existing(self, meta):
-        dupes = []
+        dupes = {}
         console.print("[yellow]Searching for existing torrents on site...")
         params = {
             'apikey': self.config['TRACKERS'][self.tracker]['api_key'].strip(),
@@ -136,14 +136,16 @@ class ANT():
             response = requests.get(url='https://anthelion.me/api', params=params)
             response = response.json()
             for each in response['item']:
-                largest = [each][0]['files'][0]
-                for file in [each][0]['files']:
+                largest = each['files'][0]
+                for file in each['files']:
                     if int(file['size']) > int(largest['size']):
                         largest = file
                 result = largest['name']
-                dupes.append(result)
-        except Exception:
-            console.print('[bold red]Unable to search for existing torrents on site. Either the site is down or your API key is incorrect')
+                size = largest['size']
+                dupes[result] = size
+        ## CvT: I have no access to ANT and don't know why their sorting dupes by size. I merely adapted the code to produce the dictionary needed for printout, as well as size comparing.        
+        except Exception as e:
+            console.print(f'[bold red]Unable to search for existing torrents on site. Either the site is down or your API key is incorrect. Error: {e}')
             await asyncio.sleep(5)
 
         return dupes

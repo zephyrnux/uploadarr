@@ -2,28 +2,14 @@
 # import discord
 import asyncio
 import requests
+import json
 import os
 import platform
 from src.trackers.COMMON import COMMON
 from src.console import console
 
 
-
 class ACM():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
-
-    ###############################################################
-    ########                    EDIT ME                    ########
-    ###############################################################
-
-    # ALSO EDIT CLASS NAME ABOVE
-
     def __init__(self, config):
         self.config = config
         self.tracker = 'ACM'
@@ -257,36 +243,45 @@ class ACM():
             data['season_number'] = meta.get('season_int', '0')
             data['episode_number'] = meta.get('episode_int', '0')
         headers = {
-            'User-Agent': f'Upload Assistant/2.1 ({platform.system()} {platform.release()})'
+            'User-Agent': f'Uploadrr ({platform.system()} {platform.release()})'
         }
         params = {
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip()
         }
         
         if meta['debug'] == False:
-            response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
             try:
-                console.print(response.json())
-            except:
-                console.print("It may have uploaded, go check")
-                return 
+                response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
+                response.raise_for_status()                
+                response_json = response.json()
+                success = response_json.get('success', False)
+                data = response_json.get('data', {})
+            except Exception as e:
+                console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
+            if success:
+                console.print(f"[bold green]Torrent uploaded successfully!")
+            else:
+                console.print(f"[bold red]Torrent upload failed.")
+
+            if 'name' in data and 'The name has already been taken.' in data['name']:
+                console.print(f"[red]Name has already been taken.")
+            if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
+                console.print(f"[red]Info hash has already been taken.")
+            return success
+        
         else:
             console.print(f"[cyan]Request Data:")
             console.print(data)
         open_torrent.close()
 
-
-   
-
-
     async def search_existing(self, meta):
-        dupes = []
+        dupes = {}
         console.print("[yellow]Searching for existing torrents on site...")
         params = {
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip(),
-            'tmdb' : meta['tmdb'],
+            'tmdbId' : meta['tmdb'],
             'categories[]' : await self.get_cat_id(meta['category']),
-            'types[]' : await self.get_type_id(await self.get_type(meta)),
+            'types[]' : await self.get_type_id(meta['type']),
             # A majority of the ACM library doesn't contain resolution information
             # 'resolutions[]' : await self.get_res_id(meta['resolution']),
             # 'name' : ""
@@ -296,15 +291,15 @@ class ACM():
             response = requests.get(url=self.search_url, params=params)
             response = response.json()
             for each in response['data']:
-                result = [each][0]['attributes']['name']
-                # difference = SequenceMatcher(None, meta['clean_name'], result).ratio()
-                # if difference >= 0.05:
-                dupes.append(result)
-        except:
-            console.print('[bold red]Unable to search for existing torrents on site. Either the site is down or your API key is incorrect')
+                result = each['attributes']['name']
+                size = each['attributes']['size']
+                dupes[result] = size
+        except Exception as e:
+            console.print(f'[bold red]Unable to search for existing torrents on site. Either the site is down or your API key is incorrect. Error: {e}')
             await asyncio.sleep(5)
 
         return dupes
+
 
     # async def fix_rtl(self, meta):
     #     original_title = meta.get('original_title')

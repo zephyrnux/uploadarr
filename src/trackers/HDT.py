@@ -103,7 +103,7 @@ class HDT():
             hdt_name = hdt_name.replace(' DV ', ' DoVi ')
         
         hdt_name = ' '.join(hdt_name.split())
-        hdt_name = re.sub("[^0-9a-zA-ZÀ-ÿ. &+'\-\[\]]+", "", hdt_name)
+        hdt_name = re.sub(r"[^0-9a-zA-ZÀ-ÿ. &+'\-\[\]]+", "", hdt_name)
         hdt_name = hdt_name.replace(':', '').replace('..', ' ').replace('  ', ' ')
         return hdt_name
 
@@ -204,7 +204,7 @@ class HDT():
     
     
     async def search_existing(self, meta):
-        dupes = []
+        dupes = {}
         with requests.Session() as session:
             common = COMMON(config=self.config)
             cookiefile = os.path.abspath(f"{meta['base_dir']}/data/cookies/HDT.txt")
@@ -227,14 +227,24 @@ class HDT():
                     'category[]' : await self.get_category_id(meta),
                     'options' : '3'
                 }
-            
-            r = session.get(search_url, params=params)
-            await asyncio.sleep(0.5)
-            soup = BeautifulSoup(r.text, 'html.parser')
-            find = soup.find_all('a', href=True)
-            for each in find:
-                if each['href'].startswith('details.php?id='):
-                    dupes.append(each.text)
+            try:
+                r = session.get(search_url, params=params)
+                await asyncio.sleep(0.5)
+                soup = BeautifulSoup(r.text, 'html.parser')
+                find = soup.find_all('a', href=True)
+                for each in find:
+                    if each['href'].startswith('details.php?id='):
+                        result = each['title']
+                        try:
+                            size = each.find('size').text
+                        except Exception:
+                            size = 0
+                        dupes[result] = size                        
+                        # CvT: Flying blind, hoping ['size'] exists. If broken, file a ticket a please include some of html from a search result (any search will do as long as it contains a result) orrr send me an invite I'll fix ;)
+            except Exception as e:
+                console.print(f'[bold red]Unable to search for existing torrents on site. Either the site is down or passkey is incorrect. Error: {e}')
+                console.print(f'[bold yellow]Issue might be Uploadrr script. Please try again, if broken please let me know.')
+                await asyncio.sleep(5)    
         
         return dupes
 

@@ -8,13 +8,6 @@ from src.console import console
 
 
 class SN():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
 
     def __init__(self, config):
         self.config = config
@@ -126,7 +119,7 @@ class SN():
 
 
     async def search_existing(self, meta):
-        dupes = []
+        dupes = {}
         console.print("[yellow]Searching for existing torrents on site...")
 
         params = {
@@ -153,7 +146,11 @@ class SN():
             response = response.json()
             for i in response['data']:
                 result = i['name']
-                dupes.append(result)
+                try:
+                    size = i['size']
+                except Exception:
+                    size = 0    
+                dupes[result] = size
         except:
             console.print('[red]Unable to search for existing torrents on site. Either the site is down or your API key is incorrect')
             await asyncio.sleep(5)

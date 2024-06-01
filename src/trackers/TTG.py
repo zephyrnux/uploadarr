@@ -187,7 +187,7 @@ class TTG():
 
 
     async def search_existing(self, meta):
-        dupes = []
+        dupes = {}
         with requests.Session() as session:
             cookiefile = os.path.abspath(f"{meta['base_dir']}/data/cookies/TTG.pkl")
             with open(cookiefile, 'rb') as cf:
@@ -211,8 +211,9 @@ class TTG():
             for each in find:
                 if each['href'].startswith('/t/'):
                     release = re.search(r"(<b>)(<font.*>)?(.*)<br", str(each))
+                    size = 0 #I dont have access to TTG so setting to 0 so script doesnt fail
                     if release:
-                        dupes.append(release.group(3))
+                        dupes[release.group(3)] = size
 
         return dupes
 
@@ -325,7 +326,7 @@ class TTG():
             desc = bbcode.convert_spoiler_to_hide(desc)
             desc = bbcode.convert_comparison_to_centered(desc, 1000)
             desc = desc.replace('[img]', '[img]')
-            desc = re.sub("(\[img=\d+)]", "[img]", desc, flags=re.IGNORECASE)
+            desc = re.sub(r"(\[img=\d+)]", "[img]", desc, flags=re.IGNORECASE)
             descfile.write(desc)
             add_trailer_enabled = self.config["DEFAULT"].get("add_trailer", False)    
             if add_trailer_enabled and meta.get("category") == "MOVIE":

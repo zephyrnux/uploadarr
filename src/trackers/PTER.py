@@ -61,7 +61,7 @@ class PTER():
             return False
     
     async def search_existing(self, meta):
-        dupes = []
+        dupes = {}
         common = COMMON(config=self.config)
         cookiefile = f"{meta['base_dir']}/data/cookies/PTER.txt"
         if os.path.exists(cookiefile):
@@ -80,8 +80,13 @@ class PTER():
                     text=row.select_one('a[href^="details.php?id="]')
                     if text != None:
                         release=text.attrs['title']
+                        try:
+                            size = text.attrs['size']
+                        except Exception:
+                            size = 0    
                     if release:
-                        dupes.append(release)
+                        result = release
+                        dupes[result] = size 
         else:
             console.print("[bold red]Missing Cookie File. (data/cookies/PTER.txt)")
             return False

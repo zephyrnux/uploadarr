@@ -96,7 +96,7 @@ class FL():
         fl_name = fl_name.replace('DTS7.1', 'DTS').replace('DTS5.1', 'DTS').replace('DTS2.0', 'DTS').replace('DTS1.0', 'DTS')
         fl_name = fl_name.replace('Dubbed', '').replace('Dual-Audio', '')
         fl_name = ' '.join(fl_name.split())
-        fl_name = re.sub("[^0-9a-zA-ZÀ-ÿ. &+'\-\[\]]+", "", fl_name)
+        fl_name = re.sub(r"[^0-9a-zA-ZÀ-ÿ. &+'\-\[\]]+", "", fl_name)
         fl_name = fl_name.replace(' ', '.').replace('..', '.')
         return fl_name 
 
@@ -197,7 +197,7 @@ class FL():
 
 
     async def search_existing(self, meta):
-        dupes = []
+        dupes = {}
         with requests.Session() as session:
             cookiefile = os.path.abspath(f"{meta['base_dir']}/data/cookies/FL.pkl")
             with open(cookiefile, 'rb') as cf:
@@ -216,14 +216,24 @@ class FL():
                     'cat' : await self.get_category_id(meta),
                     'searchin' : '0'
                 }
-            
-            r = session.get(search_url, params=params)
-            await asyncio.sleep(0.5)
-            soup = BeautifulSoup(r.text, 'html.parser')
-            find = soup.find_all('a', href=True)
-            for each in find:
-                if each['href'].startswith('details.php?id=') and "&" not in each['href']:
-                    dupes.append(each['title'])
+            try:
+                r = session.get(search_url, params=params)
+                await asyncio.sleep(0.5)
+                soup = BeautifulSoup(r.text, 'html.parser')
+                find = soup.find_all('a', href=True)
+                for each in find:
+                    if each['href'].startswith('details.php?id=') and "&" not in each['href']:
+                        result = each['title']
+                        try:
+                            size = each.find('size').text
+                        except Exception:
+                            size = 0
+                        dupes[result] = size                        
+                    # CvT: Flying blind, hoping ['size'] exists. If broken, file a ticket a please include some of html from a search result (any search will do as long as it contains a result) orrr send me an invite I'll fix ;)
+            except Exception as e:
+                console.print(f'[bold red]Unable to search for existing torrents on site. Either the site is down or passkey is incorrect. Error: {e}')
+                console.print(f'[bold yellow]Issue might be Uploadrr script. Please try again, if broken please let me know.')
+                await asyncio.sleep(5)        
 
         return dupes
 
