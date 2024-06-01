@@ -1,4 +1,4 @@
-# Upload Assistant (CvT Edition)
+# Uploadrr by CvT
 
 I have no clue what I'm doing so thought I'd fork it, bork it and, duct tape it back together to get people to sing my praises. 
 Hopefully it works and makes your life simplier.
@@ -22,11 +22,11 @@ Hopefully it works and makes your life simplier.
 
 |      |      |      |     |      |      |     |      |
 |------|------|------|-----|------|------|-----|------|
-| ACM   | AITHER | ANT   | BHDTV | BLU   | CP2P  | FL    | FNP   |
-| HDB   | HDT    | HUNO  | JPTV  | LCD   | LDU   | LST   | LT    |
-| MTV   | NBL    | OE    | PTER  | PTT   | R4E   | RF    | RTF   |
-| SN    | STC    | STT   | TDC   | TL    | TTG   | TTR   | ULCX  |
-| UTP   |
+| ACM  | AITHER | ANT | BHDTV | BLU | FL | FNP | HDB |
+| HDT  | HUNO | JPTV | LCD | LDU | LST | LT | MTV |
+| NBL  | OE | PTER | PTT | R4E | RF | RTF | SN |
+| STC  | STT | TDC | TL | TTG | TTR | ULCX | UTP |
+
 
 
 
@@ -62,4 +62,4 @@ Hopefully it works and makes your life simplier.
   
   Args are OPTIONAL, for a list of acceptable args, pass `--help`
 ## **Docker Usage:**
-  Unsported as of right now, but you might be able to check [docker usage wiki page](https://github.com/L4GSP1KE/Upload-Assistant/wiki/Docker) for inspiration. 
+  Personally untested, but Rx69 gave them files. Hopefully it works for you! Otherwise try checking [docker usage wiki page](https://github.com/L4GSP1KE/Upload-Assistant/wiki/Docker) for inspiration. 
