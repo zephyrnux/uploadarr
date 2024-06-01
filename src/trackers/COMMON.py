@@ -335,7 +335,7 @@ class COMMON():
                 {
                     'search' : str(meta.get('tv_pack', 0)),
                     'search_for' : '1',
-                    'update' : {f"{meta['season']}(?!E\d+)"}
+                    'update' : {fr"{meta['season']}(?!E\d+)"}
                 },
                 {
                     'search' : meta['episode'],
