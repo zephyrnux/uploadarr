@@ -48,7 +48,7 @@ def read_config(file_path):
 
 def write_config(file_path, config_dict):
     with open(file_path, 'w') as file:
-        file.write(f"\n        ##---------THE LAST DIGITAL UNDERFROUND PRESENTS-------##\n        ##                                                     ##\n        ##                 Special Recruitment :)              ##\n        ##          @ https://TheLDU.to/application            ##\n        ##                                                     ##\n        ##                              Ref: Uploadrr by CvT   ##\n        ##-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-##\n\n  #Refer to `/backup/example-config.py` for additional options + comments\n\n")
+        file.write(f"\n        ##---------THE LAST DIGITAL UNDERFROUND PRESENTS-------##\n        ##                                                     ##\n        ##                 Special Recruitment :)              ##\n        ##          @ https://TheLDU.to/application            ##\n        ##                                                     ##\n        ##                              Ref: Uploadrr by CvT   ##\n        ##-----------------------------------------------------##\n\n  #Refer to `/backup/example-config.py` for additional options + comments\n\n")
         file.write('config = ')
         printer = CustomPrettyPrinter(stream=file)
         printer.pprint(config_dict)
@@ -151,5 +151,7 @@ def reconfigure():
     if added_blocks:
         Print('[bold yellow]WARN[/bold yellow]: The following [i]not built-in[/i] TRACKERS: [bold]' + '[/bold], [bold]'.join(added_blocks) + '[/bold] were added.') 
         Print('[bold yellow]WARN[/bold yellow]: Please be sure to add them in `upload.py` and add the .py files into `/src/trackers`')
+        Print('[bold red]WARN[/bold yellow]: Note that you should recreate the Tracker using the template as changes have been made, and script will break if left alone.')
+
 
 reconfigure()
