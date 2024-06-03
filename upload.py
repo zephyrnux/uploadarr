@@ -31,6 +31,7 @@ from rich.console import Group
 from rich.progress import Progress, TimeRemainingColumn
 from difflib import SequenceMatcher
 import bencodepy as bencode
+from urllib.parse import urlparse, parse_qs
 import importlib
 
 ####################################
@@ -38,12 +39,12 @@ import importlib
 ### Add below + api or http list ###
 ####################################
 tracker_list = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'FL', 'FNP', 'HDB', 'HDT', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT',
-                 'MTV', 'NBL', 'OE', 'PTER', 'PTT', 'R4E', 'RF', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TL', 'TTG', 'TTR', 'ULCX', 'UTP']
+                 'MTV', 'NBL', 'OE', 'OTW', 'PTER', 'PTT', 'R4E', 'RF', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TL', 'TTG', 'TTR', 'ULCX', 'UTP']
 
 # Imports corresponding modules + creates dict
 tracker_class_map = {tracker: getattr(importlib.import_module(f"src.trackers.{tracker}"), tracker) for tracker in tracker_list}
 
-api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TTR', 'ULCX', 'UTP']
+api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TTR', 'ULCX', 'UTP']
 http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
 
 ############# EDITING BELOW THIS LINE MAY RESULT IN SCRIPT BREAKING #############
@@ -98,7 +99,7 @@ if 'version' not in config or Version(config.get('version')) < minimum_version:
     console.print("Please double-check new config and ensure client settings were appropriately set.")
     console.print(f"[bold yellow]WARN[/bold yellow]: After verification of config, rerun command.")
     console.print(f"[dim green]Thanks for using Uploadrr :) ")
-        exit()
+    exit()
 
 try:
     from data.backup import example_config
@@ -265,16 +266,17 @@ async def do_the_thing(base_dir):
             if meta['debug']:
                 console.print(meta['image_list'])
             # meta['uploaded_screens'] = True
-        elif meta.get('skip_imghost_upload', False) == True and meta.get('image_list', False) == False:
+        elif meta.get('skip_imghost_upload', False) and not meta.get('image_list', False):
             meta['image_list'] = []
+
 
         if not os.path.exists(os.path.abspath(f"{meta['base_dir']}/tmp/{meta['uuid']}/BASE.torrent")):
             reuse_torrent = None
-            if meta.get('rehash', False) == False:
+            if not meta.get('rehash', False):
                 reuse_torrent = await client.find_existing_torrent(meta)
                 if reuse_torrent != None:
                     prep.create_base_from_existing_torrent(reuse_torrent, meta['base_dir'], meta['uuid'])
-            if meta['nohash'] == False and reuse_torrent == None:
+            if not meta['nohash'] and reuse_torrent == None:
                 prep.create_torrent(meta, Path(meta['path']), "BASE", meta.get('piece_size_max', 0))
             if meta['nohash']:
                 meta['client'] = "none"
@@ -764,6 +766,17 @@ def dupe_check(dupes, meta, config, skipped_details, path):
         text = text.lower()
         return text
 
+    def handle_similarity(similarity, meta):
+        if meta['unattended']:
+            console.print(f"[red]Found potential dupe with {similarity * 100:.2f}% similarity. Aborting.")
+            meta['upload'] = False
+            return meta, True  # True indicates skipped
+        else:
+            upload = Confirm.ask(" Upload Anyways?")
+            if not upload:
+                meta['upload'] = False
+                return meta, True  # True indicates skipped
+
     similarity_threshold = max(config['AUTO'].get('dupe_similarity', 90.00) / 100, 0.70)
     size_tolerance = max(min(config['AUTO'].get('size_tolerance', 1 if meta['unattended'] else 30), 100), 1) / 100
 
@@ -785,16 +798,6 @@ def dupe_check(dupes, meta, config, skipped_details, path):
             if similarity >= similarity_threshold:
                 handle_similarity(similarity, meta)
 
-    def handle_similarity(similarity, meta):
-        if meta['unattended']:
-            console.print(f"[red]Found potential dupe with {similarity * 100:.2f}% similarity. Aborting.")
-            meta['upload'] = False
-            return meta, True  # True indicates skipped
-        else:
-            upload = Confirm.ask(" Upload Anyways?")
-            if not upload:
-                meta['upload'] = False
-                return meta, True  # True indicates skipped
 
 
 
