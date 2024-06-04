@@ -13,11 +13,11 @@ class PTT():
 
     def __init__(self, config):
         self.config = config
-        self.tracker = ' PTT'
-        self.source_flag = ' PTT'
+        self.tracker = 'PTT'
+        self.source_flag = 'PTT'
         self.upload_url = 'https://polishtorrent.top/api/torrents/upload'
         self.search_url = 'https://polishtorrent.top//api/torrents/filter'
-        self.banned_groups = [""]
+        self.banned_groups = ['ViP', 'BiRD', 'M@RTiNU$', 'inTGrity', 'PSiG', 'CiNEMAET', 'MusicET', 'TeamET', 'R2D2' ]
         pass
     
     async def get_cat_id(self, category_name):
