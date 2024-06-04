@@ -712,12 +712,12 @@ def get_confirmation(meta):
         res = meta['resolution']
 
     console.print(Text(f" {res} / {meta['type']}{tag}", style="bold"))
-    if meta.get('personalrelease', False) == True:
+    if meta.get('personalrelease', False):
         console.print(f"[bright_magenta]Personal Release!")
     console.print()
-    if meta.get('unattended', False) == False:
+    if not meta.get('unattended', False):
         get_missing(meta)
-        ring_the_bell = "\a" if config['DEFAULT'].get("sfx_on_prompt", True) == True else "" # \a rings the bell
+        ring_the_bell = "\a" if config['DEFAULT'].get("sfx_on_prompt", True) is True else "" # \a rings the bell
         console.print(f"[bold yellow]Is this correct?{ring_the_bell}") 
         console.print(f"[bold]Name[/bold]: {meta['name']}")
         confirm = Confirm.ask(" Correct?")
