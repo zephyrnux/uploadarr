@@ -17,11 +17,7 @@ class PTT():
         self.source_flag = 'PTT'
         self.upload_url = 'https://polishtorrent.top/api/torrents/upload'
         self.search_url = 'https://polishtorrent.top//api/torrents/filter'
-<<<<<<< HEAD
         self.banned_groups = ['ViP', 'BiRD', 'M@RTiNU$', 'inTGrity', 'PSiG', 'CiNEMAET', 'MusicET', 'TeamET', 'R2D2' ]
-=======
-        self.banned_groups = ['ViP', 'BiRD', 'M@RTiNU$', 'inTGrity', 'PSiG', 'CiNEMAET', 'MusicET', 'TeamET' ]
->>>>>>> c68d0f21848ac323df0d271a877713bf37ba1be4
         pass
     
     async def get_cat_id(self, category_name):
