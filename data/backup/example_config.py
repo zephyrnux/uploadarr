@@ -132,16 +132,6 @@ config = {
             "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
         },
 
-         "CP2P" : {
-            "api_key" : "CP2P_API_KEY",
-            "announce_url" : "https://cinemap2p.xyz/announce/Custom_Announce_URL",
-            "anon" : False,
-            "signature" : "\n[center][b]PLEASE SEED CP2P FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_signature" : "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]", 
-            "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED CP2P FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		 
-        },
-
         "FNP" : {
             "api_key" : "FNP_API_KEY",
             "announce_url" : "https://fearnopeer.com/announce/Custom_Announce_URL",
@@ -263,7 +253,7 @@ config = {
             "api_key" : "OTW_API_KEY",
             "announce_url" : "https://oldtoons.world/announce/Custom_Announce_URL",
             "anon" : False,
-            "signature" : "\n[center][b]PLEASE SEED OnlyToons FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "signature" : "\n[center][b]PLEASE SEED OldToons FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",     
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED OE FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
