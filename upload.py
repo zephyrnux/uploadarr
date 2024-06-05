@@ -38,13 +38,13 @@ import importlib
 #######  Tracker List Here   #######
 ### Add below + api or http list ###
 ####################################
-tracker_list = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'FL', 'FNP', 'HDB', 'HDT', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT',
+tracker_list = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FL', 'FNP', 'HDB', 'HDT', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT',
                  'MTV', 'NBL', 'OE', 'OTW', 'PTER', 'PTT', 'R4E', 'RF', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TL', 'TTG', 'TTR', 'ULCX', 'UTP']
 
 # Imports corresponding modules + creates dict
 tracker_class_map = {tracker: getattr(importlib.import_module(f"src.trackers.{tracker}"), tracker) for tracker in tracker_list}
 
-api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TTR', 'ULCX', 'UTP']
+api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TTR', 'ULCX', 'UTP']
 http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
 
 ############# EDITING BELOW THIS LINE MAY RESULT IN SCRIPT BREAKING #############
@@ -767,7 +767,11 @@ def dupe_check(dupes, meta, config, skipped_details, path):
         return text
 
     def handle_similarity(similarity, meta):
-        if meta['unattended']:
+        if similarity == 1.0:
+            console.print(f"[red]Found exact match dupe.[dim](byte-for-byte)[/dim] Aborting..")
+            meta['upload'] = False
+            return meta, True  # True indicates skipped
+        elif meta['unattended']:
             console.print(f"[red]Found potential dupe with {similarity * 100:.2f}% similarity. Aborting.")
             meta['upload'] = False
             return meta, True  # True indicates skipped
@@ -776,6 +780,7 @@ def dupe_check(dupes, meta, config, skipped_details, path):
             if not upload:
                 meta['upload'] = False
                 return meta, True  # True indicates skipped
+        return meta, False  # False indicates not skipped
 
     similarity_threshold = max(config['AUTO'].get('dupe_similarity', 90.00) / 100, 0.70)
     size_tolerance = max(min(config['AUTO'].get('size_tolerance', 1 if meta['unattended'] else 30), 100), 1) / 100
@@ -791,15 +796,16 @@ def dupe_check(dupes, meta, config, skipped_details, path):
                 cleaned_dupe_name = preprocess_string(name)
                 similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
                 if similarity >= similarity_threshold:
-                    handle_similarity(similarity, meta)
+                    meta, skipped = handle_similarity(similarity, meta)
+                    if skipped:
+                        return meta, True  # True indicates skipped
         else:
             cleaned_dupe_name = preprocess_string(name)
             similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
             if similarity >= similarity_threshold:
-                handle_similarity(similarity, meta)
-
-
-
+                meta, skipped = handle_similarity(similarity, meta)
+                if skipped:
+                    return meta, True  # True indicates skipped
 
     console.print("[yellow]No dupes found above the similarity threshold. Uploading anyways.")
     meta['upload'] = True
