@@ -82,23 +82,35 @@ class SN():
 
         }
 
-        if meta['debug'] == False:
-            response = requests.request("POST", url=self.upload_url, data=data, files=files)
-
+        if not meta['debug']:
+            success = 'Unknown'
             try:
-                if response.json().get('success'):
-                    console.print(response.json())
-                else:
-                    console.print("[red]Did not upload successfully")
-                    console.print(response.json())
-            except:
-                console.print("[red]Error! It may have uploaded, go check")
+                response = requests.post(url=self.upload_url, files=files, data=data)
+                response.raise_for_status()                
+                response_json = response.json()
+                success = response_json.get('success', False)
+                data = response_json.get('data', {})
+            except Exception as e:
+                console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
+            if success == 'Unknown':
+                console.print("[bold yellow]Status of upload is unknown, please go check..")
+                success = False
+            elif success:
+                console.print("[bold green]Torrent uploaded successfully!")
+            else:
+                console.print("[bold red]Torrent upload failed.")
+
+            if data:
+                if 'name' in data and 'The name has already been taken.' in data['name']:
+                    console.print("[red]Name has already been taken.")
+                if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
+                    console.print("[red]Info hash has already been taken.")                
+            else:
+                console.print("[cyan]Request Data:")
                 console.print(data)
-                console.print_exception()
-                return
-        else:
-            console.print(f"[cyan]Request Data:")
-            console.print(data)
+            return success
+
+
 
 
     async def edit_desc(self, meta):

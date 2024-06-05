@@ -67,7 +67,7 @@ class FL():
                 # 3 = DVD + RO 
                 cat_id = 3
 
-        if meta.get('anime', False) == True:
+        if meta.get('anime', False):
             # 24 = Anime
             cat_id = 24
         return cat_id
@@ -115,7 +115,7 @@ class FL():
         
         # Confirm the correct naming order for FL
         cli_ui.info(f"Filelist name: {fl_name}")
-        if meta.get('unattended', False) == False:
+        if meta.get('unattended', False) is False:
             fl_confirm = cli_ui.ask_yes_no("Correct?", default=False)
             if fl_confirm != True:
                 fl_name_manually = cli_ui.ask_string("Please enter a proper name", default="")
@@ -128,10 +128,10 @@ class FL():
 
         # Torrent File Naming
         # Note: Don't Edit .torrent filename after creation, SubsPlease anime releases (because of their weird naming) are an exception
-        if meta.get('anime', True) == True and meta.get('tag', '') == '-SubsPlease':
+        if meta.get('anime', True) and meta.get('tag', '') == '-SubsPlease':
             torrentFileName = fl_name
         else:
-            if meta.get('isdir', False) == False:
+            if meta.get('isdir', False) is False:
                 torrentFileName = meta.get('uuid')
                 torrentFileName = os.path.splitext(torrentFileName)[0]
             else:
@@ -232,7 +232,7 @@ class FL():
                     # CvT: Flying blind, hoping ['size'] exists. If broken, file a ticket a please include some of html from a search result (any search will do as long as it contains a result) orrr send me an invite I'll fix ;)
             except Exception as e:
                 console.print(f'[bold red]Unable to search for existing torrents on site. Either the site is down or passkey is incorrect. Error: {e}')
-                console.print(f'[bold yellow]Issue might be Uploadrr script. Please try again, if broken please let me know.')
+                console.print('[bold yellow]Issue might be Uploadrr script. Please try again, if broken please let me know.')
                 await asyncio.sleep(5)        
 
         return dupes

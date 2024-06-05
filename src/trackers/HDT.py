@@ -243,7 +243,7 @@ class HDT():
                         # CvT: Flying blind, hoping ['size'] exists. If broken, file a ticket a please include some of html from a search result (any search will do as long as it contains a result) orrr send me an invite I'll fix ;)
             except Exception as e:
                 console.print(f'[bold red]Unable to search for existing torrents on site. Either the site is down or passkey is incorrect. Error: {e}')
-                console.print(f'[bold yellow]Issue might be Uploadrr script. Please try again, if broken please let me know.')
+                console.print('[bold yellow]Issue might be Uploadrr script. Please try again, if broken please let me know.')
                 await asyncio.sleep(5)    
         
         return dupes

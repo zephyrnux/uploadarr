@@ -90,7 +90,7 @@ class BHD():
         }
         
         url = self.upload_url + self.config['TRACKERS'][self.tracker]['api_key'].strip()
-        if meta['debug'] == False:
+        if not meta['debug']:
             response = requests.post(url=url, files=files, data=data, headers=headers)
             try:
                 response = response.json()
@@ -108,10 +108,9 @@ class BHD():
                 console.print("It may have uploaded, go check")
                 return 
         else:
-            console.print(f"[cyan]Request Data:")
+            console.print("[cyan]Request Data:")
             console.print(data)
-        
-        
+              
 
     async def get_cat_id(self, category_name):
         category_id = {
@@ -256,13 +255,13 @@ class BHD():
             tags.append('EnglishDub')
         if "Open Matte" in meta.get('edition', ""):
             tags.append("OpenMatte")
-        if meta.get('scene', False) == True:
+        if meta.get('scene', False) is True:
             tags.append("Scene")
-        if meta.get('personalrelease', False) == True:
+        if meta.get('personalrelease', False) is True:
             tags.append('Personal')
         if "hybrid" in meta.get('edition', "").lower():
             tags.append('Hybrid')
-        if meta.get('has_commentary', False) == True:
+        if meta.get('has_commentary', False) is True:
             tags.append('Commentary')
         if "DV" in meta.get('hdr', ''):
             tags.append('DV')

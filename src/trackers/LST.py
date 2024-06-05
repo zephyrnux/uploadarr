@@ -18,7 +18,13 @@ class LST():
         self.source_flag = 'LST.GG'
         self.upload_url = 'https://lst.gg/api/torrents/upload'
         self.search_url = 'https://lst.gg/api/torrents/filter'
-        self.banned_groups = [""]
+        self.banned_groups = [
+    'aXXo', 'BRrip', 'CM8', 'CrEwSaDe', 'CTFOH', 'DNL', 'FaNGDiNG0', 'HD2DVD', 
+    'HDTime', 'ION10', 'iPlanet', 'KiNGDOM', 'mHD', 'mSD', 'nHD', 'nikt0', 'nSD', 
+    'NhaNc3', 'OFT', 'PRODJi', 'SANTi', 'STUTTERSHIT', 'ViSION', 'VXT', 'WAF', 
+    'x0r', 'YIFY', 'Sicario', 'RARBG', 'MeGusta', 'TSP', 'TSPxL', 'GalaxyTV', 
+    'TGALAXY', 'TORRENTGALAXY', 'TGx', 'LAMA'
+]
         pass
     
     async def get_cat_id(self, category_name, keywords, service):
@@ -118,7 +124,7 @@ class LST():
        
                 
         # Internal
-        if self.config['TRACKERS'][self.tracker].get('internal', False) == True:
+        if self.config['TRACKERS'][self.tracker].get('internal', False):
             if meta['tag'] != "" and (meta['tag'][1:] in self.config['TRACKERS'][self.tracker].get('internal_groups', [])):
                 data['internal'] = 1
                 
@@ -136,7 +142,8 @@ class LST():
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip()
         }
         
-        if meta['debug'] == False:
+        if not meta['debug']:
+            success = 'Unknown'
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
                 response.raise_for_status()                
@@ -145,21 +152,30 @@ class LST():
                 data = response_json.get('data', {})
             except Exception as e:
                 console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
-            if success:
-                console.print(f"[bold green]Torrent uploaded successfully!")
-            else:
-                console.print(f"[bold red]Torrent upload failed.")
 
-            if 'name' in data and 'The name has already been taken.' in data['name']:
-                console.print(f"[red]Name has already been taken.")
-            if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
-                console.print(f"[red]Info hash has already been taken.")
-            return success
-        
-        else:
-            console.print(f"[cyan]Request Data:")
-            console.print(data)
-        open_torrent.close()
+            if success == 'Unknown':
+                console.print("[bold yellow]Status of upload is unknown, please go check..")
+                success = False
+            elif success:
+                console.print("[bold green]Torrent uploaded successfully!")
+            else:
+                console.print("[bold red]Torrent upload failed.")
+
+            if data:
+                if 'name' in data and 'The name has already been taken.' in data['name']:
+                    console.print("[red]Name has already been taken.")
+                if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
+                    console.print("[red]Info hash has already been taken.")                
+            else:
+                console.print("[cyan]Request Data:")
+                console.print(data)
+    
+            try:
+                open_torrent.close()
+            except Exception as e:
+                console.print(f"[red]Failed to close torrent file: {e}[/red]")
+
+            return success 
 
 
 

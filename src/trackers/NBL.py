@@ -56,7 +56,8 @@ class NBL():
             'ignoredupes' : 'on'
         }
 
-        if meta['debug'] == False:
+        if not meta['debug']:
+            success = 'Unknown'
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data)
                 response.raise_for_status()                
@@ -65,22 +66,29 @@ class NBL():
                 data = response_json.get('data', {})
             except Exception as e:
                 console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
-            if success:
-                console.print(f"[bold green]Torrent uploaded successfully!")
+            if success == 'Unknown':
+                console.print("[bold yellow]Status of upload is unknown, please go check..")
+                success = False
+            elif success:
+                console.print("[bold green]Torrent uploaded successfully!")
             else:
-                console.print(f"[bold red]Torrent upload failed.")
+                console.print("[bold red]Torrent upload failed.")
 
-            if 'name' in data and 'The name has already been taken.' in data['name']:
-                console.print(f"[red]Name has already been taken.")
-            if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
-                console.print(f"[red]Info hash has already been taken.")
-            return success
-        
-        else:
-            console.print(f"[cyan]Request Data:")
-            console.print(data)
-        open_torrent.close()
+            if data:
+                if 'name' in data and 'The name has already been taken.' in data['name']:
+                    console.print("[red]Name has already been taken.")
+                if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
+                    console.print("[red]Info hash has already been taken.")                
+            else:
+                console.print("[cyan]Request Data:")
+                console.print(data)
+    
+            try:
+                open_torrent.close()
+            except Exception as e:
+                console.print(f"[red]Failed to close torrent file: {e}[/red]")
 
+            return success 
 
 
     async def search_existing(self, meta):

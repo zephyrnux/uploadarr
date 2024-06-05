@@ -62,7 +62,7 @@ class COMMON():
             desc = base
             desc = bbcode.convert_pre_to_code(desc)
             desc = bbcode.convert_hide_to_spoiler(desc)
-            if comparison == False:
+            if comparison is False:
                 desc = bbcode.convert_comparison_to_collapse(desc, 1000)
 
             add_trailer_enabled = self.config["DEFAULT"].get("add_trailer", False)    
@@ -107,7 +107,7 @@ class COMMON():
                 pr_signature = self.config["TRACKERS"][tracker].get("pr_signature")
                 anon_pr_sig = self.config["TRACKERS"][tracker].get("anon_pr_signature")
                 if signature is None or anon_signature is None or pr_signature is None or anon_pr_sig is None:
-                    print(f"[bold][red]WARN[/red]: Global Signatures are turned off, but no signature is provided for selected tracker.[/bold]")
+                    print("[bold][red]WARN[/red]: Global Signatures are turned off, but no signature is provided for selected tracker.[/bold]")
 
         with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]DESCRIPTION.txt", 'a', encoding='utf8') as descfile:
             if meta["personalrelease"]:
@@ -244,7 +244,7 @@ class COMMON():
                 for retry in range(ptgen_retry):
                     try:
                         ptgen = requests.get(url, params=params)
-                        if ptgen.json()["error"] == None:
+                        if ptgen.json()["error"] is None:
                             break
                     except requests.exceptions.JSONDecodeError:
                         continue
@@ -252,16 +252,16 @@ class COMMON():
                 params['url'] = ptgen.json()['data'][0]['link'] 
             except Exception:
                 console.print("[red]Unable to get data from ptgen using IMDb")
-                params['url'] = console.input(f"[red]Please enter [yellow]Douban[/yellow] link: ")
+                params['url'] = console.input("[red]Please enter [yellow]Douban[/yellow] link: ")
         else:
             console.print("[red]No IMDb id was found.")
-            params['url'] = console.input(f"[red]Please enter [yellow]Douban[/yellow] link: ")
+            params['url'] = console.input("[red]Please enter [yellow]Douban[/yellow] link: ")
         try:
             ptgen = requests.get(url, params=params)
             if ptgen.json()["error"] != None:
                 for retry in range(ptgen_retry):
                     ptgen = requests.get(url, params=params)
-                    if ptgen.json()["error"] == None:
+                    if ptgen.json()["error"] is None:
                         break
             ptgen = ptgen.json()
             meta['ptgen'] = ptgen
