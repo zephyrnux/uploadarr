@@ -163,8 +163,12 @@ class JPTV():
                 console.print("[cyan]Request Data:")
                 console.print(data)
     
-            open_torrent.close()
-            return success
+            try:
+                open_torrent.close()
+            except Exception as e:
+                console.print(f"[red]Failed to close torrent file: {e}[/red]")
+
+            return success 
 
 
 
