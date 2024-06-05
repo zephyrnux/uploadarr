@@ -97,8 +97,8 @@ if 'version' not in config or Version(config.get('version')) < minimum_version:
         exit()
 
     console.print("Please double-check new config and ensure client settings were appropriately set.")
-    console.print(f"[bold yellow]WARN[/bold yellow]: After verification of config, rerun command.")
-    console.print(f"[dim green]Thanks for using Uploadrr :) ")
+    console.print("[bold yellow]WARN[/bold yellow]: After verification of config, rerun command.")
+    console.print("[dim green]Thanks for using Uploadrr :) ")
     exit()
 
 try:
@@ -194,7 +194,7 @@ async def do_the_thing(base_dir):
                         console.print(Markdown(f"- {md_text.rstrip()}\n\n", style=Style(color='cyan')))
                     console.print(f"\nTotal items queued: [bold cyan]{len(queue)}[/bold cyan]\n")
             else:
-                console.print(f"[red]There was an issue with your input. If you think this was not an issue, please make a report that includes the full command used.")
+                console.print("[red]There was an issue with your input. If you think this was not an issue, please make a report that includes the full command used.")
                 exit()
 
     delay = config['AUTO'].get('delay', 0)
@@ -236,7 +236,7 @@ async def do_the_thing(base_dir):
                     await asyncio.sleep(1)
                     progress.update(task, advance=1)
         console.print(f"[green]Gathering info for {os.path.basename(path)}")
-        if meta['imghost'] == None:
+        if meta['imghost'] is None:
             meta['imghost'] = config['DEFAULT']['img_host_1']
         if meta['unattended']:
             console.print("[yellow]Running in Auto Mode")
@@ -276,11 +276,11 @@ async def do_the_thing(base_dir):
                 reuse_torrent = await client.find_existing_torrent(meta)
                 if reuse_torrent != None:
                     prep.create_base_from_existing_torrent(reuse_torrent, meta['base_dir'], meta['uuid'])
-            if not meta['nohash'] and reuse_torrent == None:
+            if not meta['nohash'] and reuse_torrent is None:
                 prep.create_torrent(meta, Path(meta['path']), "BASE", meta.get('piece_size_max', 0))
             if meta['nohash']:
                 meta['client'] = "none"
-        elif os.path.exists(os.path.abspath(f"{meta['base_dir']}/tmp/{meta['uuid']}/BASE.torrent")) and meta.get('rehash', False) == True and meta['nohash'] == False:
+        elif os.path.exists(os.path.abspath(f"{meta['base_dir']}/tmp/{meta['uuid']}/BASE.torrent")) and meta.get('rehash', False) is True and meta['nohash'] is False:
             prep.create_torrent(meta, Path(meta['path']), "BASE", meta.get('piece_size_max', 0))
         if int(meta.get('randomized', 0)) >= 1:
             prep.create_random_torrents(meta['base_dir'], meta['uuid'], meta['randomized'], meta['path'])
@@ -316,7 +316,7 @@ async def do_the_thing(base_dir):
                 if confirm:
                     break
 
-        if isinstance(trackers, list) == False:
+        if not isinstance(trackers, list):
             trackers = [trackers]
         trackers = [s.strip().upper() for s in trackers]
         if meta.get('manual', False):
@@ -403,7 +403,7 @@ async def do_the_thing(base_dir):
                 if meta['unattended']:
                     do_manual = True
                 else:
-                    do_manual = Confirm.ask(f"Get files for manual upload?", default=True)
+                    do_manual = Confirm.ask("Get files for manual upload?", default=True)
                 if do_manual:
                     for manual_tracker in trackers:
                         if manual_tracker != 'MANUAL':
@@ -474,7 +474,7 @@ async def do_the_thing(base_dir):
 
                     if meta.get('youtube', None) is None:
                         while True:
-                            youtube = Prompt.ask(f"Unable to find youtube trailer, please link one\n[dim] e.g.(https://www.youtube.com/watch?v=dQw4w9WgXcQ or dQw4w9WgXcQ)[/dim]")
+                            youtube = Prompt.ask("Unable to find youtube trailer, please link one\n[dim] e.g.(https://www.youtube.com/watch?v=dQw4w9WgXcQ or dQw4w9WgXcQ)[/dim]")
                             video_id = get_youtube_id(youtube)
                             if video_id is not None:
                                 meta['youtube'] = video_id
@@ -541,7 +541,7 @@ async def do_the_thing(base_dir):
 
                             if meta.get('youtube', None) is None:
                                 while True:
-                                    youtube = Prompt.ask(f"Unable to find youtube trailer, please link one\n[dim] e.g.(https://www.youtube.com/watch?v=dQw4w9WgXcQ or dQw4w9WgXcQ)[/dim]")
+                                    youtube = Prompt.ask("Unable to find youtube trailer, please link one\n[dim] e.g.(https://www.youtube.com/watch?v=dQw4w9WgXcQ or dQw4w9WgXcQ)[/dim]")
                                     video_id = get_youtube_id(youtube)
                                     if video_id is not None:
                                         meta['youtube'] = video_id
@@ -678,7 +678,7 @@ async def do_the_thing(base_dir):
         console.print(reason_panel)
 
 def get_confirmation(meta):
-    if meta['debug'] == True:
+    if meta['debug']:
         console.print("[bold red]DEBUG: True")
     console.print(f"Prep material saved to {meta['base_dir']}/tmp/{meta['uuid']}")
     console.print()
@@ -713,7 +713,7 @@ def get_confirmation(meta):
 
     console.print(Text(f" {res} / {meta['type']}{tag}", style="bold"))
     if meta.get('personalrelease', False):
-        console.print(f"[bright_magenta]Personal Release!")
+        console.print("[bright_magenta]Personal Release!")
     console.print()
     if not meta.get('unattended', False):
         get_missing(meta)

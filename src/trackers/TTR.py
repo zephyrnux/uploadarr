@@ -4,6 +4,7 @@ import requests
 import json
 import platform
 import os
+import re
 from src.trackers.COMMON import COMMON
 from src.console import console
 
@@ -123,15 +124,29 @@ class TTR():
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip()
         }
         
-        if meta['debug'] == False:
-            response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
+        if not meta['debug']:
+            success = False
+            data = {}
             try:
-                console.print(response.json())
-            except:
-                console.print("It may have uploaded, go check")
-                return 
+                response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
+                response.raise_for_status()                
+                response_json = response.json()
+                success = response_json.get('success', False)
+                data = response_json.get('data', {})
+            except Exception as e:
+                console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
+            if success:
+                console.print("[bold green]Torrent uploaded successfully!")
+            else:
+                console.print("[bold red]Torrent upload failed.")
+
+            if 'name' in data and 'The name has already been taken.' in data['name']:
+                console.print("[red]Name has already been taken.")
+            if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
+                console.print("[red]Info hash has already been taken.")
+            return success
         else:
-            console.print(f"[cyan]Request Data:")
+            console.print("[cyan]Request Data:")
             console.print(data)
         open_torrent.close()
 
@@ -225,11 +240,11 @@ class TTR():
                         raise ValueError("No IMDB Year Found..")
                 except (KeyError, ValueError):
                     year = ""
-        if meta.get('no_season', False) == True:
+        if meta.get('no_season', False):
             season = ''
-        if meta.get('no_year', False) == True:
+        if meta.get('no_year', False):
             year = ''
-        if meta.get('no_aka', False) == True:
+        if meta.get('no_aka', False):
             alt_title = ''
         if meta['debug']:
             console.log("[cyan]get_name cat/type")

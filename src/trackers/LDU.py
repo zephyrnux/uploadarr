@@ -47,7 +47,7 @@ class LDU():
         if category_name == 'MOVIE':
             if adult and ('hentai' in map(str.strip, keywords.lower().split(',')) or 'animation' in map(str.strip, keywords.lower().split(','))):
                 category_id = '10'
-            elif adult == True:
+            elif adult is True:
                 category_id = '6'
             elif '???' in tags[0]:
                 category_id = '27'
@@ -176,7 +176,7 @@ class LDU():
             'sticky' : 0,
         }
         # Internal
-        if self.config['TRACKERS'][self.tracker].get('internal', False) == True:
+        if self.config['TRACKERS'][self.tracker].get('internal', False):
             if meta['tag'] != "" and (meta['tag'][1:] in self.config['TRACKERS'][self.tracker].get('internal_groups', [])):
                 data['internal'] = 1
                 
@@ -194,7 +194,9 @@ class LDU():
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip()
         }
         
-        if meta['debug'] == False:
+        if not meta['debug']:
+            success = False
+            data = {}
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
                 response.raise_for_status()                
@@ -202,20 +204,20 @@ class LDU():
                 success = response_json.get('success', False)
                 data = response_json.get('data', {})
             except Exception as e:
-                console.print(f"[red]Encountered {e}[/red]\n[bold yellow]May have uploaded, please go check..")
+                console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
             if success:
-                console.print(f"[bold green]Torrent uploaded successfully!")
+                console.print("[bold green]Torrent uploaded successfully!")
             else:
-                console.print(f"[bold red]Torrent upload failed.")
+                console.print("[bold red]Torrent upload failed.")
 
             if 'name' in data and 'The name has already been taken.' in data['name']:
-                console.print(f"[red]Name has already been taken.")
+                console.print("[red]Name has already been taken.")
             if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
-                console.print(f"[red]Info hash has already been taken.")
+                console.print("[red]Info hash has already been taken.")
             return success
         
         else:
-            console.print(f"[cyan]Request Data:")
+            console.print("[cyan]Request Data:")
             console.print(data)
         open_torrent.close()
 
@@ -309,11 +311,11 @@ class LDU():
                         raise ValueError("No IMDB Year Found..")
                 except (KeyError, ValueError):
                     year = ""
-        if meta.get('no_season', False) == True:
+        if meta.get('no_season', False) is True:
             season = ''
-        if meta.get('no_year', False) == True:
+        if meta.get('no_year', False) is True:
             year = ''
-        if meta.get('no_aka', False) == True:
+        if meta.get('no_aka', False) is True:
             alt_title = ''
         if meta['debug']:
             console.log("[cyan]get_name cat/type")

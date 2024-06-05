@@ -11,13 +11,6 @@ from src.trackers.COMMON import COMMON
 from src.console import console
 
 class HUNO():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
     def __init__(self, config):
         self.config = config
         self.tracker = 'HUNO'
@@ -42,7 +35,7 @@ class HUNO():
 
         # adding logic to check if its an encode or webrip and not HEVC as only HEVC encodes and webrips are allowed
         if meta['video_codec'] != "HEVC" and (meta['type'] == "ENCODE" or meta['type'] == "WEBRIP"):
-            console.print(f'[bold red]Only x265/HEVC encodes are allowed')
+            console.print('[bold red]Only x265/HEVC encodes are allowed')
             return
 
         if meta['bdinfo'] != None:
@@ -93,7 +86,7 @@ class HUNO():
             'api_token': tracker_config['api_key'].strip()
         }
 
-        if meta['debug'] == False:
+        if not meta['debug']:
             response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
             try:
                 console.print(response.json())
@@ -104,7 +97,7 @@ class HUNO():
                 console.print("It may have uploaded, go check")
                 return
         else:
-            console.print(f"[cyan]Request Data:")
+            console.print("[cyan]Request Data:")
             console.print(data)
         open_torrent.close()
 

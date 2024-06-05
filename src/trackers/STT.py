@@ -73,13 +73,15 @@ class STT():
             'api_token': self.config['TRACKERS'][self.tracker]['api_key'].strip()
         }
         # Internal
-        if self.config['TRACKERS'][self.tracker].get('internal', False) == True:
+        if self.config['TRACKERS'][self.tracker].get('internal', False):
             if meta['tag'] != "" and (meta['tag'][1:] in self.config['TRACKERS'][self.tracker].get('internal_groups', [])):
                 data['internal'] = 1
                 
         if meta.get('category') == "TV":
             console.print('[bold red]This site only ALLOWS Movies.')
-        if meta['debug'] == False:
+        if not meta['debug']:
+            success = False
+            data = {}
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
                 response.raise_for_status()                
@@ -89,18 +91,18 @@ class STT():
             except Exception as e:
                 console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
             if success:
-                console.print(f"[bold green]Torrent uploaded successfully!")
+                console.print("[bold green]Torrent uploaded successfully!")
             else:
-                console.print(f"[bold red]Torrent upload failed.")
+                console.print("[bold red]Torrent upload failed.")
 
             if 'name' in data and 'The name has already been taken.' in data['name']:
-                console.print(f"[red]Name has already been taken.")
+                console.print("[red]Name has already been taken.")
             if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
-                console.print(f"[red]Info hash has already been taken.")
+                console.print("[red]Info hash has already been taken.")
             return success
         
         else:
-            console.print(f"[cyan]Request Data:")
+            console.print("[cyan]Request Data:")
             console.print(data)
         open_torrent.close()
 
