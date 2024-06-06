@@ -81,7 +81,7 @@ class Args():
         parser.add_argument('-rt', '--randomized', nargs='*', required=False, help="Number of extra, torrents with random infohash", default=0)
         parser.add_argument('-aq', '--auto-queue', dest='auto_queue', help="Automatically queue files in a directory")
         parser.add_argument('-sq', '--show-queue', dest='show_queue', action='store_true', required=False, help="Show the list of queued files")
-        parser.add_argument('-fa', '--full-auto', dest='full_auto', nargs='?', const=True, default=False, help=argparse.SUPPRESS)
+        parser.add_argument('-fa', '--full-auto', dest='full_auto', nargs='?', const=True, default=False, type=str, help=argparse.SUPPRESS)
         parser.add_argument('-ua', '--unattended', action='store_true', required=False, help=argparse.SUPPRESS)
         parser.add_argument('-vs', '--vapoursynth', action='store_true', required=False, help="Use vapoursynth for screens (requires vs install)")
         parser.add_argument('-cleanup', '--cleanup', action='store_true', required=False, help="Clean up tmp directory")
@@ -91,7 +91,8 @@ class Args():
         # console.print(args)
 
         if args.get('full_auto', False):
-            args['auto_queue'] = args['unattended'] = args['auto_desc'] = True
+            args['unattended'] = args['auto_desc'] = True 
+            args['auto_queue'] = args['full_auto']
 
         if len(before_args) >= 1 and not os.path.exists(' '.join(args['path'])):
             for each in before_args:
