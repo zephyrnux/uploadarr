@@ -1,4 +1,4 @@
-# ![Uploadrr by CvT] (https://i.ibb.co/2NVWb0c/uploadrr.webp)
+# ![Uploadrr by CvT](https://i.ibb.co/2NVWb0c/uploadrr.webp)
 
 I have no clue what I'm doing so thought I'd fork it, bork it and, duct tape it back together to get people to sing my praises. 
 Hopefully it works and makes your life simplier.
