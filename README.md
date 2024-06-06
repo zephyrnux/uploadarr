@@ -1,4 +1,4 @@
-# Uploadrr by CvT
+# ![Uploadrr by CvT](https://i.ibb.co/2NVWb0c/uploadrr.webp)
 
 I have no clue what I'm doing so thought I'd fork it, bork it and, duct tape it back together to get people to sing my praises. 
 Hopefully it works and makes your life simplier.
@@ -14,25 +14,28 @@ Hopefully it works and makes your life simplier.
   - Can re-use existing torrents instead of hashing new
   - Generates proper name for your upload using Mediainfo/BDInfo and TMDb/IMDb conforming to site rules
   - Checks for existing releases already on site
+  - Manual or Automated Queuing 
   - Adds to your client with fast resume, seeding instantly (rtorrent/qbittorrent/deluge/watch folder)
   - ALL WITH MINIMAL INPUT!
-  - Currently works with .mkv/.mp4/Blu-ray/DVD/HD-DVDs
+  - Currently works with .mkv/.mp4/Blu-ray/DVD/HD-DVDs (or anything if --full-directory is applied)
 
 ## Supported Sites
 
 |      |      |      |     |      |      |     |      |
 |------|------|------|-----|------|------|-----|------|
-| ACM  | AITHER | ANT | BHDTV | BLU | FL | FNP | HDB |
-| HDT  | HUNO | JPTV | LCD | LDU | LST | LT | MTV |
-| NBL  | OE | PTER | PTT | R4E | RF | RTF | SN |
-| STC  | STT | TDC | TL | TTG | TTR | ULCX | UTP |
+| ACM  | AITHER | ANT | BHDTV | BLU | CP2P | FL | FNP |
+| HDB  | HDT | HUNO | JPTV | LCD | LDU | LST | LT |
+| MTV  | NBL  | OE | OTW | PTER | PTT | R4E | RF |
+| RTF  | SN | STC | STT | TDC | TL | TTG | TTR |
+| ULCX | UTP |
+
 
 
 
 
 
 ## Coming Soon:
-  - Auto-Mode 
+  - Better support for FANRES + ADULT Content 
 
   
 
