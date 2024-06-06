@@ -1,5 +1,5 @@
 
-        ##---------THE LAST DIGITAL UNDERFROUND PRESENTS-------##
+        ##---------THE LAST DIGITAL UNDERGROUND PRESENTS-------##
         ##                                                     ##
         ##                 Special Recruitment :)              ##
         ##          @ https://TheLDU.to/application            ##
