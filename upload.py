@@ -321,11 +321,6 @@ async def do_the_thing(base_dir):
         trackers = [s.strip().upper() for s in trackers]
         if meta.get('manual', False):
             trackers.insert(0, "MANUAL")
-        
-        # if delay > 0:
-        #     for i in range(delay):
-        #         await asyncio.sleep(1)
-        #         progress.update(task, advance=1)
 
         console.print(f"Processing: [bold cyan]{path}[/bold cyan]")
         common = COMMON(config=config)
@@ -582,7 +577,8 @@ async def do_the_thing(base_dir):
                         skipped_details.append((path, f"Banned group on {tracker_class.tracker}"))  
                         continue
                     await tracker_class.upload(meta)
-                    await client.add_to_client(meta, tracker_class.tracker)            
+                    await client.add_to_client(meta, tracker_class.tracker)
+                    successful_uploads += 1            
 
     ### FEEDBACK ###
 
