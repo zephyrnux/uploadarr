@@ -13,7 +13,13 @@ console = Console()
 
 class DoubleQuoteDict(dict):
     def __str__(self):
-        return "{" + ", ".join(f"\"{k}\": {v if not isinstance(v, str) else '\"' + v.replace('\n', '\\n') + '\"'}" for k, v in self.items()) + "}"
+        parts = []
+        for k, v in self.items():
+            if isinstance(v, str):
+                v = '"' + v.replace('\n', '\\n') + '"'
+            parts.append(f"\"{k}\": {v}")
+        return "{" + ", ".join(parts) + "}"
+
 
 class CustomPrettyPrinter(pprint.PrettyPrinter):
     def _format(self, object, stream, indent, allowance, context, level):
@@ -24,18 +30,21 @@ class CustomPrettyPrinter(pprint.PrettyPrinter):
                 if level == 1:
                     stream.write("    ")
                 if level == 2:
-                    stream.write("            ")        
+                    stream.write("            ")
                 if isinstance(value, dict):
-                    stream.write(f"\"{key}\": ")
+                    stream.write("\"{}\": ".format(key))
                     self._format(value, stream, indent, allowance + 1, context, level + 1)
                 else:
-                    stream.write(f"\"{key}\": {value if not isinstance(value, str) else '\"' + value.replace('\n', '\\n') + '\"'}")
-                if i < len(object) - 1: 
+                    if isinstance(value, str):
+                        value = value.replace('\n', '\\n')
+                        value = f'"{value}"'
+                    stream.write("\"{}\": {}".format(key, value))
+                if i < len(object) - 1:
                     stream.write(",")
-                    if level == 0 or 1 and isinstance(value, dict):
+                    if level == 0 or (level == 1 and isinstance(value, dict)):
                         stream.write("\n\n")
                     else:
-                        stream.write("\n")                     
+                        stream.write("\n")
             self._indent_per_level -= 1
             stream.write("\n}")
         else:
