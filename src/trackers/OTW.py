@@ -16,7 +16,13 @@ class OTW():
         self.source_flag = 'OTW'
         self.upload_url = 'https://oldtoons.world/api/torrents/upload'
         self.search_url = 'https://oldtoons.world/api/torrents/filter'
-        self.banned_groups = [""]
+        self.banned_groups = [
+    '[Oj]', '3LTON', '4yEo', 'ADE', 'AFG', 'AniHLS', 'AnimeRG', 'AniURL', 'AROMA', 'aXXo', 'Brrip', 'CHD', 'CM8', 
+    'CrEwSaDe', 'DeadFish', 'DNL', 'ELiTE', 'eSc', 'FaNGDiNG0', 'FGT', 'Flights', 'FRDS', 'FUM', 'HAiKU', 'HD2DVD',
+    'HDS', 'HDTime', 'Hi10', 'ION10', 'iPlanet', 'JIVE', 'KiNGDOM', 'LAMA', 'Leffe', 'LOAD', 'mHD', 'NhaNc3', 'nHD', 
+    'NOIVTC', 'nSD', 'PiRaTeS', 'PRODJi', 'RAPiDCOWS', 'RARBG', 'RDN', 'REsuRRecTioN', 'RMTeam', 'SANTi', 'SicFoI', 'SPASM', 
+    'STUTTERSHIT', 'Telly', 'TM', 'UPiNSMOKE', 'WAF', 'xRed', 'XS', 'YIFY', 'ZKBL', 'ZmN', 'ZMNT'
+]
         pass
     
     async def get_cat_id(self, category_name):
