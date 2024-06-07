@@ -788,6 +788,7 @@ def dupe_check(dupes, meta, config, skipped_details, path):
             meta_size = meta.get('content_size')
             if meta_size is None:
                 meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
+            dupe_size = int(dupe_size)    
             if abs(meta_size - dupe_size) <= size_tolerance * meta_size:
                 cleaned_dupe_name = preprocess_string(name)
                 similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
