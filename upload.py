@@ -743,14 +743,17 @@ def dupe_check(dupes, meta, config, skipped_details, path):
 
     for name, size in dupes.items():
         try:
-            size = int(size)
-            if size > 0:
-                size_gb = round(size / (1024 ** 3), 2)  # Convert size to GB
+            if "GB" in str(size).upper():
+                size_gb = str(size).upper()
             else:
-                size_gb = "N/A"
+                size = int(size)
+                if size > 0:
+                    size_gb = str(round(size / (1024 ** 3), 2)) + " GB"  # Convert size to GB
+                else:
+                    size_gb = "N/A"
         except ValueError:
             size_gb = "N/A"
-        table.add_row(name, f"[magenta]{size_gb}[/magenta] GB")
+        table.add_row(name, f"[magenta]{size_gb}[/magenta]")
 
     console.print()
     console.print(table)
@@ -784,12 +787,14 @@ def dupe_check(dupes, meta, config, skipped_details, path):
     cleaned_meta_name = preprocess_string(meta['clean_name'])
 
     for name, dupe_size in dupes.items():
-        if dupe_size != 0:
+        if isinstance(dupe_size, str) and "GB" in dupe_size:
+            dupe_size = float(dupe_size.replace(" GB", "")) * (1024 ** 3)  # Convert GB to bytes
+        elif isinstance(dupe_size, (int, float)) and dupe_size != 0:
             meta_size = meta.get('content_size')
             if meta_size is None:
                 meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
-            dupe_size = int(dupe_size)    
-            if abs(meta_size - dupe_size) <= size_tolerance * meta_size:
+            dupe_size = int(dupe_size)   
+            if abs(meta_size - size) <= size_tolerance * meta_size:
                 cleaned_dupe_name = preprocess_string(name)
                 similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
                 if similarity >= similarity_threshold:
