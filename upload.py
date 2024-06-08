@@ -197,7 +197,7 @@ async def do_the_thing(base_dir):
                 console.print("[red]There was an issue with your input. If you think this was not an issue, please make a report that includes the full command used.")
                 exit()
 
-    delay = config['AUTO'].get('delay', 0)
+    delay = meta.get('delay', 0) or config['AUTO'].get('delay', 0)
     base_meta = {k: v for k, v in meta.items()}
 
     # Initialize counters
