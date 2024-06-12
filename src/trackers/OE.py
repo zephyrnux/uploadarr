@@ -26,7 +26,6 @@ class OE():
         cat_id = await self.get_cat_id(meta['category'])
         type_id = await self.get_type_id(meta['type'], meta.get('tv_pack', 0), meta.get('video_codec'), meta.get('category', ""))
         resolution_id = await self.get_res_id(meta['resolution'])
-        oe_name = await self.edit_name(meta)
         if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
         else:
@@ -267,6 +266,13 @@ class OE():
 
         
         return ' '.join(name.split())
+
+    async def get_cat_id(self, category_name):
+        category_id = {
+            'MOVIE': '1', 
+            'TV': '2', 
+            }.get(category_name, '0')
+        return category_id
 
     async def get_type_id(self, type, tv_pack, video_codec, category):
         type_id = {
