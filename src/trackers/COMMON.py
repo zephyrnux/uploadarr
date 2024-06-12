@@ -73,7 +73,7 @@ class COMMON():
 
             img_size = self.config["DEFAULT"].get("img_size", 500)
             inline_imgs = self.config["DEFAULT"].get("inline_imgs", 0)
-            desc = desc.replace('[img]', f"[img={img_size}")
+            desc = desc.replace('[img]', f"[img={img_size}]")
             descfile.write(desc)
             images = meta['image_list']
             if len(images) > 0: 
