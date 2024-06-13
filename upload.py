@@ -17,6 +17,7 @@ import glob
 import subprocess
 import traceback
 import time
+import random
 from packaging.version import Version
 from src.console import console
 from rich.markdown import Markdown
@@ -39,12 +40,12 @@ import importlib
 ### Add below + api or http list ###
 ####################################
 tracker_list = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FL', 'FNP', 'HDB', 'HDT', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT',
-                 'MTV', 'NBL', 'OE', 'OTW', 'PTER', 'PTT', 'R4E', 'RF', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TL', 'TTG', 'TTR', 'ULCX', 'UTP']
+                 'MTV', 'NBL', 'OE', 'OINK', 'OTW', 'PTER', 'PTT', 'R4E', 'RF', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TL', 'TTG', 'TTR', 'ULCX', 'UTP']
 
 # Imports corresponding modules + creates dict
 tracker_class_map = {tracker: getattr(importlib.import_module(f"src.trackers.{tracker}"), tracker) for tracker in tracker_list}
 
-api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TTR', 'ULCX', 'UTP']
+api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'OINK', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TTR', 'ULCX', 'UTP']
 http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
 
 ############# EDITING BELOW THIS LINE MAY RESULT IN SCRIPT BREAKING #############
@@ -69,7 +70,7 @@ else:
     console.print("[bold red] It appears you have no config file, please ensure to configure and place `/data/config.py`")
     exit()
 
-if 'version' not in config or Version(config.get('version')) < minimum_version:
+def reconfigure():
     console.print("[bold red]WARN[/bold red]: Version out of date, automatic upgrade in progress")
     try:
         if os.path.exists(old_config_path):
@@ -77,7 +78,7 @@ if 'version' not in config or Version(config.get('version')) < minimum_version:
             shutil.move(old_config_path, backup_name)
         shutil.move(config_path, old_config_path)
     except Exception as e:
-        console.print("[bold red]ERROR[/bold red]: Unable to proceed with automatic upgrade. Please rename `config.py` to `old_config.py` move it t 'data/backup` and run `python3 data/reconfig.py`")
+        console.print("[bold red]ERROR[/bold red]: Unable to proceed with automatic upgrade. Please rename `config.py` to `old_config.py` move it to 'data/backup` and run `python3 data/reconfig.py`")
         console.print(f"Error: {str(e)}")
         exit()
 
@@ -98,14 +99,17 @@ if 'version' not in config or Version(config.get('version')) < minimum_version:
 
     console.print("Please double-check new config and ensure client settings were appropriately set.")
     console.print("[bold yellow]WARN[/bold yellow]: After verification of config, rerun command.")
-    console.print("[dim green]Thanks for using Uploadrr :) ")
+    console.print("[dim green]Thanks for using Uploadrr :)")
     exit()
+
+if 'version' not in config or Version(config.get('version')) < minimum_version:
+    reconfigure()
 
 try:
     from data.backup import example_config
     if 'version' in example_config.config and Version(example_config.config.get('version')) > Version(config.get('version')):
         console.print("[bold yellow]WARN[/bold yellow]: Config version out of date, updating is recommended.")
-        console.print("[bold yellow]WARN[/bold yellow]: Simply rename `[bold]config.py[/bold]` to `[bold]old_config.py[/bold]` and place in `[bold]/data/backup/[/bold]` then run `[bold]python3 data/reconfig.py[/bold]`")
+        console.print("[bold yellow]WARN[/bold yellow]: Simply pass --reconfig")
 except Exception as e:
     console.print(f"[bold red]Error: {str(e)}[/bold red]")
     pass
@@ -125,6 +129,8 @@ async def do_the_thing(base_dir):
         else:
             break
     meta, help, before_args = parser.parse(tuple(' '.join(sys.argv[1:]).split(' ')), meta)
+    if meta.get("reconfig", False):
+        reconfigure()    
     if meta['cleanup'] and os.path.exists(f"{base_dir}/tmp"):
         shutil.rmtree(f"{base_dir}/tmp")
         console.print("[bold green]Successfully emptied tmp directory")
@@ -207,6 +213,13 @@ async def do_the_thing(base_dir):
     skipped_details = []
     skipped_tmdb_files = []
     current_file = 1
+
+    if meta.get('random'):
+        random.shuffle(queue)
+    elif meta.get('auto_queue'):
+        queue = sorted(queue, key=str.lower)
+    else:
+        queue = queue
 
     for path in queue:
         meta = {k: v for k, v in base_meta.items()}

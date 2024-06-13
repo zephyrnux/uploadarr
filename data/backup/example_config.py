@@ -8,7 +8,7 @@
         ##-----------------------------------------------------##
 
 config = {
-    'version': '1.0.0',
+    'version': '1.0.1',
 	
     "DEFAULT" : {
 
@@ -16,6 +16,7 @@ config = {
         "imgbb_api" : "imgbb_API_KEY", # Recommended
         "ptpimg_api" : "ptpimg_API_KEY",
         "lensdump_api" : "lensdump_API_KEY",
+        "ptscreens_api" : "ptscreens_API_KEY", #No Api Rate-Limit (slower than imgbb, but might be worth it!)
 
         # Order of image hosts, and backup image hosts
         "img_host_1": "imgbb",
@@ -23,8 +24,8 @@ config = {
         "img_host_3": "imgbox",
 	    "img_host_4": "pixhost",
         "img_host_5": "lensdump",
+        "img_host_6": "ptscreens",
 
-        "screens" : "6",
         "img_size" : "500",  #Size in Description [img=500]
         "optimize_images" : True,  # Lossless PNG Compression (True/False)
 	    #"inline_imgs": 3, #Uncomment and use this if you want to insert a line break after X images in description
@@ -42,7 +43,6 @@ config = {
 
         # Play the bell sound effect when asking for confirmation
         "sfx_on_prompt" : True,
-
     },
 
     "AUTO" :{  ####### AUTO / POWER USER SETTINGS ########
@@ -259,13 +259,23 @@ config = {
             "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
             },
 
+        "OINK" : {
+            "api_key" : "OiNK_API_KEY",
+            "announce_url" : "https://yoinked.org/announce/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : "\n[center][b]PLEASE SEED YOiNKED FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_signature" : "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",     
+            "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            },            
+
         "OTW" : {
             "api_key" : "OTW_API_KEY",
             "announce_url" : "https://oldtoons.world/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : "\n[center][b]PLEASE SEED OldToons FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",     
-            "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED OE FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "pr_signature": "\n [center]PERSONAL RELEASE[/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
             },
 
@@ -439,7 +449,8 @@ config = {
             "qbit_port" : "8080",
             "qbit_user" : "username",
             "qbit_pass" : "password",
-            # "torrent_storage_dir" : "path/to/BT_backup folder",
+            ### REPLACE $HOME with PATH: ie: /home/USER/ or on mac: USER/
+            "torrent_storage_dir" : "$HOME/.local/share/qBittorrent/BT_backup", #: "$HOME/Library/Application Support/qBittorrent/BT_backup" , if windows: r"C:\APPDATA\qBittorrent\BT_backup" or LOCALAPPDATA
             # "qbit_tag" : "tag",
             # "qbit_cat" : "category",
             

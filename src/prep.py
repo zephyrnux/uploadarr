@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*- 
 from sys import meta_path
+from turtle import title
 from src.args import Args
 from src.console import console
 from src.exceptions import *
@@ -361,7 +362,7 @@ class Prep():
         else:
             meta['video_encode'], meta['video_codec'], meta['has_encode_settings'], meta['bit_depth'] = self.get_video_encode(mi, meta['type'], bdinfo)
         
-        meta['edition'], meta['repack'], meta['cut'], meta['ratio'] = self.get_edition(meta['path'], bdinfo, meta['filelist'], meta.get('manual_edition'))
+        meta['edition'], meta['repack'], meta['cut'], meta['ratio'] = self.get_edition(meta['title'], meta['path'], bdinfo, meta['filelist'], meta.get('manual_edition'))
         if "REPACK" in meta.get('edition', ""):
             meta['repack'] = re.search(r"REPACK[\d]?", meta['edition'])[0]
             meta['edition'] = re.sub(r"REPACK[\d]?", "", meta['edition']).strip().replace('  ', ' ')
@@ -721,7 +722,7 @@ class Prep():
                         try:
                             if os.path.getsize(Path(image)) <= 31000000 and self.img_host == "imgbb":
                                 i += 1
-                            elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", 'pixhost']:
+                            elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", "pixhost", "ptscreens" ]:
                                 i += 1
                             elif os.path.getsize(Path(image)) <= 75000:
                                 console.print("[bold yellow]Image is incredibly small, retaking")
@@ -862,7 +863,7 @@ class Prep():
                             try:
                                 if os.path.getsize(Path(image)) <= 31000000 and self.img_host == "imgbb":
                                     i += 1
-                                elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", 'pixhost']:
+                                elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", 'pixhost', "ptscreens"]:
                                     i += 1
                                 elif os.path.getsize(Path(image)) <= 75000:
                                     console.print("[yellow]Image is incredibly small (and is most likely to be a single color), retaking")
@@ -934,10 +935,10 @@ class Prep():
             else:
                 loglevel = 'quiet'
                 debug = True
-                if bool(meta.get('ffdebug', False)) == True:
+                if bool(meta.get('ffdebug', False)):
                     loglevel = 'verbose'
                     debug = False
-                if meta.get('vapoursynth', False) == True:
+                if meta.get('vapoursynth', False):
                     from src.vs import vs_screengn
                     vs_screengn(source=path, encode=None, filter_b_frames=False, num=num_screens, dir=f"{base_dir}/tmp/{folder_id}/")
                 else:
@@ -978,7 +979,7 @@ class Prep():
                                         time.sleep(1)
                                     elif os.path.getsize(Path(image_path)) <= 31000000 and self.img_host == "imgbb" and not retake:
                                         i += 1
-                                    elif os.path.getsize(Path(image_path)) <= 10000000 and self.img_host in ["imgbox", 'pixhost'] and not retake:
+                                    elif os.path.getsize(Path(image_path)) <= 10000000 and self.img_host in ["imgbox", 'pixhost', "ptscreens"] and not retake:
                                         i += 1
                                     elif self.img_host in ["ptpimg", "lensdump"] and not retake:
                                         i += 1
@@ -1924,7 +1925,7 @@ class Prep():
         return video_encode, video_codec, has_encode_settings, bit_depth
 
 
-    def get_edition(self, video, bdinfo, filelist, manual_edition):
+    def get_edition(self, title, video, bdinfo, filelist, manual_edition):
         if video.lower().startswith('dc'):
             video = video.replace('dc', '', 1)
         guess = guessit(video)
@@ -1951,8 +1952,6 @@ class Prep():
 
         video = video.upper().replace('.', ' ').replace(tag, '').replace('-', '')
 
-        # if "OPEN MATTE" in video.upper():
-        #     ratio = "Open Matte"
         cuts = {
             "director cut": "Director's Cut",
             "extended": "Extended",
@@ -1980,18 +1979,18 @@ class Prep():
             edition = "AI UPSCALE" 
         if "AI" in video.upper() and "UPSCALE" in video.upper():
             edition = "AI UPSCALE"            
-        if " REPACK " in (video or edition) or "V2" in video:
+        if " REPACK " in (video or edition) or "[REPACK]" in video or "V2" in video:
             repack = "REPACK"
-        if " REPACK2 " in (video or edition) or "V3" in video:
+        if " REPACK2 " in (video or edition) or "[REPACK2]" in video or "V3" in video:
             repack = "REPACK2"
-        if " REPACK3 " in (video or edition) or "V4" in video:
+        if " REPACK3 " in (video or edition) or "[REPACK3]" in video or "V4" in video:
             repack = "REPACK3"
         if " PROPER " in (video or edition):
             repack = "PROPER"
         if " RERIP " in (video.upper() or edition):
             repack = "RERIP"
-        # if "HYBRID" in video.upper() and "HYBRID" not in title.upper():
-        #     edition = "Hybrid " + edition
+        if " HYBRID " in video.upper() and "HYBRID" not in title.upper():
+            edition = "Hybrid " + edition
         edition = re.sub(r"(REPACK\d?)?(RERIP)?(PROPER)?", "", edition, flags=re.IGNORECASE).strip()
         bad = ['internal', 'limited', 'retail']
 
@@ -2198,6 +2197,24 @@ class Prep():
                                 progress.console.print("[yellow]imgbb failed, trying next image host")
                                 progress.stop()
                                 newhost_list, i = self.upload_screens(meta, screens - i , img_host_num + 1, i, total_screens, [], return_dict)
+                        elif img_host == "ptscreens":
+                            url = "https://ptscreens.com/api/1/upload"
+                            data = {
+                                'key': self.config['DEFAULT']['ptscreens_api'],
+                                'image': base64.b64encode(open(image, "rb").read()).decode('utf8')
+                            }
+                            try:
+                                response = requests.post(url, data = data,timeout=timeout)
+                                response = response.json()
+                                if response.get('status_code') != 200:
+                                    progress.console.print(response)
+                                img_url = response['data'].get('medium', response['data']['image'])['url']
+                                web_url = response['data']['url_viewer']
+                                raw_url = response['data']['image']['url']
+                            except Exception:
+                                progress.console.print("[yellow]PT Screens failed, trying next image host")
+                                progress.stop()
+                                newhost_list, i = self.upload_screens(meta, screens - i , img_host_num + 1, i, total_screens, [], return_dict)        
                         elif img_host == "freeimage.host":
                             progress.console.print("[red]Support for freeimage.host has been removed. Please remove from your config")
                             progress.console.print("continuing in 15 seconds")
