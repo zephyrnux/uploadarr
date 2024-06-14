@@ -414,13 +414,23 @@ config = {
 
         "UTP" : {
             "api_key" : "UTP_API_KEY",
-            "announce_url" : "https://utp.to//announce/Custom_Announce_URL",
+            "announce_url" : "https://utp.to/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : "\n[center][b]PLEASE SEED UTP FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED UTP FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
-        },	    
+        },	
+
+        "VHD": {
+                "api_key": "VHD_API_KEY",
+                "announce_url": "https://vision-hd.org/announce/Custom_Announce_URL",
+                "anon": False,
+            "signature" : "\n[center][b]PLEASE SEED VHD FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_signature" : "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
+            "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED VHD FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	
+    },        
 	    
         "MANUAL" : {
             # Uncomment and replace link with filebrowser (https://github.com/filebrowser/filebrowser) link to the Uploadrr directory, this will link to your filebrowser instead of uploading to uguu.se
