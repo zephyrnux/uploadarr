@@ -50,6 +50,9 @@ http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
 
 ############# EDITING BELOW THIS LINE MAY RESULT IN SCRIPT BREAKING #############
 
+python3_path = shutil.which("python3")
+python_cmd = python3_path if python3_path else "python" 
+
 base_dir = os.path.dirname(os.path.realpath(__file__))
 data_dir = os.path.join(base_dir, 'data')
 config_path = os.path.abspath(os.path.join(data_dir, 'config.py'))
@@ -64,10 +67,14 @@ def get_backup_name(path, suffix='_bu'):
         counter += 1
     return path
 
-if os.path.exists(config_path):
-    from data.config import config
-else:
+if not os.path.exists(config_path):  
     console.print("[bold red] It appears you have no config file, please ensure to configure and place `/data/config.py`")
+    exit()
+
+try:
+    from data.config import config 
+except ImportError as e:
+    console.print(f"[bold red]Error importing config: {str(e)}[/bold red]")
     exit()
 
 def reconfigure():
@@ -83,7 +90,7 @@ def reconfigure():
         exit()
 
     result = subprocess.run(
-        ["python3", os.path.join(data_dir, "reconfig.py"), "--output-dir", data_dir],
+        [python_cmd, os.path.join(data_dir, "reconfig.py"), "--output-dir", data_dir],
         capture_output=True,
         text=True
     )
@@ -102,7 +109,7 @@ def reconfigure():
     console.print("[dim green]Thanks for using Uploadrr :)")
     exit()
 
-if 'version' not in config or Version(config.get('version')) < minimum_version:
+if 'version' not in config or Version(config.get('version')) < minimum_version:  # Check for version and reconfigures
     reconfigure()
 
 try:
@@ -128,9 +135,9 @@ async def do_the_thing(base_dir):
             paths.append(os.path.abspath(each))
         else:
             break
-    meta, help, before_args = parser.parse(tuple(' '.join(sys.argv[1:]).split(' ')), meta)
     if meta.get("reconfig", False):
-        reconfigure()    
+        reconfigure()        
+    meta, help, before_args = parser.parse(tuple(' '.join(sys.argv[1:]).split(' ')), meta)    
     if meta['cleanup'] and os.path.exists(f"{base_dir}/tmp"):
         shutil.rmtree(f"{base_dir}/tmp")
         console.print("[bold green]Successfully emptied tmp directory")

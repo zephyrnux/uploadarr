@@ -20,7 +20,6 @@ class DoubleQuoteDict(dict):
             parts.append(f"\"{k}\": {v}")
         return "{" + ", ".join(parts) + "}"
 
-
 class CustomPrettyPrinter(pprint.PrettyPrinter):
     def _format(self, object, stream, indent, allowance, context, level):
         if isinstance(object, dict):
@@ -51,17 +50,16 @@ class CustomPrettyPrinter(pprint.PrettyPrinter):
             super()._format(object, stream, indent, allowance, context, level)
 
 def read_config(file_path):
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding='utf-8') as file:
         exec(file.read())
     return locals()['config']
 
 def write_config(file_path, config_dict):
-    with open(file_path, 'w') as file:
+    with open(file_path, 'w', encoding='utf-8') as file:
         file.write(f"\n        ##---------THE LAST DIGITAL UNDERGROUND PRESENTS-------##\n        ##                                                     ##\n        ##                 Special Recruitment :)              ##\n        ##          @ https://TheLDU.to/application            ##\n        ##                                                     ##\n        ##                              Ref: Uploadrr by CvT   ##\n        ##-----------------------------------------------------##\n\n  #Refer to `/backup/example-config.py` for additional options + comments\n\n")
         file.write('config = ')
         printer = CustomPrettyPrinter(stream=file)
         printer.pprint(config_dict)
-
 
 def replace_values(base_dict, old_dict):
     special_cases = {
@@ -77,7 +75,6 @@ def replace_values(base_dict, old_dict):
             if isinstance(old_value, dict):
                 replace_values(base_dict[key], old_value)
                 continue
-
             else:
                 if key in special_cases and old_value == special_cases[key]:
                     continue
@@ -97,11 +94,9 @@ def replace_values(base_dict, old_dict):
                         else:
                             base_dict[key] = old_value
                 else:
-                    base_dict[key] = old_value                            
+                    base_dict[key] = old_value
         else:
             base_dict[key] = old_value
-
-
 
 parser = argparse.ArgumentParser(description='Reconfigure the config file.')
 parser.add_argument('--output-dir', type=str, required=True, help='The directory where the new config.py should be written.')
@@ -112,21 +107,30 @@ data_dir = os.path.dirname(os.path.realpath(__file__))
 backup_dir = os.path.join(data_dir, 'backup')
 
 def reconfigure():
-    base_config = read_config(os.path.join(backup_dir, 'example_config.py'))
-    old_config = read_config(os.path.join(backup_dir, 'old_config.py'))
+    base_config_path = os.path.join(backup_dir, 'example_config.py')
+    old_config_path = os.path.join(backup_dir, 'old_config.py')
+    new_config_path = os.path.join(output_dir, 'config.py')
+    
+    try:
+        base_config = read_config(base_config_path)
+        old_config = read_config(old_config_path)
+    except Exception as e:
+        console.print(f"[bold red]ERROR[/bold red]: {e}")
+        return
+
     new_config = copy.deepcopy(base_config)
     replace_values(new_config, old_config)
 
-    if os.path.exists(os.path.join(backup_dir, 'config.py')):
-        current_config = read_config(os.path.join(backup_dir, 'config.py'))
+    if os.path.exists(new_config_path):
+        current_config = read_config(new_config_path)
     else:
         current_config = {'version': '0'}
 
-    if not os.path.exists(os.path.join(backup_dir, 'old_config.py')):
+    if not os.path.exists(old_config_path):
         console.print("[bold red]WARN[/bold red]: [bold]old_config.py[/bold] not found, please rename your old `config.py` to `old_config.py` and try again")
         return
 
-    if os.path.exists(os.path.join(backup_dir, 'config.py')):
+    if os.path.exists(new_config_path):
         if version.parse(current_config.get('version', '0')) > version.parse(base_config.get('version', '0')):
             console.print("[bold red]WARN[/bold red]: The current config file has a higher version number than the example config file.")
             console.print("[bold red]WARN[/bold red]: Continuing will [bold]downgrade[/bold] the configuration file and may cause [bold]incompatibility issues[/bold].")
@@ -153,7 +157,11 @@ def reconfigure():
     if default_value is not None:
         new_config['TRACKERS'] = {'default_trackers': default_value, **new_config['TRACKERS']}
 
-    write_config(os.path.join(output_dir, 'config.py'), new_config)
+    try:
+        write_config(new_config_path, new_config)
+    except Exception as e:
+        console.print(f"[bold red]ERROR[/bold red]: {e}")
+        return
 
     Print('[bold green]Congratulations! config.py was successfully updated.[/bold green]')
     Print('[bold yellow]WARN[/bold yellow]: It is recommended you double check your client settings.')
@@ -161,6 +169,5 @@ def reconfigure():
         Print('[bold yellow]WARN[/bold yellow]: The following [i]not built-in[/i] TRACKERS: [bold]' + '[/bold], [bold]'.join(added_blocks) + '[/bold] were added.') 
         Print('[bold yellow]WARN[/bold yellow]: Please be sure to add them in `upload.py` and add the .py files into `/src/trackers`')
         Print('[bold red]WARN[/bold yellow]: Note that you should recreate the Tracker using the template as changes have been made, and script will break if left alone.')
-
 
 reconfigure()
