@@ -36,7 +36,8 @@ Hopefully it works and makes your life simplier.
 
 
 ## Coming Soon:
-  - Better support for FANRES + ADULT Content 
+  - Better support for FANRES & Adult Content
+  - Better support for Music & Ebooks 
 
   
 
