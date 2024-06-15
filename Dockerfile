@@ -4,11 +4,11 @@ FROM alpine:latest
 RUN apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 # install requirements
-RUN apk add --no-cache --upgrade ffmpeg mediainfo python3 git py3-pip python3-dev g++ cargo mktorrent rust
+RUN apk add --no-cache --upgrade ffmpeg mediainfo python3 git py3-pip python3-dev python3-tkinter g++ cargo mktorrent rust
 
 # create virtual environment
-RUN python3 -m venv /Assistant
-ENV PATH="/Assistant/bin:$PATH"
+RUN python3 -m venv /venv
+ENV PATH="/venv/bin:$PATH"
 
 # change workdir
 WORKDIR Uploadrr
