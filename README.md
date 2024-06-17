@@ -63,8 +63,19 @@ Hopefully it works and makes your life simplier.
   - Run `python3 -m pip3 install --user -U -r requirements.txt` to ensure dependencies are up to date
 ## **CLI Usage:**
   
-  `python3 upload.py "/downloads/path/to/content" --args`
+  `python3 upload.py "/downloads/path/to/media" --args`
   
-  Args are OPTIONAL, for a list of acceptable args, pass `--help`
+  Args are OPTIONAL, for a list of acceptable args, pass `--help`  
+  For an overview of all arguments with descriptions plea see [Uploadrr Argument List](https://theldu.org/wiki/uploadrr-arguments-list/) Thanks **GME**!
 ## **Docker Usage:**
-  Personally untested, but Rx69 gave them files. Hopefully it works for you! Otherwise try checking [docker usage wiki page](https://github.com/L4GSP1KE/Upload-Assistant/wiki/Docker) for inspiration. 
+  Many thanks to **l1mo** for helping set the Dockerfile up.  
+  Thanks to **dare** for the following command to have everything running smoothly.
+
+``` docker run --rm -it --network=host
+-v /path/to/config.py:/Uploadrr/data/config.py
+-v /path/to/media:/media
+-v /path/to/BT_backup:/BT_backup
+ghcr.io/z-ink/uploadrr:master “/path/to/media”
+```
+
+Hopefully it works for you! Otherwise try checking [docker usage wiki page](https://github.com/L4GSP1KE/Upload-Assistant/wiki/Docker) for inspiration. 

@@ -461,7 +461,8 @@ config = {
             "qbit_user" : "username",
             "qbit_pass" : "password",
             ### REPLACE $HOME with PATH: ie: /home/USER/ or on mac: USER/
-            "torrent_storage_dir" : "$HOME/.local/share/qBittorrent/BT_backup", #: "$HOME/Library/Application Support/qBittorrent/BT_backup" , if windows: r"C:\APPDATA\qBittorrent\BT_backup" or LOCALAPPDATA
+            "torrent_storage_dir" : "$HOME/.local/share/qBittorrent/BT_backup", #: "$HOME/Library/Application Support/qBittorrent/BT_backup" , if windows: r"C:\APPDATA\qBittorrent\BT_backup" or LOCALAPPDATA 
+            # if using DOCKER usually in  "/mnt/cache/appdata/qbittorrent/data/BT_backup/" HOWEVER input "/BT_backup" here
             # "qbit_tag" : "tag",
             # "qbit_cat" : "category",
             
