@@ -20,7 +20,7 @@ class LDU():
         self.source_flag = 'LDU'
         self.upload_url = 'https://theldu.to/api/torrents/upload'
         self.search_url = 'https://theldu.to/api/torrents/filter'
-        self.banned_groups = ['example']
+        self.banned_groups = ['']
         pass
     
     async def get_cat_id(self, category_name, genres, keywords, service, edition, meta):
@@ -231,7 +231,10 @@ class LDU():
 
     def get_language_tag(self, meta):
         audio_lang = []
-        if 'mediainfo' in meta:
+        if meta.get("is_disc") is not None:
+            lang_tag = ""
+            sub_lang_tag = ""
+        elif 'mediainfo' in meta:
             for x in meta["mediainfo"]["media"]["track"]:
                 if x["@type"] == "Audio":
                     commentary_found = 'Title' in x and ('comment' in x['Title'].lower() or 'review' in x['Title'].lower())
