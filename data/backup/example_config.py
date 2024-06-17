@@ -26,6 +26,7 @@ config = {
         "img_host_5": "lensdump",
         "img_host_6": "ptscreens",
 
+        "screens" : "6",
         "img_size" : "500",  #Size in Description [img=500]
         "optimize_images" : True,  # Lossless PNG Compression (True/False)
 	    #"inline_imgs": 3, #Uncomment and use this if you want to insert a line break after X images in description

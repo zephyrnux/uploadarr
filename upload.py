@@ -262,7 +262,7 @@ async def do_the_thing(base_dir):
             console.print("[yellow]Running in Auto Mode")
                 
         current_file += 1
-        prep = Prep(screens=meta['screens'], img_host=meta['imghost'], config=config)
+        prep = Prep(screens=meta.get('screens', 3), img_host=meta.get('imghost', 'imgbox'), config=config)
         meta = await prep.gather_prep(meta=meta, mode='cli')
 
         # Gather TMDb ID
