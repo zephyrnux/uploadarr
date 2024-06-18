@@ -4,7 +4,6 @@ ffmpeg-python
 pymediainfo
 tmdbsimple
 anitopy
-cli-ui
 qbittorrent-api
 deluge-client
 pyrobase

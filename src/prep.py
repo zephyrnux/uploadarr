@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*- 
 from sys import meta_path
-from turtle import title
 from src.args import Args
 from src.console import console
 from src.exceptions import *
@@ -44,7 +43,6 @@ try:
     from subprocess import Popen
     import subprocess
     import itertools
-    import cli_ui
     from rich.prompt import Prompt
     from rich.progress import Progress, TextColumn, BarColumn, TimeRemainingColumn
     import platform
