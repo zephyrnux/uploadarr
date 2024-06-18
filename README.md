@@ -69,13 +69,20 @@ Hopefully it works and makes your life simplier.
   For an overview of all arguments with descriptions plea see [Uploadrr Argument List](https://theldu.org/wiki/uploadrr-arguments-list/) Thanks **GME**!
 ## **Docker Usage:**
   Many thanks to **l1mo** for helping set the Dockerfile up.  
-  Thanks to **dare** for the following command to have everything running smoothly.
+  Thanks to **dare** for the following command to have everything running smoothly.  
+  Either:
 
-``` docker run --rm -it --network=host
--v /path/to/config.py:/Uploadrr/data/config.py
--v /path/to/media:/media
--v /path/to/BT_backup:/BT_backup
-ghcr.io/z-ink/uploadrr:master “/path/to/media”
 ```
+docker run --rm -it --network=host \
+-v /path/to/config.py:/Uploadrr/data/config.py \
+-v /path/to/media:/media \
+-v /path/to/BT_backup:/BT_backup \
+ghcr.io/z-ink/uploadrr:master "/path/to/media" --args
+```  
+Or:
+```
+docker run --rm -it --network=host -v /path/to/config.py:/Uploadrr/data/config.py -v /path/to/media:/media -v /path/to/BT_backup:/BT_backup ghcr.io/z-ink/uploadrr:master "/path/to/media" --args
+```
+
 
 Hopefully it works for you! Otherwise try checking [docker usage wiki page](https://github.com/L4GSP1KE/Upload-Assistant/wiki/Docker) for inspiration. 
