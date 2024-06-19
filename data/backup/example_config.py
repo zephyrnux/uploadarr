@@ -17,6 +17,7 @@ config = {
         "ptpimg_api" : "ptpimg_API_KEY",
         "lensdump_api" : "lensdump_API_KEY",
         "ptscreens_api" : "ptscreens_API_KEY", #No Api Rate-Limit (slower than imgbb, but might be worth it!)
+        "oeimg_api" : "oeimg_API_KEY", 
 
         # Order of image hosts, and backup image hosts
         "img_host_1": "imgbb",
@@ -25,6 +26,7 @@ config = {
 	    "img_host_4": "pixhost",
         "img_host_5": "lensdump",
         "img_host_6": "ptscreens",
+        "img_host_7": "oeimg",
 
         "screens" : "6",
         "img_size" : "500",  #Size in Description [img=500]

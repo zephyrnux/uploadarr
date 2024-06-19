@@ -720,7 +720,7 @@ class Prep():
                         try:
                             if os.path.getsize(Path(image)) <= 31000000 and self.img_host == "imgbb":
                                 i += 1
-                            elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", "pixhost", "ptscreens" ]:
+                            elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", "pixhost", "ptscreens", "oeimg" ]:
                                 i += 1
                             elif os.path.getsize(Path(image)) <= 75000:
                                 console.print("[bold yellow]Image is incredibly small, retaking")
@@ -861,7 +861,7 @@ class Prep():
                             try:
                                 if os.path.getsize(Path(image)) <= 31000000 and self.img_host == "imgbb":
                                     i += 1
-                                elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", 'pixhost', "ptscreens"]:
+                                elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", 'pixhost', "ptscreens", "oeimg"]:
                                     i += 1
                                 elif os.path.getsize(Path(image)) <= 75000:
                                     console.print("[yellow]Image is incredibly small (and is most likely to be a single color), retaking")
@@ -977,7 +977,7 @@ class Prep():
                                         time.sleep(1)
                                     elif os.path.getsize(Path(image_path)) <= 31000000 and self.img_host == "imgbb" and not retake:
                                         i += 1
-                                    elif os.path.getsize(Path(image_path)) <= 10000000 and self.img_host in ["imgbox", 'pixhost', "ptscreens"] and not retake:
+                                    elif os.path.getsize(Path(image_path)) <= 10000000 and self.img_host in ["imgbox", 'pixhost', "ptscreens", "oeimg"] and not retake:
                                         i += 1
                                     elif self.img_host in ["ptpimg", "lensdump"] and not retake:
                                         i += 1
@@ -2195,6 +2195,24 @@ class Prep():
                                 progress.console.print("[yellow]imgbb failed, trying next image host")
                                 progress.stop()
                                 newhost_list, i = self.upload_screens(meta, screens - i , img_host_num + 1, i, total_screens, [], return_dict)
+                        elif img_host == "oeimg":
+                            url = "https://imgoe.download/api/1/upload"
+                            data = {
+                                'key': self.config['DEFAULT']['oeimg_api'],
+                                'image': base64.b64encode(open(image, "rb").read()).decode('utf8')
+                            }
+                            try:
+                                response = requests.post(url, data = data,timeout=timeout)
+                                response = response.json()
+                                if response.get('status_code') != 200:
+                                    progress.console.print(response)
+                                img_url = response['data'].get('medium', response['data']['image'])['url']
+                                web_url = response['data']['url_viewer']
+                                raw_url = response['data']['image']['url']
+                            except Exception:
+                                progress.console.print("[yellow]oeimg failed, trying next image host")
+                                progress.stop()
+                                newhost_list, i = self.upload_screens(meta, screens - i , img_host_num + 1, i, total_screens, [], return_dict)                                
                         elif img_host == "ptscreens":
                             url = "https://ptscreens.com/api/1/upload"
                             data = {
