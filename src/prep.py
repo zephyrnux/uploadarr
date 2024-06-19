@@ -1962,7 +1962,7 @@ class Prep():
             if key in video.lower():
                 cut = value
 
-        ratios = {"IMAX": "IMAX", "OPEN MATTE": "Open Matte", "MAR": "MAR"}
+        ratios = {"IMAX": "IMAX", "OPEN MATTE": "Open Matte", " MAR ": "MAR"}
         for key, value in ratios.items():
             if key in video.upper():
                 ratio = value
