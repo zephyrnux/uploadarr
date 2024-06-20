@@ -58,6 +58,8 @@ class TL():
                 return self.CATEGORIES['MovieDvd']
             elif meta['type'] == 'ENCODE' and 'DVD' in meta['source']:
                 return self.CATEGORIES['MovieDvdRip']
+            elif 'WEB' in meta['type'] and '2160' in meta['resolution']:
+                return self.CATEGORIES['Movie4K']
             elif 'WEB' in meta['type']:
                 return self.CATEGORIES['MovieWebrip']
             elif meta['type'] == 'HDTV':
