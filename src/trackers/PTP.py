@@ -1,4 +1,4 @@
-import cli_ui
+import rich.prompt as Prompt
 import requests
 import asyncio
 import re
@@ -359,7 +359,7 @@ class PTP():
         if ptpType == None:
             if meta.get('mode', 'discord') == 'cli':
                 ptpTypeList = ["Feature Film", "Short Film", "Miniseries", "Stand-up Comedy", "Concert", "Movie Collection"]
-                ptpType = cli_ui.ask_choice("Select the proper type", choices=ptpTypeList)
+                ptpType = Prompt.ask("Select the proper type", choices=ptpTypeList)
         return ptpType
 
     def get_codec(self, meta):
@@ -468,7 +468,11 @@ class PTP():
             "English Softsubs Exist (Mislabeled)" : None,
             "Hardcoded Subs (Non-English)" : "OTHER"
         }
-        opts = cli_ui.select_choices("English subtitles not found. Please select any/all applicable options:", choices=list(trumpable_values.keys()))
+        choices = list(trumpable_values.keys())
+        opts = []
+        for choice in choices:
+            if Prompt.ask(f"Select {choice}?", choices=["yes", "no"]) == "yes":
+                opts.append(choice)
         trumpable = []
         if opts:
             for t, v in trumpable_values.items():
@@ -479,7 +483,7 @@ class PTP():
                         trumpable.append(v)
                     elif v == "OTHER": #Hardcoded, Non-English
                         trumpable.append(14)
-                        hc_sub_langs = cli_ui.ask_string("Enter language code for HC Subtitle languages")
+                        hc_sub_langs = Prompt.ask("Enter language code for HC Subtitle languages")
                         for lang, subID in self.sub_lang_map.items():
                             if any(hc_sub_langs.strip() == x for x in list(lang)):
                                 sub_langs.append(subID)
@@ -572,7 +576,7 @@ class PTP():
         return desc
 
     async def edit_desc(self, meta):
-        from src.prep import Prep
+        from prep_what import Prep
         prep = Prep(screens=meta['screens'], img_host=meta['imghost'], config=self.config)
         base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r', encoding="utf-8").read()
         with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'w', encoding="utf-8") as desc:
@@ -694,7 +698,7 @@ class PTP():
                     resp = loginresponse.json()
                     if resp['Result'] == "TfaRequired":
                         data['TfaType'] = "normal"
-                        data['TfaCode'] = cli_ui.ask_string("2FA Required: Please enter 2FA code")
+                        data['TfaCode'] = Prompt.ask("2FA Required: Please enter 2FA code")
                         loginresponse = session.post("https://passthepopcorn.me/ajax.php?action=login", data=data, headers=headers)
                         await asyncio.sleep(2)
                         resp = loginresponse.json()
@@ -774,7 +778,7 @@ class PTP():
             if cover != None and "ptpimg" not in cover:
                 cover = await self.ptpimg_url_rehost(cover)
             while cover == None:
-                cover = cli_ui.ask_string("No Poster was found. Please input a link to a poster: \n", default="")
+                cover = Prompt.ask("No Poster was found. Please input a link to a poster:", default="")
                 if "ptpimg" not in str(cover) and str(cover).endswith(('.jpg', '.png')):
                     cover = await self.ptpimg_url_rehost(cover)
             yt_id = meta.get("youtube", ""),
