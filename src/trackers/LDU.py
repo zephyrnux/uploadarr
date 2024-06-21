@@ -5,6 +5,7 @@ import requests
 from difflib import SequenceMatcher
 import os
 import re
+import langcodes
 import platform
 from datetime import datetime
 
@@ -230,41 +231,90 @@ class LDU():
             return success 
 
     def get_language_tag(self, meta):
+        def map_language(language):
+            try:
+                lang_code = langcodes.find(language).to_alpha3()
+                return lang_code.upper()
+            except langcodes.LanguageTagError:
+                return '???'
+
         audio_lang = []
-        if meta.get("is_disc") is not None:
-            lang_tag = ""
-            sub_lang_tag = ""
+        sub_lang = []
+        if meta.get("is_disc") == "BDMV":
+            if 'discs' in meta and meta['discs']:
+                bdinfo = meta['discs'][0].get('bdinfo', {})
+                audio_tracks = bdinfo.get('audio', [])
+                subtitle_tracks = bdinfo.get('subtitles', [])
+                
+                for track in audio_tracks:
+                    language = track.get('language')
+                    if language and 'comment' not in language.lower() and 'review' not in language.lower():
+                        audio_lang.append(map_language(language))
+
+                audio_lang = list(dict.fromkeys(audio_lang))  # Remove dupes + keep order
+                
+                if not audio_lang:
+                    audio_lang.append('???')
+                
+                lang_tag = f"[{' '.join(audio_lang)}]"
+                
+                for lang in subtitle_tracks:
+                    sub_lang.append(map_language(lang))
+                
+                if not sub_lang:
+                    sub_lang_tag = "[No Subs]"
+                else:
+                    sub_lang = list(dict.fromkeys(sub_lang))  # Remove dupes + keep order
+                    if 'ENG' in sub_lang:
+                        if len(sub_lang) > 1:
+                            sub_lang_tag = "[Subs ENG+]"
+                        else:
+                            sub_lang_tag = "[Subs ENG]"
+                    else:
+                        if sub_lang[0] == '???':
+                            sub_lang_tag = "[Subs ???]"
+                        else:
+                            if len(sub_lang) > 1:
+                                sub_lang_tag = f"[Subs {sub_lang[0]}+]"
+                            else:
+                                sub_lang_tag = f"[Subs {sub_lang[0]}]"
         elif 'mediainfo' in meta:
             for x in meta["mediainfo"]["media"]["track"]:
                 if x["@type"] == "Audio":
                     commentary_found = 'Title' in x and ('comment' in x['Title'].lower() or 'review' in x['Title'].lower())
                     if not commentary_found and 'Language_String3' in x:
                         audio_lang.append(x.get('Language_String3'))
+            
             audio_lang = list(dict.fromkeys(audio_lang))  # Remove dupes + keep order
-        if not audio_lang:
-            audio_lang.append('???')
-        lang_tag = f"[{' '.join(lang.upper() for lang in audio_lang)}]"
-        sub_lang = [x.get('Language_String3') for x in meta["mediainfo"]["media"]["track"] if x["@type"] == "Text"]
-        if not sub_lang:
-            sub_lang_tag = "[No Subs]"
-        else:
-            sub_lang = list(dict.fromkeys(sub_lang))  # Remove dupes + keep order
-            if 'eng' in sub_lang:
-                if len(sub_lang) > 1:
-                    sub_lang_tag = "[Subs ENG+]"
-                else:
-                    sub_lang_tag = "[Subs ENG]"
+            if not audio_lang:
+                audio_lang.append('???')
+            lang_tag = f"[{' '.join(lang.upper() for lang in audio_lang)}]"
+            
+            sub_lang = [x.get('Language_String3') for x in meta["mediainfo"]["media"]["track"] if x["@type"] == "Text"]
+            if not sub_lang:
+                sub_lang_tag = "[No Subs]"
             else:
-                if sub_lang[0] is None:
-                    sub_lang_tag = "[Subs ???]"
-                else:
+                sub_lang = list(dict.fromkeys(sub_lang))  # Remove dupes + keep order
+                if 'eng' in sub_lang:
                     if len(sub_lang) > 1:
-                        sub_lang_tag = f"[Subs {sub_lang[0].upper()}+]"
+                        sub_lang_tag = "[Subs ENG+]"
                     else:
-                        sub_lang_tag = f"[Subs {sub_lang[0].upper()}]"
+                        sub_lang_tag = "[Subs ENG]"
+                else:
+                    if sub_lang[0] is None:
+                        sub_lang_tag = "[Subs ???]"
+                    else:
+                        if len(sub_lang) > 1:
+                            sub_lang_tag = f"[Subs {sub_lang[0].upper()}+]"
+                        else:
+                            sub_lang_tag = f"[Subs {sub_lang[0].upper()}]"
+        else:
+            audio_lang.append('???')
+            lang_tag = f"[{' '.join(audio_lang)}]"
+            sub_lang_tag = "[No Subs]"
 
+        return lang_tag + " " + sub_lang_tag
 
-        return lang_tag+" "+sub_lang_tag
 
 
     def get_basename(self, meta):
@@ -341,7 +391,7 @@ class LDU():
         if meta['category'] == "MOVIE": #MOVIE SPECIFIC
             if type == "DISC": #Disk
                 if meta['is_disc'] == 'BDMV':
-                    name = f"{title} [{alt_title}] ({year}) {three_d} [{cut} {ratio} {edition} {repack} {resolution} {region} {uhd} {source} {hdr} {video_codec} {audio}{tag}] {lang_tag}"
+                    name = f"{title} {alt_title} ({year}) {three_d} [{cut} {ratio} {edition} {repack} {resolution} {region} {uhd} {source} {hdr} {video_codec} {audio}{tag}] {lang_tag}"
                     potential_missing = ['edition', 'region', 'distributor']
                 elif meta['is_disc'] == 'DVD': 
                     name = f"{title} {alt_title} ({year}) [{cut} {ratio} {edition} {repack} {source} {dvd_size} {audio}{tag}] {lang_tag}"

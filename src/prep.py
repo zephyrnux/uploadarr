@@ -46,6 +46,7 @@ try:
     from rich.prompt import Prompt
     from rich.progress import Progress, TextColumn, BarColumn, TimeRemainingColumn
     import platform
+    import langcodes
     from requests.exceptions import HTTPError
 
 except ModuleNotFoundError:
@@ -688,6 +689,7 @@ class Prep():
                 else:
                     loglevel = 'quiet'
                     debug = True
+                retake = False    
                 with Progress(
                     TextColumn("[bold green]Saving Screens..."),
                     BarColumn(),
@@ -699,47 +701,49 @@ class Prep():
                     smallest_image_path = None
                     smallest_image_size = float('inf')
 
-                    for i in range(num_screens):
-                        image = f"{base_dir}/tmp/{folder_id}/{filename}-{i}.png"
-                        
-                        try:
-                            ss_times = self.valid_ss_time(ss_times, num_screens, length)
-                            (
-                                ffmpeg
-                                .input(file, ss=ss_times[-1], skip_frame=keyframe)
-                                .output(image, vframes=1, pix_fmt="rgb24")
-                                .overwrite_output()
-                                .global_args('-loglevel', loglevel)
-                                .run(quiet=debug)
-                            )
-                        except Exception:
-                            console.print(traceback.format_exc())
-                        
-                        self.optimize_images(image)
-                        
-                        try:
-                            if os.path.getsize(Path(image)) <= 31000000 and self.img_host == "imgbb":
-                                i += 1
-                            elif os.path.getsize(Path(image)) <= 10000000 and self.img_host in ["imgbox", "pixhost", "ptscreens", "oeimg" ]:
-                                i += 1
-                            elif os.path.getsize(Path(image)) <= 75000:
+                    for _ in range(num_screens):
+                        image_path = f"{base_dir}/tmp/{folder_id}/{filename}-{i}.png"
+                        if not os.path.exists(image_path) or retake:                       
+                            try:
+                                ss_times = self.valid_ss_time(ss_times, num_screens, length)
+                                (
+                                    ffmpeg
+                                    .input(file, ss=ss_times[-1], skip_frame=keyframe)
+                                    .output(image_path, vframes=1, pix_fmt="rgb24")
+                                    .overwrite_output()
+                                    .global_args('-loglevel', loglevel)
+                                    .run(quiet=debug)
+                                )
+                            except Exception:
+                                console.print(traceback.format_exc())
+                            
+                            self.optimize_images(image_path)
+                            if os.path.getsize(Path(image_path)) <= 75000:
                                 console.print("[bold yellow]Image is incredibly small, retaking")
-                                time.sleep(1)
-                            elif self.img_host == "ptpimg":
+                                time.sleep(1)                            
+                            elif os.path.getsize(Path(image_path)) <= 31000000 and self.img_host == "imgbb":
                                 i += 1
-                            elif self.img_host == "lensdump":
+                            elif os.path.getsize(Path(image_path)) <= 10000000 and self.img_host in ["imgbox", "pixhost", "ptscreens", "oeimg" ]:
                                 i += 1
+                            elif self.img_host in ["ptpimg", "lensdump"] and not retake:
+                                i += 1
+                            elif retake:
+                                pass                               
                             else:
                                 console.print("[red]Image too large for your image host, retaking")
                                 time.sleep(1)
-                        except Exception:
-                            pass
-                        
-                        progress.advance(screen_task)
+                        else:
+                            screenshot_size = os.path.getsize(image_path)
+                            if screenshot_size < smallest_image_size:
+                                smallest_image_size = screenshot_size
+                                smallest_image_path = image_path
 
+                        i += 1
+                        progress.advance(screen_task)
+                        
                     # Remove the smallest image
-                    smallest_image_path = min(glob.glob(f"{base_dir}/tmp/{folder_id}/{filename}-*"), key=os.path.getsize)
-                    os.remove(smallest_image_path)
+                    if smallest_image_path:
+                        os.remove(smallest_image_path)
                     
         
     def dvd_screenshots(self, meta, disc_num, num_screens=None):
