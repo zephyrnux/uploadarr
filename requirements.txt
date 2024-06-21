@@ -19,3 +19,4 @@ rich
 Jinja2
 pyotp
 packaging
+langcodes
