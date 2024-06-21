@@ -24,7 +24,7 @@ class Args():
 
         parser.add_argument('path', nargs='*', help="Path to file/directory")
         parser.add_argument('-fd', '--full-directory', dest='full_dir', action='store_true', required=False, help="Uploads Folder + ALL Content Within")
-        parser.add_argument('-s', '--screens', nargs='*', required=False, help="Number of screenshots", default=int(self.config['DEFAULT']['screens']))
+        parser.add_argument('-s', '--screens', type=int, required=False, help="Number of screenshots", default=int(self.config['DEFAULT']['screens']))
         parser.add_argument('-c', '--category', nargs='*', required=False, help="Category [MOVIE, TV, FANRES]", choices=['movie', 'tv', 'fanres'])
         parser.add_argument('-t', '--type', nargs='*', required=False, help="Type [DISC, REMUX, ENCODE, WEBDL, WEBRIP, HDTV]", choices=['disc', 'remux', 'encode', 'webdl', 'web-dl', 'webrip', 'hdtv'])
         parser.add_argument('--source', nargs='*', required=False, help="Source [Blu-ray, BluRay, DVD, HDDVD, WEB, HDTV, UHDTV]", choices=['Blu-ray', 'BluRay', 'DVD', 'HDDVD', 'WEB', 'HDTV', 'UHDTV'], dest="manual_source")
