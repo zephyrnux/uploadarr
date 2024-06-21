@@ -5,7 +5,7 @@ import traceback
 from torf import Torrent
 import xml.etree.ElementTree
 import os
-import cli_ui
+from rich.prompt import Confirm
 import pickle
 import re
 from pathlib import Path
@@ -36,7 +36,7 @@ class MTV():
         torrent_filename = "BASE"
         if not Torrent.read(f"{meta['base_dir']}/tmp/{meta['uuid']}/BASE.torrent").piece_size <= 8388608: 
             console.print("[red]Piece size is OVER 8M and does not work on MTV. Generating a new .torrent")
-            from src.prep import Prep
+            from prep_what import Prep
             prep = Prep(screens=meta['screens'], img_host=meta['imghost'], config=self.config)
             prep.create_torrent(meta, Path(meta['path']), "MTV", piece_size_max=8)
             torrent_filename = "MTV"
@@ -418,7 +418,7 @@ class MTV():
         vcookie = await self.validate_cookies(meta, cookiefile)
         if vcookie != True:
             console.print('[red]Failed to validate cookies. Please confirm that the site is up and your username and password is valid.')
-            recreate = cli_ui.ask_yes_no("Log in again and create new session?")
+            recreate = Confirm.ask("Log in again and create new session?")
             if recreate == True:
                 if os.path.exists(cookiefile):
                     os.remove(cookiefile)

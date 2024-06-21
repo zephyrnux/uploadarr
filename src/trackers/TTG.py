@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import traceback
 import json
-import cli_ui
+from rich.prompt import Confirm
 from unidecode import unidecode
 from urllib.parse import urlparse, quote
 from src.trackers.COMMON import COMMON
@@ -227,7 +227,7 @@ class TTG():
         vcookie = await self.validate_cookies(meta, cookiefile)
         if vcookie != True:
             console.print('[red]Failed to validate cookies. Please confirm that the site is up and your passkey is valid.')
-            recreate = cli_ui.ask_yes_no("Log in again and create new session?")
+            recreate = Confirm.ask("Log in again and create new session?")
             if recreate == True:
                 if os.path.exists(cookiefile):
                     os.remove(cookiefile)

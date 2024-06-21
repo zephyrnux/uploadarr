@@ -7,7 +7,6 @@ from pathlib import Path
 import traceback
 import json
 import glob
-import cli_ui
 import pickle
 from unidecode import unidecode
 from urllib.parse import urlparse, quote

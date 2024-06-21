@@ -8,7 +8,7 @@ import glob
 import pickle
 from unidecode import unidecode
 from urllib.parse import urlparse, quote
-import cli_ui
+from rich.prompt import Prompt, Confirm
 from bs4 import BeautifulSoup
 
 from src.trackers.COMMON import COMMON
@@ -114,11 +114,11 @@ class FL():
         has_ro_audio, has_ro_sub = await self.get_ro_tracks(meta)
         
         # Confirm the correct naming order for FL
-        cli_ui.info(f"Filelist name: {fl_name}")
-        if meta.get('unattended', False) is False:
-            fl_confirm = cli_ui.ask_yes_no("Correct?", default=False)
-            if fl_confirm != True:
-                fl_name_manually = cli_ui.ask_string("Please enter a proper name", default="")
+        console.print(f"[bold blue]Filelist name:[/bold blue] {fl_name}")
+        if not meta.get('unattended', False):
+            fl_confirm = Confirm.ask("Correct?", default=False)
+            if not fl_confirm:
+                fl_name_manually = Prompt.ask("Please enter a proper name", default="")
                 if fl_name_manually == "":
                     console.print('No proper name given')
                     console.print("Aborting...")
@@ -247,7 +247,7 @@ class FL():
         vcookie = await self.validate_cookies(meta, cookiefile)
         if vcookie != True:
             console.print('[red]Failed to validate cookies. Please confirm that the site is up and your passkey is valid.')
-            recreate = cli_ui.ask_yes_no("Log in again and create new session?")
+            recreate = Confirm.ask("Log in again and create new session?")
             if recreate == True:
                 if os.path.exists(cookiefile):
                     os.remove(cookiefile)

@@ -4,7 +4,7 @@ import re
 import os
 import json
 import glob
-import cli_ui
+from rich.prompt import Prompt, Confirm
 import pickle
 from pathlib import Path
 from bs4 import BeautifulSoup
@@ -119,11 +119,11 @@ class HDT():
         cat_id = await self.get_category_id(meta)
 
         # Confirm the correct naming order for HDT
-        cli_ui.info(f"HDT name: {hdt_name}")
-        if meta.get('unattended', False) == False:
-            hdt_confirm = cli_ui.ask_yes_no("Correct?", default=False)
-            if hdt_confirm != True:
-                hdt_name_manually = cli_ui.ask_string("Please enter a proper name", default="")
+        console.print(f"HDT name: {hdt_name}")
+        if not meta.get('unattended', False):
+            hdt_confirm = Confirm.ask("Correct?", default=False)
+            if not hdt_confirm:
+                hdt_name_manually = Prompt.ask("Please enter a proper name", default="")
                 if hdt_name_manually == "":
                     console.print('No proper name given')
                     console.print("Aborting...")
