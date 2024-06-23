@@ -26,6 +26,8 @@ class LDU():
     
     async def get_cat_id(self, category_name, genres, keywords, service, edition, meta):
         adult = meta.get('adult', False)
+        soundmix = meta.get('imdb_info', {}).get('soundmix', [])
+        is_silent = 'silent' in soundmix
         release_date = meta.get('full_date', '')
         if isinstance(release_date, str):
             try:
@@ -63,7 +65,9 @@ class LDU():
             elif year != '' and year <= 1926:
                 category_id = '18'     
             elif 'silent film' in map(str.strip, keywords.lower().split(',')):
-                category_id = '18'      
+                category_id = '18'
+            elif is_silent:
+                category_id = '18'          
             elif 'holiday' in map(str.strip, keywords.lower().split(',')):
                 category_id = '24'     
             elif 'musical' in map(str.strip, keywords.lower().split(',')):
@@ -231,6 +235,9 @@ class LDU():
             return success 
 
     def get_language_tag(self, meta):
+        soundmix = meta.get('imdb_info', {}).get('soundmix', [])
+        is_silent = 'silent' in soundmix
+
         def map_language(language):
             try:
                 lang_code = langcodes.find(language).to_alpha3()
@@ -256,7 +263,10 @@ class LDU():
                 if not audio_lang:
                     audio_lang.append('???')
                 
-                lang_tag = f"[{' '.join(audio_lang)}]"
+                if is_silent:
+                    lang_tag = "[Silent]"
+                else:    
+                    lang_tag = f"[{' '.join(audio_lang)}]"
                 
                 for lang in subtitle_tracks:
                     sub_lang.append(map_language(lang))
@@ -288,7 +298,10 @@ class LDU():
             audio_lang = list(dict.fromkeys(audio_lang))  # Remove dupes + keep order
             if not audio_lang:
                 audio_lang.append('???')
-            lang_tag = f"[{' '.join(lang.upper() for lang in audio_lang)}]"
+            if is_silent:
+                lang_tag = "[Silent]"
+            else:        
+                lang_tag = f"[{' '.join(lang.upper() for lang in audio_lang)}]"
             
             sub_lang = [x.get('Language_String3') for x in meta["mediainfo"]["media"]["track"] if x["@type"] == "Text"]
             if not sub_lang:
@@ -310,7 +323,10 @@ class LDU():
                             sub_lang_tag = f"[Subs {sub_lang[0].upper()}]"
         else:
             audio_lang.append('???')
-            lang_tag = f"[{' '.join(audio_lang)}]"
+            if is_silent:
+                lang_tag = "[Silent]"
+            else:    
+                lang_tag = f"[{' '.join(audio_lang)}]"
             sub_lang_tag = "[No Subs]"
 
         return lang_tag + " " + sub_lang_tag

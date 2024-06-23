@@ -3107,6 +3107,7 @@ class Prep():
         if int(str(imdbID).replace('tt', '')) != 0:
             ia = Cinemagoer()
             info = ia.get_movie(imdbID)
+            ia.update(info, ['technical'])        
             imdb_info['title'] = info.get('title')
             imdb_info['year'] = info.get('year')
             imdb_info['aka'] = info.get('original title', info.get('localized title', imdb_info['title'])).replace(' - IMDb', '')
@@ -3116,6 +3117,7 @@ class Prep():
             imdb_info['cover'] = info.get('full-size cover url', '').replace(".jpg", "._V1_FMjpg_UX750_.jpg")
             imdb_info['plot'] = info.get('plot', [''])[0]
             imdb_info['genres'] = ', '.join(info.get('genres', ''))
+            imdb_info['soundmix'] = info.get('sound mix')
             imdb_info['original_language'] = info.get('language codes')
             if isinstance(imdb_info['original_language'], list):
                 if len(imdb_info['original_language']) > 1:
