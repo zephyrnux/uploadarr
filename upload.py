@@ -39,13 +39,13 @@ import importlib
 #######  Tracker List Here   #######
 ### Add below + api or http list ###
 ####################################
-tracker_list = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FL', 'FNP', 'HDB', 'HDT', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT',
-                 'MTV', 'NBL', 'OE', 'OINK', 'OTW', 'PTER', 'PTT', 'R4E', 'RF', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TL', 'TTG', 'TTR', 'ULCX', 'UTP', 'VHD']
+tracker_list = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'CP2P', 'FL', 'FNP', 'HDB', 'HDT', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT',
+                 'MTV', 'NBL', 'OE', 'OINK', 'OTW', 'PTER', 'PTT', 'R4E', 'RF', 'RTF', 'SN', 'STC', 'TDC', 'TL', 'TTG', 'TTR', 'ULCX', 'UTP', 'VHD']
 
 # Imports corresponding modules + creates dict
 tracker_class_map = {tracker: getattr(importlib.import_module(f"src.trackers.{tracker}"), tracker) for tracker in tracker_list}
 
-api_trackers = ['ACM', 'AITHER', 'ANT', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'OINK', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'STT', 'TDC', 'TTR', 'ULCX', 'UTP', 'VHD']
+api_trackers = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'OINK', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'TDC', 'TTR', 'ULCX', 'UTP', 'VHD']
 http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
 
 ############# EDITING BELOW THIS LINE MAY RESULT IN SCRIPT BREAKING #############
@@ -237,7 +237,7 @@ async def do_the_thing(base_dir):
                 saved_meta = json.load(f)
                 for key, value in saved_meta.items():
                     overwrite_list = [
-                        'trackers', 'dupe', 'debug', 'anon', 'category', 'type', 'screens', 'nohash', 'manual_edition', 'imdb', 'tmdb_manual', 'mal', 'manual', 
+                        'path', 'trackers', 'dupe', 'debug', 'anon', 'category', 'type', 'screens', 'nohash', 'manual_edition', 'imdb', 'tmdb_manual', 'mal', 'manual', 
                         'hdb', 'ptp', 'blu', 'no_season', 'no_aka', 'no_year', 'no_dub', 'no_tag', 'no_seed', 'client', 'desclink', 'descfile', 'desc', 'draft', 'region', 'freeleech', 
                         'personalrelease', 'unattended', 'season', 'episode', 'torrent_creation', 'qbit_tag', 'qbit_cat', 'skip_imghost_upload', 'imghost', 'manual_source', 'webdv', 'hardcoded-subs'
                     ]
