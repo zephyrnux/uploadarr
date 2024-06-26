@@ -27,7 +27,7 @@ class LDU():
     async def get_cat_id(self, category_name, genres, keywords, service, edition, meta):
         adult = meta.get('adult', False)
         soundmix = meta.get('imdb_info', {}).get('soundmix', [])
-        is_silent = 'silent' in soundmix
+        is_silent = 'silent' in soundmix if soundmix else False
         release_date = meta.get('full_date', '')
         if isinstance(release_date, str):
             try:
