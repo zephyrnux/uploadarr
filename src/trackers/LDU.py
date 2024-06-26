@@ -236,7 +236,7 @@ class LDU():
 
     def get_language_tag(self, meta):
         soundmix = meta.get('imdb_info', {}).get('soundmix', [])
-        is_silent = 'silent' in soundmix
+        is_silent = 'silent' in soundmix if soundmix else False 
 
         def map_language(language):
             try:
