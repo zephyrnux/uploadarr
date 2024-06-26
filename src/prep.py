@@ -45,6 +45,7 @@ try:
     import itertools
     from rich.prompt import Prompt
     from rich.progress import Progress, TextColumn, BarColumn, TimeRemainingColumn
+    from rich.traceback import install, Traceback
     import platform
     import langcodes
     from requests.exceptions import HTTPError
@@ -56,8 +57,7 @@ except ModuleNotFoundError:
     exit()
 except KeyboardInterrupt:
     exit()
-
-
+install ()
 class Prep():
     """
     Prepare for upload:
@@ -904,15 +904,14 @@ class Prep():
 
 
     def screenshots(self, path, filename, folder_id, base_dir, meta, num_screens=None):
-        if num_screens == None:
+        if num_screens is None:
             num_screens = self.screens - len(meta.get('image_list', []))
-        if num_screens == 0: 
-        # or len(meta.get('image_list', [])) >= num_screens:
+        if num_screens == 0:
             return
         with open(f"{base_dir}/tmp/{folder_id}/MediaInfo.json", encoding='utf-8') as f:
             mi = json.load(f)
             video_track = mi['media']['track'][1]
-            length = video_track.get('Duration', mi['media']['track'][0]['Duration'])
+            length = float(video_track.get('Duration', mi['media']['track'][0]['Duration']))
             width = float(video_track.get('Width'))
             height = float(video_track.get('Height'))
             par = float(video_track.get('PixelAspectRatio', 1))
@@ -928,7 +927,7 @@ class Prep():
             else:
                 sar = w_sar = par 
                 h_sar = 1
-            length = round(float(length))
+            length = round(length)
             os.chdir(f"{base_dir}/tmp/{folder_id}")
             i = 0
             if len(glob.glob(f"{filename}-*.png")) >= num_screens:
@@ -973,27 +972,30 @@ class Prep():
                                         .run(quiet=debug)
                                     )
                                 except Exception as e:
-                                    console.print(traceback.format_exc())
+                                    console.print(Traceback.extract())
                                     self.optimize_images(image_path)
-                                    if os.path.getsize(Path(image_path)) <= 75000:
-                                        console.print("[yellow]Image is incredibly small, retaking")
-                                        retake = True
-                                        time.sleep(1)
-                                    elif os.path.getsize(Path(image_path)) <= 31000000 and self.img_host == "imgbb" and not retake:
-                                        i += 1
-                                    elif os.path.getsize(Path(image_path)) <= 10000000 and self.img_host in ["imgbox", 'pixhost', "ptscreens", "oeimg"] and not retake:
-                                        i += 1
-                                    elif self.img_host in ["ptpimg", "lensdump"] and not retake:
-                                        i += 1
-                                    elif self.img_host == "freeimage.host":
-                                        console.print("[bold red]Support for freeimage.host has been removed. Please remove from your config")
-                                        exit()
-                                    elif retake:
-                                        pass
-                                    else:
-                                        console.print("[red]Image too large for your image host, retaking")
-                                        retake = True
-                                        time.sleep(1) 
+                                    if os.path.exists(image_path):
+                                        if os.path.getsize(Path(image_path)) <= 75000 or self.is_black_image(image_path):
+                                            console.print("[yellow]Image is incredibly small or black, retaking")
+                                            retake = True
+                                            os.remove(image_path)
+                                            time.sleep(1)
+                                        elif os.path.getsize(Path(image_path)) <= 31000000 and self.img_host == "imgbb" and not retake:
+                                            i += 1
+                                        elif os.path.getsize(Path(image_path)) <= 10000000 and self.img_host in ["imgbox", 'pixhost', "ptscreens", "oeimg"] and not retake:
+                                            i += 1
+                                        elif self.img_host in ["ptpimg", "lensdump"] and not retake:
+                                            i += 1
+                                        elif self.img_host == "freeimage.host":
+                                            console.print("[bold red]Support for freeimage.host has been removed. Please remove from your config")
+                                            exit()
+                                        elif retake:
+                                            pass
+                                        else:
+                                            console.print("[red]Image too large for your image host, retaking")
+                                            retake = True
+                                            os.remove(image_path)
+                                            time.sleep(1)
                             else:
                                 screenshot_size = os.path.getsize(image_path)
                                 if screenshot_size < smallest_image_size:
@@ -1006,9 +1008,20 @@ class Prep():
                         # Remove the smallest image
                         if smallest_image_path:
                             os.remove(smallest_image_path)
-                        
 
-    def valid_ss_time(self, ss_times, num_screens, length):
+    def is_black_image(image_path, threshold=0.98):
+        try:
+            command = [
+                'ffmpeg', '-i', image_path, '-vf', 
+                'blackdetect=d=0.1:pic_th=%f' % threshold, '-f', 'null', '-'
+            ]
+            result = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+            return 'black_start' in result.stderr
+        except Exception as e:
+            console.print(f"[red]Error checking black image: {e}")
+            return False                     
+
+    def valid_ss_time(self, ss_times, num_screens, length, min_time_diff=10):
         valid_time = False
         while not valid_time:
             valid_time = True
@@ -1016,7 +1029,7 @@ class Prep():
                 sst = random.randint(round(length / 5), round(length / 2))
                 tolerance = length / 10 / num_screens
                 for each in ss_times:
-                    if abs(sst - each) <= tolerance:
+                    if abs(sst - each) <= tolerance or any(abs(sst - t) < min_time_diff for t in ss_times):
                         valid_time = False
                 if valid_time:
                     ss_times.append(sst)
@@ -1025,7 +1038,7 @@ class Prep():
         return ss_times
 
     def optimize_images(self, image):
-        if self.config['DEFAULT'].get('optimize_images', True) == True:
+        if self.config['DEFAULT'].get('optimize_images', True):
             if os.path.exists(image):
                 try:
                     pyver = platform.python_version_tuple()
@@ -1576,8 +1589,8 @@ class Prep():
             "E-AC-3": "DD+",
             "MLP FBA": "TrueHD",
             "FLAC": "FLAC",
-            "Opus": "OPUS",
-            "Vorbis": "VORBIS",
+            "Opus": "Opus",
+            "Vorbis": "Vorbis",
             "PCM": "LPCM",
 
             #BDINFO AUDIOS
