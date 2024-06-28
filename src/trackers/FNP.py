@@ -17,7 +17,7 @@ class FNP():
         self.source_flag = 'FnP'
         self.upload_url = 'https://fearnopeer.com/api/torrents/upload'
         self.search_url = 'https://fearnopeer.com/api/torrents/filter'
-        self.banned_groups = [""]
+        self.banned_groups = ["YIFY", "RARBG", "YTS", "LAMA", "D3g", "YAWNiX"]
         pass
     
     async def get_cat_id(self, category_name):
