@@ -39,13 +39,13 @@ import importlib
 #######  Tracker List Here   #######
 ### Add below + api or http list ###
 ####################################
-tracker_list = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'CP2P', 'FL', 'FNP', 'HDB', 'HDT', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT',
+tracker_list = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FL', 'FNP', 'HDB', 'HDT', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT',
                  'MTV', 'NBL', 'OE', 'OINK', 'OTW', 'PTER', 'PTT', 'R4E', 'RF', 'RTF', 'SN', 'STC', 'TDC', 'TL', 'TTG', 'TTR', 'ULCX', 'UTP', 'VHD']
 
 # Imports corresponding modules + creates dict
 tracker_class_map = {tracker: getattr(importlib.import_module(f"src.trackers.{tracker}"), tracker) for tracker in tracker_list}
 
-api_trackers = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'CP2P', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'OINK', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'TDC', 'TTR', 'ULCX', 'UTP', 'VHD']
+api_trackers = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'NBL', 'OE', 'OINK', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'TDC', 'TTR', 'ULCX', 'UTP', 'VHD']
 http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
 
 ############# EDITING BELOW THIS LINE MAY RESULT IN SCRIPT BREAKING #############
@@ -315,9 +315,9 @@ async def do_the_thing(base_dir):
             json.dump(meta, f, indent=4)
             f.close()
         confirm = get_confirmation(meta)  
-        while confirm == False:
+        while not confirm:
             # help.print_help()
-            console.print("Input args that need correction e.g.(--tag NTb --category tv --tmdb 12345)")
+            console.print("Input args that need correction e.g.(--tag NTb --category tv --tmdb 12345)")  
             console.print("Enter 'skip' if no correction needed", style="dim")
             editargs = Prompt.ask("")
             if editargs.lower() == 'skip':
@@ -372,11 +372,11 @@ async def do_the_thing(base_dir):
                     continue
                 dupes = await tracker_class.search_existing(meta)
                 dupes = await common.filter_dupes(dupes, meta)
-                meta, skipped = dupe_check(dupes, meta, config, skipped_details, path)
+                meta, skipped = dupe_check(dupes, meta, config, skipped_details, path)                    
                 if skipped:
                     skipped_files += 1
                     skipped_details.append((path, f"Potential duplicate on {tracker_class.tracker}"))
-                    continue
+                    continue                        
                 if meta['upload']:
                     #await tracker_class.upload(meta)    
                     upload_success = await tracker_class.upload(meta)

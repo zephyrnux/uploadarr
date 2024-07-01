@@ -8,7 +8,7 @@
         ##-----------------------------------------------------##
 
 config = {
-    'version': '1.0.1',
+    'version': '1.0.2',
 	
     "DEFAULT" : {
 
@@ -135,16 +135,6 @@ config = {
             "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
         },
 
-        "CP2P" : {
-            "api_key" : "CP2P_API_KEY",
-            "announce_url" : "https://cinemap2p.xyz/announce/Custom_Announce_URL",
-            "anon" : False,
-            "signature" : "\n[center][b]PLEASE SEED CP2P FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_signature" : "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",    
-            "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED FNP FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
-            }, 
-
         "FNP" : {
             "api_key" : "FNP_API_KEY",
             "announce_url" : "https://fearnopeer.com/announce/Custom_Announce_URL",
@@ -157,7 +147,7 @@ config = {
 
         "HDB" : {
             "api_key" : "HDB_API_KEY",
-            "announce_url" : "https://https://hdbits.org/announce/Custom_Announce_URL",
+            "announce_url" : "https://hdbits.org/announce/Custom_Announce_URL",
             "anon" : False,
             "signature" : "\n[center][b]PLEASE SEED HDB FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",       
@@ -351,6 +341,7 @@ config = {
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED Swarmazon[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
         },
+
         "STC" :{
             "api_key" : "STC_API_KEY",
             "announce_url" : "https://skipthecommericals.xyz/announce/Custom_Announce_URL",
@@ -358,15 +349,6 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED SkipTheCommercials FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED STC FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
-        },
-        "STT" :{
-            "api_key" : "STT_API_KEY",
-            "announce_url" : "https://skipthetrailers.xyz/announce/Custom_Announce_URL",
-            "anon" : False,
-            "signature" : "\n[center][b]PLEASE SEED SkipTheTrailers FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_signature" : "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",    
-            "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED STT FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
         },
 
