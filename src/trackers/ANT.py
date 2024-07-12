@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# import discord
 import os
 import asyncio
 import requests
@@ -19,9 +18,13 @@ class ANT():
         self.source_flag = 'ANT'
         self.search_url = 'https://anthelion.me/api.php'
         self.upload_url = 'https://anthelion.me/api.php'
-        self.banned_groups = ['Ozlem', 'RARBG', 'FGT', 'STUTTERSHIT', 'LiGaS', 'DDR', 'Zeus', 'TBS', 'aXXo', 'CrEwSaDe', 'DNL', 'EVO',
-                              'FaNGDiNG0', 'HD2DVD', 'HDTime', 'iPlanet', 'KiNGDOM', 'NhaNc3', 'PRoDJi', 'SANTi', 'ViSiON', 'WAF', 'YIFY',
-                              'YTS', 'MkvCage', 'mSD']
+        self.banned_groups = ['3LTON', '4yEo', 'ADE', 'AFG', 'AniHLS', 'AnimeRG', 'AniURL', 'AROMA', 'aXXo', 'Brrip', 'CHD', 'CM8', 
+                            'CrEwSaDe', 'd3g', 'DDR', 'DNL', 'DeadFish', 'ELiTE', 'eSc', 'FaNGDiNG0', 'FGT', 'Flights', 'FRDS', 
+                            'FUM', 'HAiKU', 'HD2DVD', 'HDS', 'HDTime', 'Hi10', 'ION10', 'iPlanet', 'JIVE', 'KiNGDOM', 'Leffe', 
+                            'LiGaS', 'LOAD', 'MeGusta', 'MkvCage', 'mHD', 'mSD', 'NhaNc3', 'nHD', 'NOIVTC', 'nSD', 'Oj', 'Ozlem', 
+                            'PiRaTeS', 'PRoDJi', 'RAPiDCOWS', 'RARBG', 'RetroPeeps', 'RDN', 'REsuRRecTioN', 'RMTeam', 'SANTi', 
+                            'SicFoI', 'SPASM', 'SPDVD', 'STUTTERSHIT', 'TBS', 'Telly', 'TM', 'UPiNSMOKE', 'URANiME', 'WAF', 'xRed', 
+                            'XS', 'YIFY', 'YTS', 'Zeus', 'ZKBL', 'ZmN', 'ZMNT']
         pass
 
     async def get_flags(self, meta):
@@ -88,38 +91,32 @@ class ANT():
         if meta['scene']:
             # ID of "Scene?" checkbox on upload form is actually "censored"
             data['censored'] = 1
-        headers = {
-            'User-Agent': f'Uploadrr ({platform.system()} {platform.release()})'
-        }
-        if not meta['debug']:
-            success = 'Unknown'
+        headers = {'User-Agent': f'Uploadrr ({platform.system()} {platform.release()})'}
+        success = False
+        
+        if meta['debug'] is False:
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data, headers=headers)
-                response.raise_for_status()                
-                response_json = response.json()
-                success = response_json.get('success', False)
-                data = response_json.get('data', {})
+                if response.status_code in [200, 201]:
+                    response = response.json()
+                    success = True
+                    try:
+                        console.print(response)
+                    except Exception:
+                        console.print("It may have uploaded, go check")
+                        success = False  # Set success to False explicitly if printing fails
             except Exception as e:
-                console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
-            if success == 'Unknown':
-                console.print("[bold yellow]Status of upload is unknown, please go check..")
-                success = False
-            elif success:
-                console.print("[bold green]Torrent uploaded successfully!")
-            else:
-                console.print("[bold red]Torrent upload failed.")
+                console.print(f"[red]Failed to upload file: {e}[/red]")
+                success = False  # Set success to False explicitly if any exception occurs during upload
+        else:
+            console.print("[cyan]Request Data:")
+            console.print(data)
 
-            if data:
-                if 'name' in data and 'The name has already been taken.' in data['name']:
-                    console.print("[red]Name has already been taken.")
-                if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
-                    console.print("[red]Info hash has already been taken.")                
-            else:
-                console.print("[cyan]Request Data:")
-                console.print(data)
-    
+        try:
             open_torrent.close()
-            return success 
+        except Exception as e:
+            console.print(f"[red]Failed to close torrent file: {e}[/red]")
+        return success
 
     async def edit_desc(self, meta):
         return
