@@ -45,7 +45,7 @@ tracker_list = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FL', 'FNP', 'HDB
 # Imports corresponding modules + creates dict
 tracker_class_map = {tracker: getattr(importlib.import_module(f"src.trackers.{tracker}"), tracker) for tracker in tracker_list}
 
-api_trackers = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'TDC', 'TTR', 'ULCX', 'UTP', 'VHD', 'MB']
+api_trackers = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'TDC', 'TTR', 'ULCX', 'UTP', 'VHD']
 http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
 
 ############# EDITING BELOW THIS LINE MAY RESULT IN SCRIPT BREAKING #############
