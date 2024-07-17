@@ -43,6 +43,7 @@ Hopefully it works and makes your life simplier.
 
 ## **Setup:**
    - **REQUIRES AT LEAST PYTHON 3.7 AND PIP3**
+     (Note: _If using Python 3.7 you must ``pip3 install qbittorrent-api==2023.9.53`` or lower version any more recent version requires Python 3.8+_)
    - Needs [mono](https://www.mono-project.com/) on linux systems for BDInfo
    - Also needs MediaInfo and ffmpeg installed on your system
       - On Windows systems, ffmpeg must be added to PATH I recomend using https://scoop.sh/ , alternatively follow this guide for manual installation (https://windowsloop.com/install-ffmpeg-windows-10/) 
