@@ -65,11 +65,12 @@ class COMMON():
             if comparison is False:
                 desc = bbcode.convert_comparison_to_collapse(desc, 1000)
 
-            add_trailer_enabled = self.config["DEFAULT"].get("add_trailer", False)    
-            if add_trailer_enabled and meta.get("category") == "MOVIE":
-                key = meta.get("youtube")
-                if key:
-                    descfile.write(f"[center][youtube]{key}[/youtube][/center]")
+            if not tracker == 'OE':
+                add_trailer_enabled = self.config["DEFAULT"].get("add_trailer", False)    
+                if add_trailer_enabled and meta.get("category") == "MOVIE":
+                    key = meta.get("youtube")
+                    if key:
+                        descfile.write(f"[center][youtube]{key}[/youtube][/center]")
 
             img_size = self.config["DEFAULT"].get("img_size", 500)
             inline_imgs = self.config["DEFAULT"].get("inline_imgs", 0)
@@ -309,7 +310,7 @@ class COMMON():
         if meta['debug']:
             console.log("[cyan]Pre-filtered dupes")
             console.log(dupes)
-        #new_dupes = []
+            
         new_dupes = {}
         for each in dupes:
             if meta.get('sd', 0) == 1:
