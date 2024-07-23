@@ -1930,8 +1930,11 @@ class Prep():
             profile = "Hi10P"
         else:
             profile = ""
-        if profile or codec:
-            video_encode = f"{profile} {codec}"
+        if profile and codec:
+            if profile != codec:
+                video_encode = f"{profile} {codec}"
+            else:
+                video_encode = codec
         else:
             video_encode = format
         video_codec = format
