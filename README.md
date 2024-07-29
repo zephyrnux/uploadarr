@@ -67,7 +67,7 @@ Hopefully it works and makes your life simplier.
   `python3 upload.py "/downloads/path/to/media" --args`
   
   Args are OPTIONAL, for a list of acceptable args, pass `--help`  
-  For an overview of all arguments with descriptions plea see [Uploadrr Argument List](https://theldu.org/wiki/uploadrr-arguments-list/) Thanks **GME**!
+  For an overview of all arguments with descriptions plea see [Uploadrr Argument List](https://theldu.org/index.php/Uploadrr) Thanks **GME**!
 ## **Docker Usage:**
   Many thanks to **l1mo** for helping set the Dockerfile up.  
   Thanks to **dare** for the following command to have everything running smoothly.  
