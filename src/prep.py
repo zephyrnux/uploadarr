@@ -1904,42 +1904,56 @@ class Prep():
             if mi['media']['track'][1].get('Encoded_Library_Settings', None):
                 has_encode_settings = True
             bit_depth = mi['media']['track'][1].get('BitDepth', '0')
-        except:
+        except KeyError:
             format = bdinfo['video'][0]['codec']
             format_profile = bdinfo['video'][0]['profile']
-        if type in ("ENCODE", "WEBRIP"): #ENCODE or WEBRIP
+
+        # Determine codec based on type and format
+        if type in ("ENCODE", "WEBRIP"):  # ENCODE or WEBRIP
             if format == 'AVC':
                 codec = 'x264'
             elif format == 'HEVC':
                 codec = 'x265'
-        elif type in ('WEBDL', 'HDTV'): #WEB-DL
+        elif type in ('WEBDL', 'HDTV'):  # WEB-DL or HDTV
             if format == 'AVC':
                 codec = 'H.264'
             elif format == 'HEVC':
                 codec = 'H.265'
-            
-            if type == 'HDTV' and has_encode_settings == True:
+            if type == 'HDTV' and has_encode_settings:
                 codec = codec.replace('H.', 'x')
         elif format == "VP9":
             codec = "VP9"
         elif format == "VC-1":
             codec = "VC-1"
         elif format == "AV1":
-            codec = "AV1"    
+            codec = "AV1"
+
+        # Determine profile
         if format_profile == 'High 10':
             profile = "Hi10P"
         else:
             profile = ""
-        if profile and codec:
-            if profile != codec:
-                video_encode = f"{profile} {codec}"
+
+        # Format video_encode based on codec and profile
+        if profile:
+            if codec:
+                if profile != codec:
+                    video_encode = f"{profile} {codec}"
+                else:
+                    video_encode = codec
             else:
-                video_encode = codec
+                video_encode = profile
         else:
-            video_encode = format
+            if codec:
+                video_encode = codec
+            else:
+                video_encode = format
+
+        # Handle special case for MPEG Video
         video_codec = format
         if video_codec == "MPEG Video":
             video_codec = f"MPEG-{mi['media']['track'][1].get('Format_Version')}"
+
         return video_encode, video_codec, has_encode_settings, bit_depth
 
 
