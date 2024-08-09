@@ -222,8 +222,7 @@ config = {
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LT FAMILY[/b][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://github.com/z-ink/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
         },
-	    
-        },      
+	       
         "MB": {
                 "api_key": "MB_API_KEY",
                 "announce_url": "https://malayabits.cc/announce/Custom_Announce_URL",
