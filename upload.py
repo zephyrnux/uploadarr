@@ -394,7 +394,7 @@ async def do_the_thing(base_dir):
                 if meta['unattended']:
                     upload_to_tracker = True
                 else:
-                    upload_to_tracker = Confirm.ask(f"Upload to {tracker_class.tracker}? {debug}", choices=["y", "N"])
+                    upload_to_tracker = Confirm.ask(f"Upload to {tracker_class.tracker}? {debug}")
                 if upload_to_tracker:
                     console.print(f"Uploading to {tracker}")
                     if check_banned_group(tracker_class.tracker, tracker_class.banned_groups, meta, skipped_details, path):
@@ -404,7 +404,11 @@ async def do_the_thing(base_dir):
                     if await tracker_class.validate_credentials(meta):
                         dupes = await tracker_class.search_existing(meta)
                         dupes = await common.filter_dupes(dupes, meta)
-                        meta, skipped = dupe_check(dupes, meta)
+                        # Ensure correct number of input arguments for dupe_check when uploading to MTV
+                        if tracker == 'MTV':
+                            meta, skipped = dupe_check(dupes, meta, config, skipped_details, path)
+                        else:
+                            meta, skipped = dupe_check(dupes, meta) 
                         if skipped:
                             skipped_files += 1
                             skipped_details.append((path, tracker))
@@ -741,8 +745,8 @@ def get_confirmation(meta):
         console.print(f"[bold]Name[/bold]: {meta['name']}")
         confirm = True
     return confirm
-
-def dupe_check(dupes, meta, config, skipped_details, path):
+# dupe_check accepts a variable number of arguments using default arguments.
+def dupe_check(dupes, meta, config=None, skipped_details=None, path=None):
     if not dupes:
         console.print("[green]No dupes found")
         meta['upload'] = True   
