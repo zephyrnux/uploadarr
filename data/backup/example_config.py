@@ -1,4 +1,3 @@
-
         ##---------THE LAST DIGITAL UNDERGROUND PRESENTS-------##
         ##                                                     ##
         ##                 Special Recruitment :)              ##
@@ -13,11 +12,11 @@ config = {
     "DEFAULT" : {
 
         "tmdb_api" : "TMDB_API_KEY", ## REQUIRED 
-        "imgbb_api" : "imgbb_API_KEY", # Recommended
+        "imgbb_api" : "imgbb_API_KEY", ## Recommended
         "ptpimg_api" : "ptpimg_API_KEY",
-        "lensdump_api" : "lensdump_API_KEY",
-        "ptscreens_api" : "ptscreens_API_KEY", #No Api Rate-Limit (slower than imgbb, but might be worth it!)
-        "oeimg_api" : "oeimg_API_KEY", 
+        "lensdump_api" : "lensdump_API_KEY", ## https://lensdump.com/settings/api
+        "ptscreens_api" : "ptscreens_API_KEY", ## https://ptscreens.com/settings/api
+        "oeimg_api" : "oeimg_API_KEY", ## https://imgoe.download/settings/api
 
         # Order of image hosts, and backup image hosts
         "img_host_1": "imgbb",
@@ -29,13 +28,13 @@ config = {
         "img_host_7": "oeimg",
 
         "screens" : "6",
-        "img_size" : "500",  #Size in Description [img=500]
-        "optimize_images" : True,  # Lossless PNG Compression (True/False)
-	    #"inline_imgs": 3, #Uncomment and use this if you want to insert a line break after X images in description
-        "add_trailer" : True, # Adds Movie Trailer (Skips TV as season specifier not supported)
+        "img_size" : "500",  ## Size in Description [img=500]
+        "optimize_images" : True,  ## Lossless PNG Compression (True/False)
+	    # "inline_imgs": 3, ## Uncomment and use this if you want to insert a line break after X images in description
+        "add_trailer" : True, ## Adds Movie Trailer (Skips TV as season specifier not supported)
 
         ### GOLBAL SIGNATURES ###
-        "use_global_sigs": True, # If False it will use your tracker signatures       
+        "use_global_sigs": True, ## If False it will use your tracker signatures       
         "global_sig": "\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]", 
         "global_anon_sig": "\n[center][url=https://github.com/z-ink/uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
         "global_pr_sig": "\n[center][size=6][b]Personal Release[/b][/size][/center]\n[center][url=https://github.com/z-ink/uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]", #personal realease signature
