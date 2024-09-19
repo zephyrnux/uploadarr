@@ -128,9 +128,13 @@ except Exception as e:
     console.print(f"[bold red]Error: {str(e)}[/bold red]")
     pass
 
-
-client = Clients(config=config)
-parser = Args(config)
+# Initialize client and argument parser
+try:
+    client = Clients(config=config)
+    parser = Args(config)
+except Exception as e:
+    console.print(f"[bold red]Error initializing client or parser: {e}[/bold red]")
+    sys.exit(1)
 
 async def do_the_thing(base_dir):
     print_banner()
