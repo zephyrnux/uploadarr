@@ -18,6 +18,7 @@ class LT():
         self.source_flag = 'Lat-Team "Poder Latino"'
         self.upload_url = 'https://lat-team.com/api/torrents/upload'
         self.search_url = 'https://lat-team.com/api/torrents/filter'
+        self.signature = None
         self.banned_groups = [""]
         pass
     

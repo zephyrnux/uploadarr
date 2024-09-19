@@ -15,6 +15,7 @@ class PTT():
         self.config = config
         self.tracker = 'PTT'
         self.source_flag = 'PTT'
+        self.signature = None
         self.upload_url = 'https://polishtorrent.top/api/torrents/upload'
         self.search_url = 'https://polishtorrent.top//api/torrents/filter'
         self.banned_groups = ['ViP', 'BiRD', 'M@RTiNU$', 'inTGrity', 'PSiG', 'CiNEMAET', 'MusicET', 'TeamET', 'R2D2' ]

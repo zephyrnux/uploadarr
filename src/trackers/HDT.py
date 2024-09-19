@@ -20,6 +20,7 @@ class HDT():
     def __init__(self, config):
         self.config = config
         self.tracker = 'HDT'
+        self.signature = None
         self.source_flag = 'hd-torrents.org'
         self.username = config['TRACKERS'][self.tracker].get('username', '').strip()
         self.password = config['TRACKERS'][self.tracker].get('password', '').strip()

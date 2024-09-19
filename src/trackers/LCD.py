@@ -20,6 +20,7 @@ class LCD():
         self.search_url = 'https://locadora.cc/api/torrents/filter'
         self.torrent_url = 'https://locadora.cc/api/torrents/'
         self.upload_url = 'https://locadora.cc/api/torrents/upload' 
+        self.signature = None
         self.banned_groups = [""]
         pass
     

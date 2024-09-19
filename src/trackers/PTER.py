@@ -21,6 +21,7 @@ class PTER():
         self.config = config
         self.tracker = 'PTER'
         self.source_flag = 'PTER'
+        self.signature = None
         self.passkey =  str(config['TRACKERS']['PTER'].get('passkey', '')).strip()
         self.username = config['TRACKERS']['PTER'].get('username', '').strip()
         self.password = config['TRACKERS']['PTER'].get('password', '').strip()

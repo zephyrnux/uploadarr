@@ -18,6 +18,7 @@ class JPTV():
         self.source_flag = 'jptv.club'
         self.upload_url = 'https://jptv.club/api/torrents/upload'
         self.search_url = 'https://jptv.club/api/torrents/filter'
+        self.signature = None
         self.banned_groups = [""]
         pass
     

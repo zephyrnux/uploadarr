@@ -21,6 +21,7 @@ class FL():
         self.config = config
         self.tracker = 'FL'
         self.source_flag = 'FL'
+        self.signature = None
         self.username = config['TRACKERS'][self.tracker].get('username', '').strip()
         self.password = config['TRACKERS'][self.tracker].get('password', '').strip()
         self.fltools = config['TRACKERS'][self.tracker].get('fltools', {})

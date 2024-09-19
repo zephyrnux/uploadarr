@@ -18,6 +18,7 @@ class LST():
         self.source_flag = 'LST.GG'
         self.upload_url = 'https://lst.gg/api/torrents/upload'
         self.search_url = 'https://lst.gg/api/torrents/filter'
+        self.signature = None
         self.banned_groups = [
     'aXXo', 'BRrip', 'CM8', 'CrEwSaDe', 'CTFOH', 'DNL', 'FaNGDiNG0', 'HD2DVD', 
     'HDTime', 'ION10', 'iPlanet', 'KiNGDOM', 'mHD', 'mSD', 'nHD', 'nikt0', 'nSD', 

@@ -17,6 +17,7 @@ class BHDTV():
         self.config = config
         self.tracker = 'BHDTV'
         self.source_flag = 'BIT-HDTV'
+        self.signature = None
         #search not implemented
         #self.search_url = 'https://api.bit-hdtv.com/torrent/search/advanced'
         self.upload_url = 'https://www.bit-hdtv.com/takeupload.php'

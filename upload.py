@@ -39,19 +39,26 @@ import importlib
 #######  Tracker List Here   #######
 ### Add below + api or http list ###
 ####################################
-tracker_list = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FL', 'FNP', 'HDB', 'HDT', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT',
-                'MB', 'MTV', 'NBL', 'OE', 'OINK', 'OTW', 'PTER', 'PTT', 'R4E', 'RF', 'RTF', 'SN', 'STC', 'TDC', 'TL', 'TTG', 'TTR', 'ULCX', 'UTP', 'VHD']
+tracker_data = {
+    'api': ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'TDC', 'TTR', 'ULCX', 'UTP', 'VHD'],
+    'http': ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
+}
 
-# Imports corresponding modules + creates dict
-tracker_class_map = {tracker: getattr(importlib.import_module(f"src.trackers.{tracker}"), tracker) for tracker in tracker_list}
+# Combine all trackers into one list
+tracker_list = tracker_data['api'] + tracker_data['http']
 
-api_trackers = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'STC', 'TDC', 'TTR', 'ULCX', 'UTP', 'VHD']
-http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
+console.print(tracker_list)
 
-############# EDITING BELOW THIS LINE MAY RESULT IN SCRIPT BREAKING #############
+# Import corresponding modules and create a dictionary mapping
+tracker_class_map = {}
+for tracker in tracker_list:
+    try:
+        tracker_class_map[tracker] = getattr(importlib.import_module(f"src.trackers.{tracker}"), tracker)
+    except ImportError as e:
+        logging.error(f"Error importing {tracker}: {e}")
 
-python3_path = shutil.which("python3")
-python_cmd = python3_path if python3_path else "python" 
+# Detect python3 or fallback to default python command
+python_cmd = shutil.which("python3") or "python"
 
 base_dir = os.path.dirname(os.path.realpath(__file__))
 data_dir = os.path.join(base_dir, 'data')
@@ -364,7 +371,7 @@ async def do_the_thing(base_dir):
             else:
                 debug = ""
 
-            if tracker in api_trackers:
+            if tracker in tracker_data['api']:
                 tracker_class = tracker_class_map[tracker](config=config)
                 if meta['unattended']:
                     upload_to_tracker = True
@@ -400,7 +407,7 @@ async def do_the_thing(base_dir):
                         skipped_files += 1
                         skipped_details.append((path, f"{tracker_class.tracker} Rejected Upload"))
             
-            if tracker in http_trackers:
+            if tracker in tracker_data['http']:
                 tracker_class = tracker_class_map[tracker](config=config)
                 if meta['unattended']:
                     upload_to_tracker = True
@@ -435,7 +442,7 @@ async def do_the_thing(base_dir):
                         if manual_tracker != 'MANUAL':
                             manual_tracker = manual_tracker.replace(" ", "").upper().strip()
                             tracker_class = tracker_class_map[manual_tracker](config=config)
-                            if manual_tracker in api_trackers:
+                            if manual_tracker in tracker_data['api']:
                                 await common.unit3d_edit_desc(meta, tracker_class.tracker, tracker_class.signature)
                             else:
                                 await tracker_class.edit_desc(meta)

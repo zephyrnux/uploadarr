@@ -30,6 +30,7 @@ class MB():
         self.source_flag = 'MalayaBits'
         self.upload_url = 'https://malayabits.cc/api/torrents/upload'
         self.search_url = 'https://malayabits.cc/api/torrents/filter'
+        self.signature = None
         self.banned_groups = [""]
         pass
     

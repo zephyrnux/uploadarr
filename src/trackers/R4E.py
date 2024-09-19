@@ -15,6 +15,7 @@ class R4E():
         self.config = config
         self.tracker = 'R4E'
         self.source_flag = 'R4E'
+        self.signature = None
         self.upload_url = 'https://racing4everyone.eu/api/torrents/upload'
         self.search_url = 'https://racing4everyone.eu/api/torrents/filter'
         self.banned_groups = [""]

@@ -13,6 +13,7 @@ class RF():
         self.config = config
         self.tracker = 'RF'
         self.source_flag = 'ReelFliX'
+        self.signature = None
         self.upload_url = 'https://reelflix.xyz/api/torrents/upload'
         self.search_url = 'https://reelflix.xyz/api/torrents/filter'
         self.banned_groups = ['RoSubbed', 'LAMA', 'MeGusta', 'x0r', 'aXXo']

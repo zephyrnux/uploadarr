@@ -17,6 +17,7 @@ class FNP():
         self.source_flag = 'FnP'
         self.upload_url = 'https://fearnopeer.com/api/torrents/upload'
         self.search_url = 'https://fearnopeer.com/api/torrents/filter'
+        self.signature = None
         self.banned_groups = ["YIFY", "RARBG", "YTS", "LAMA", "D3g", "YAWNiX"]
         pass
     

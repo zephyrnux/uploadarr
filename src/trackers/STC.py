@@ -15,6 +15,7 @@ class STC():
         self.config = config
         self.tracker = 'STC'
         self.source_flag = 'STC'
+        self.signature = None
         self.upload_url = 'https://skipthecommericals.xyz/api/torrents/upload'
         self.search_url = 'https://skipthecommericals.xyz/api/torrents/filter'
         self.banned_groups = [""]
