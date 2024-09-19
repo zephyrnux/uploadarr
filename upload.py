@@ -127,20 +127,31 @@ parser = Args(config)
 
 async def do_the_thing(base_dir):
     print_banner()
-    meta = dict()
-    meta['base_dir'] = base_dir
+    meta = {'base_dir': base_dir}
+
+    # Parse the command-line arguments and update meta
+    meta, help, before_args = parser.parse(sys.argv[1:], meta)
+
+    # If 'reconfig' is set in meta, run reconfigure()
+    if meta.get("reconfig", False):
+        reconfigure()
+
+    # Collect existing paths from the arguments
     paths = []
     for each in sys.argv[1:]:
         if os.path.exists(each):
             paths.append(os.path.abspath(each))
         else:
             break
-    if meta.get("reconfig", False):
-        reconfigure()        
-    meta, help, before_args = parser.parse(tuple(' '.join(sys.argv[1:]).split(' ')), meta)    
-    if meta['cleanup'] and os.path.exists(f"{base_dir}/tmp"):
-        shutil.rmtree(f"{base_dir}/tmp")
-        console.print("[bold green]Successfully emptied tmp directory")
+
+    # Clean up tmp directory if 'cleanup' flag is set
+    if meta.get('cleanup', False):
+        tmp_dir = f"{base_dir}/tmp"
+        if os.path.exists(tmp_dir):
+            shutil.rmtree(tmp_dir)
+            console.print("[bold green]Successfully emptied tmp directory")
+        else:
+            console.print("[bold yellow]tmp directory is already empty")
 
     if meta.get('auto_queue'):
         directory = meta['auto_queue']
