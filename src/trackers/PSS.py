@@ -9,14 +9,14 @@ import platform
 from src.trackers.COMMON import COMMON
 from src.console import console 
 
-class STC():
+class PSS():
 
     def __init__(self, config):
         self.config = config
-        self.tracker = 'STC'
-        self.source_flag = 'STC'
-        self.upload_url = 'https://skipthecommericals.xyz/api/torrents/upload'
-        self.search_url = 'https://skipthecommericals.xyz/api/torrents/filter'
+        self.tracker = 'PSS'
+        self.source_flag = 'PSS'
+        self.upload_url = 'https://privatesilverscreen.cc/api/torrents/upload'
+        self.search_url = 'https://privatesilverscreen.cc/api/torrents/filter'
         self.banned_groups = [""]
         pass
     
