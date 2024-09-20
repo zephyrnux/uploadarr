@@ -17,7 +17,10 @@ class PSS():
         self.source_flag = 'PSS'
         self.upload_url = 'https://privatesilverscreen.cc/api/torrents/upload'
         self.search_url = 'https://privatesilverscreen.cc/api/torrents/filter'
-        self.banned_groups = [""]
+        self.banned_groups = [ "Will1869", "x0r", "rarbg", "NeXus", "core", "ZMNT", "d3g", "msd", "MeGusta", "FGT", "nikt0", "STUTTERSHIT", "$andra", "AROMA", "aXXo", "BRrip", "CM8", "CrEwSaDe",
+    "DNL", "FaNGDiNG0", "FRDS", "HD2DVD", "HDTime", "iPlanet", "KiNGDOM", "Leffe", "mHD", "nHD", "nSD", "NhaNc3", "PRODJi", "RDN", "SANTi", "ViSION", "WAF", "YIFY", "YTS",
+    "FROZEN", "UTR", "Grym", "GrymLegacy", "C4K", "tigole", "ProRes", "MezRips", "GalaxyRG", "RCDiVX", "AR", "LycanHD", "TSP", "TSPxL"]
+
         pass
     
     async def upload(self, meta):
