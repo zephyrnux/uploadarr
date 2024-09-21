@@ -2452,11 +2452,6 @@ class Prep():
             video_encode = meta.get('video_encode', video_codec)
         edition = meta.get('edition', "")
 
-        if meta['category'] == "TV":
-            if meta['search_year'] != "":
-                year = meta['year']
-            else:
-                year = ""
         if meta.get('no_season', False) == True:
             season = ''
         if meta.get('no_year', False) == True:
