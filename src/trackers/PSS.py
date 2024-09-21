@@ -180,7 +180,6 @@ class PSS():
         if resolution == "OTHER":
             resolution = ""
         audio = meta.get('audio', "")
-        lang_tag = self.get_language_tag(meta)
         service = meta.get('service', "")
         season = meta.get('season', "")
         episode = meta.get('episode', "")
