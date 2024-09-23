@@ -7,7 +7,7 @@
         ##-----------------------------------------------------##
 
 config = {
-    'version': '1.0.2',
+    'version': '1.0.3',
 	
     "DEFAULT" : {
 
@@ -281,6 +281,16 @@ config = {
             "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
             },
 
+        "PSS" :{
+            "api_key" : "PSS_API_KEY",
+            "announce_url" : "https://privatesilverscreen.cc/announce/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : "\n[center][b]PLEASE SEED PrivateSilverScreen FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
+            "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+        },
+
         "PTER" : {
             "passkey":'passkey',
             "img_rehost" : False,
@@ -351,16 +361,6 @@ config = {
             "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
         },
 
-        "STC" :{
-            "api_key" : "STC_API_KEY",
-            "announce_url" : "https://skipthecommericals.xyz/announce/Custom_Announce_URL",
-            "anon" : False,
-            "signature" : "\n[center][b]PLEASE SEED SkipTheCommercials FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
-            "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED STC FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
-        },
-
         "TDC" :{
             "api_key" : "TDC_API_KEY",
             "announce_url" : "https://thedarkcommunity.cc/announce/Custom_Announce_URL",
@@ -415,16 +415,7 @@ config = {
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED UTP FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
         },	
-
-        "VHD": {
-                "api_key": "VHD_API_KEY",
-                "announce_url": "https://vision-hd.org/announce/Custom_Announce_URL",
-                "anon": False,
-            "signature" : "\n[center][b]PLEASE SEED VHD FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
-            "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED VHD FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	
-    },        
+    
 
         "MANUAL" : {
             # Uncomment and replace link with filebrowser (https://github.com/filebrowser/filebrowser) link to the Uploadrr directory, this will link to your filebrowser instead of uploading to uguu.se

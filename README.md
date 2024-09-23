@@ -2,10 +2,12 @@
 
 # Uploadrr
 
-Welcome to Uploadrr! This tool is designed to simplify media uploading tasks by automating several processes. It might not be perfect, but it aims to make your life easier.
+Welcome to a tool which aims to make your life easier just to give you a headache when it all breaks down. Yay code!
+Help is always apreciated, yes it should be rebuilt from the ground up. No, nobody has time for that. We stand on the shoulder of giants.. or are lazy. 
+Coffee timeeee.
 
 > [!NOTE]
-> This project is a fork of an existing repository, which I have customized and maintained according to my specific needs. While it retains core functionality from the original project, there may be slight variations to better suit my use cases. You are welcome to use this fork as you see fit.
+> This project is a fork of an existing repository, which I have customized for me n friends. While it retains core functionality from the original project, there may be slight variations to better suit my needs. You are welcome to use this fork as you see fit.
 
 ## Features
   - **Media Information:** Generates and parses MediaInfo/BDInfo.
@@ -52,13 +54,13 @@ Welcome to Uploadrr! This tool is designed to simplify media uploading tasks by 
 | OE    |
 | OINK  |
 | OTW   |
+| PSS   |
 | PTER  |
 | PTT   |
 | R4E   |
 | RF    |
 | RTF   |
 | SN    |
-| STC   |
 | TDC   |
 | TL    |
 | TTG   |
@@ -70,7 +72,7 @@ Welcome to Uploadrr! This tool is designed to simplify media uploading tasks by 
 </details>
 
 > [!TIP]
-> To ensure proper functionality with Uploadrr, please use the exact site names as listed here. For instance, "Aither" should be referred to as "AITHER" rather than "ATH". This requirement applies to all sites listed, so please verify that you are using the correct name.
+> To ensure proper functionality with Uploadrr, please use the exact site names as listed in list. 
 
 ## Upcoming Features
   - Enhanced support for FANRES & Adult Content.
