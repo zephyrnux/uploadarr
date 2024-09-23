@@ -18,6 +18,7 @@ class OINK():
         self.source_flag = 'YOiNKED'
         self.upload_url = 'https://yoinked.org/api/torrents/upload'
         self.search_url = 'https://yoinked.org/api/torrents/filter'
+        self.signature = None
         self.banned_groups = ["OFT", "ION10", "d3g", "SicFoI", "nikt0", "CHD", "YIFY", "RMTeam", "aXXo", "mSD", "mHD", "x0r", "RARBG", "MeGusta", "FGT", "ELiTE", "ADE", "Telly", "PiRaTeS", "LAMA", "GalaxyRG", "PSA", "Pahe", "JATT", "DUS-IcTv", "Will1869", "iVy", "TGx", "edge2020", "Tigole", "QxR", "SWTYBLZ", "TAoE", "4K4U", "NAHOM"]
 
         pass

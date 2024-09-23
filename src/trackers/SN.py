@@ -13,6 +13,7 @@ class SN():
         self.config = config
         self.tracker = 'SN'
         self.source_flag = 'Swarmazon'
+        self.signature = None
         self.upload_url = 'https://swarmazon.club/api/upload.php'
         self.search_url = 'https://swarmazon.club/api/search.php'           
         self.banned_groups = [""]

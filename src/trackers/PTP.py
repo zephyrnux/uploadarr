@@ -27,6 +27,7 @@ class PTP():
         self.config = config
         self.tracker = 'PTP'
         self.source_flag = 'PTP'
+        self.signature = None
         self.api_user = config['TRACKERS']['PTP'].get('ApiUser', '').strip()
         self.api_key = config['TRACKERS']['PTP'].get('ApiKey', '').strip()
         self.announce_url = config['TRACKERS']['PTP'].get('announce_url', '').strip() 

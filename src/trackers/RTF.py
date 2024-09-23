@@ -16,6 +16,7 @@ class RTF():
         self.config = config
         self.tracker = 'RTF'
         self.source_flag = 'sunshine'
+        self.signature = None
         self.upload_url = 'https://retroflix.club/api/upload'
         self.search_url = 'https://retroflix.club/api/torrent'
         self.forum_link = 'https://retroflix.club/forums.php?action=viewtopic&topicid=3619'

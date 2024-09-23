@@ -39,19 +39,26 @@ import importlib
 #######  Tracker List Here   #######
 ### Add below + api or http list ###
 ####################################
-tracker_list = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FL', 'FNP', 'HDB', 'HDT', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT',
-                'MB', 'MTV', 'NBL', 'OE', 'OINK', 'OTW', 'PTER', 'PSS', 'PTT', 'R4E', 'RF', 'RTF', 'SN', 'TDC', 'TL', 'TTG', 'TTR', 'ULCX', 'UTP']
+tracker_data = {
+    'api': ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PSS', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'TDC', 'TTR', 'ULCX', 'UTP'],
+    'http': ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
+}
 
-# Imports corresponding modules + creates dict
-tracker_class_map = {tracker: getattr(importlib.import_module(f"src.trackers.{tracker}"), tracker) for tracker in tracker_list}
+# Combine all trackers into one list
+tracker_list = tracker_data['api'] + tracker_data['http']
 
-api_trackers = ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PSS', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'TDC', 'TTR', 'ULCX', 'UTP']
-http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
+console.print(tracker_list)
 
-############# EDITING BELOW THIS LINE MAY RESULT IN SCRIPT BREAKING #############
+# Import corresponding modules and create a dictionary mapping
+tracker_class_map = {}
+for tracker in tracker_list:
+    try:
+        tracker_class_map[tracker] = getattr(importlib.import_module(f"src.trackers.{tracker}"), tracker)
+    except ImportError as e:
+        logging.error(f"Error importing {tracker}: {e}")
 
-python3_path = shutil.which("python3")
-python_cmd = python3_path if python3_path else "python" 
+# Detect python3 or fallback to default python command
+python_cmd = shutil.which("python3") or "python"
 
 base_dir = os.path.dirname(os.path.realpath(__file__))
 data_dir = os.path.join(base_dir, 'data')
@@ -121,26 +128,41 @@ except Exception as e:
     console.print(f"[bold red]Error: {str(e)}[/bold red]")
     pass
 
-
-client = Clients(config=config)
-parser = Args(config)
+# Initialize client and argument parser
+try:
+    client = Clients(config=config)
+    parser = Args(config)
+except Exception as e:
+    console.print(f"[bold red]Error initializing client or parser: {e}[/bold red]")
+    sys.exit(1)
 
 async def do_the_thing(base_dir):
     print_banner()
-    meta = dict()
-    meta['base_dir'] = base_dir
+    meta = {'base_dir': base_dir}
+
+    # Parse the command-line arguments and update meta
+    meta, help, before_args = parser.parse(sys.argv[1:], meta)
+
+    # If 'reconfig' is set in meta, run reconfigure()
+    if meta.get("reconfig", False):
+        reconfigure()
+
+    # Collect existing paths from the arguments
     paths = []
     for each in sys.argv[1:]:
         if os.path.exists(each):
             paths.append(os.path.abspath(each))
         else:
             break
-    if meta.get("reconfig", False):
-        reconfigure()        
-    meta, help, before_args = parser.parse(tuple(' '.join(sys.argv[1:]).split(' ')), meta)    
-    if meta['cleanup'] and os.path.exists(f"{base_dir}/tmp"):
-        shutil.rmtree(f"{base_dir}/tmp")
-        console.print("[bold green]Successfully emptied tmp directory")
+
+    # Clean up tmp directory if 'cleanup' flag is set
+    if meta.get('cleanup', False):
+        tmp_dir = f"{base_dir}/tmp"
+        if os.path.exists(tmp_dir):
+            shutil.rmtree(tmp_dir)
+            console.print("[bold green]Successfully emptied tmp directory")
+        else:
+            console.print("[bold yellow]tmp directory is already empty")
 
     if meta.get('auto_queue'):
         directory = meta['auto_queue']
@@ -353,7 +375,7 @@ async def do_the_thing(base_dir):
             else:
                 debug = ""
 
-            if tracker in api_trackers:
+            if tracker in tracker_data['api']:
                 tracker_class = tracker_class_map[tracker](config=config)
                 if meta['unattended']:
                     upload_to_tracker = True
@@ -389,7 +411,7 @@ async def do_the_thing(base_dir):
                         skipped_files += 1
                         skipped_details.append((path, f"{tracker_class.tracker} Rejected Upload"))
             
-            if tracker in http_trackers:
+            if tracker in tracker_data['http']:
                 tracker_class = tracker_class_map[tracker](config=config)
                 if meta['unattended']:
                     upload_to_tracker = True
@@ -424,7 +446,7 @@ async def do_the_thing(base_dir):
                         if manual_tracker != 'MANUAL':
                             manual_tracker = manual_tracker.replace(" ", "").upper().strip()
                             tracker_class = tracker_class_map[manual_tracker](config=config)
-                            if manual_tracker in api_trackers:
+                            if manual_tracker in tracker_data['api']:
                                 await common.unit3d_edit_desc(meta, tracker_class.tracker, tracker_class.signature)
                             else:
                                 await tracker_class.edit_desc(meta)

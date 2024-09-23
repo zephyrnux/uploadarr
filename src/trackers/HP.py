@@ -17,6 +17,7 @@ class HP():
         self.source_flag = 'Hidden-Palace'
         self.upload_url = 'https://hidden-palace.net/api/torrents/upload'
         self.search_url = 'https://hidden-palace.net/api/torrents/filter'
+        self.signature = None
         self.banned_groups = [""]
         pass
     

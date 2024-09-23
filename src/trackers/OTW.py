@@ -16,6 +16,7 @@ class OTW():
         self.source_flag = 'OLD'
         self.upload_url = 'https://oldtoons.world/api/torrents/upload'
         self.search_url = 'https://oldtoons.world/api/torrents/filter'
+        self.signature = None
         self.banned_groups = [
     '[Oj]', '3LTON', '4yEo', 'ADE', 'AFG', 'AniHLS', 'AnimeRG', 'AniURL', 'AROMA', 'aXXo', 'Brrip', 'CHD', 'CM8', 
     'CrEwSaDe', 'DeadFish', 'DNL', 'ELiTE', 'eSc', 'FaNGDiNG0', 'FGT', 'Flights', 'FRDS', 'FUM', 'HAiKU', 'HD2DVD',
