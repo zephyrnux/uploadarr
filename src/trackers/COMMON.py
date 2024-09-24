@@ -72,9 +72,15 @@ class COMMON():
                     if key:
                         descfile.write(f"[center][youtube]{key}[/youtube][/center]")
 
+            add_logo_enabled = self.config["DEFAULT"].get("add_logo", False)
+            if add_logo_enabled:
+                logo = meta.get('logo')
+                logo_size = self.config["DEFAULT"].get("logo_size", 420)
+                if logo:
+                    descfile.write(f"[center][img={logo_size}]{logo}[/img]")  
+
             img_size = self.config["DEFAULT"].get("img_size", 500)
             inline_imgs = self.config["DEFAULT"].get("inline_imgs", 0)
-            desc = desc.replace('[img]', f"[img={img_size}]")
             descfile.write(desc)
             images = meta['image_list']
             if len(images) > 0: 
@@ -82,7 +88,6 @@ class COMMON():
                 for each in range(len(images[:int(meta['screens'])])):
                     web_url = images[each]['web_url']
                     raw_url = images[each]['raw_url']
-                    img_size = self.config["DEFAULT"]["img_size"]
                     descfile.write(f"[url={web_url}][img={img_size}]{raw_url}[/img][/url] ")
                     if img_size and inline_imgs:
                         try:

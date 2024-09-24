@@ -7,7 +7,7 @@
         ##-----------------------------------------------------##
 
 config = {
-    'version': '1.0.3',
+    'version': '1.0.4',
 	
     "DEFAULT" : {
 
@@ -31,6 +31,8 @@ config = {
         "img_size" : "500",  #Size in Description [img=500]
         "optimize_images" : True,  # Lossless PNG Compression (True/False)
 	    #"inline_imgs": 3, #Uncomment and use this if you want to insert a line break after X images in description
+        "add_logo" : False, # Adds Logo as header
+        #"logo_size": 400, #Uncomment and choose a logo size. Defauts to 420 if nothing is set. Recomended range 300-500
         "add_trailer" : True, # Adds Movie Trailer (Skips TV as season specifier not supported)
 
         ### GOLBAL SIGNATURES ###

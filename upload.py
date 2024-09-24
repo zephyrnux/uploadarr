@@ -47,8 +47,6 @@ tracker_data = {
 # Combine all trackers into one list
 tracker_list = tracker_data['api'] + tracker_data['http']
 
-console.print(tracker_list)
-
 # Import corresponding modules and create a dictionary mapping
 tracker_class_map = {}
 for tracker in tracker_list:
@@ -64,7 +62,7 @@ base_dir = os.path.dirname(os.path.realpath(__file__))
 data_dir = os.path.join(base_dir, 'data')
 config_path = os.path.abspath(os.path.join(data_dir, 'config.py'))
 old_config_path = os.path.abspath(os.path.join(data_dir, 'backup', 'old_config.py'))
-minimum_version = Version('1.0.0')
+minimum_version = Version('1.0.4')
 
 def get_backup_name(path, suffix='_bu'):
     base, ext = os.path.splitext(path)

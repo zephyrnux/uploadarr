@@ -1194,7 +1194,7 @@ class Prep():
             movie = tmdb.Movies(meta['tmdb'])
             while True:  # Keep looping until a valid response is obtained
                 try:
-                    response = movie.info()
+                    response = movie.info()  # Fetch movie info
                     break 
                 except HTTPError as e:
                     if e.response.status_code == 404:
@@ -1206,6 +1206,8 @@ class Prep():
                         movie = tmdb.Movies(meta['tmdb'])  # Update the movie object with the new TMDb ID
                     else:
                         raise
+            
+            # Extract general movie information
             meta['title'] = response['title']
             if response['release_date']:
                 try:
@@ -1217,19 +1219,18 @@ class Prep():
             else:
                 console.print('[yellow]TMDB does not have a release date, using year from filename instead (if it exists)')
                 meta['year'] = meta['search_year']
+            
             external = movie.external_ids()
-            if meta.get('imdb', None) == None:
+            if meta.get('imdb', None) is None:
                 imdb_id = external.get('imdb_id', "0")
-                if imdb_id == "" or imdb_id == None:
-                    meta['imdb_id'] = '0'
-                else:
-                    meta['imdb_id'] = str(int(imdb_id.replace('tt', ''))).zfill(7)
+                meta['imdb_id'] = str(int(imdb_id.replace('tt', ''))).zfill(7) if imdb_id else '0'
             else:
                 meta['imdb_id'] = str(meta['imdb']).replace('tt', '').zfill(7)
+
             if meta.get('tvdb_id', '0') in ['', ' ', None, 'None', '0']:
-                meta['tvdb_id'] = external.get('tvdb_id', '0')
-                if meta['tvdb_id'] in ["", None, " ", "None"]:
-                    meta['tvdb_id'] = '0'
+                meta['tvdb_id'] = external.get('tvdb_id', '0') or '0'
+
+            # Fetch Trailer
             try:
                 videos = movie.videos()
                 for each in videos.get('results', []):
@@ -1239,23 +1240,41 @@ class Prep():
             except Exception:
                 console.print('[yellow]Unable to grab videos from TMDb.')
             
+            # Additional metadata
             meta['aka'], original_language = await self.get_imdb_aka(meta['imdb_id'])
-            if original_language != None:
-                meta['original_language'] = original_language
-            else:
-                meta['original_language'] = response['original_language']
-
+            meta['original_language'] = original_language if original_language is not None else response['original_language']
             meta['original_title'] = response.get('original_title', meta['title'])
             meta['keywords'] = self.get_keywords(movie)
             meta['genres'] = self.get_genres(response)
             meta['adult'] = response['adult']
             meta['tmdb_directors'] = self.get_directors(movie)
-            if meta.get('anime', False) == False:
+            
+            if not meta.get('anime', False):
                 meta['mal_id'], meta['aka'], meta['anime'] = self.get_anime(response, meta)
+            
             meta['poster'] = response.get('poster_path', "")
+
+            # Fetch logos from the images endpoint
+            logo_response = movie.images()
+            logos = logo_response.get('logos', [])
+            english_logos = [logo for logo in logos if logo.get('iso_639_1') == 'en']
+
+            # English Logo Bias
+            if english_logos:
+                first_logo = english_logos[0] 
+            else:
+                first_logo = logos[0] if logos else None  
+
+            if first_logo:
+                logo_path = first_logo['file_path']
+                meta['logo'] = f"https://image.tmdb.org/t/p/original{logo_path}"
+            else:
+                meta['logo'] = None 
+
             meta['overview'] = response['overview']
             meta['tmdb_type'] = 'Movie'
             meta['runtime'] = response.get('episode_run_time', 60)
+
         elif meta['category'] == "TV":
             tv = tmdb.TV(meta['tmdb'])
             response = tv.info()
