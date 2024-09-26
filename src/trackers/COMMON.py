@@ -77,7 +77,7 @@ class COMMON():
                 logo = meta.get('logo')
                 logo_size = self.config["DEFAULT"].get("logo_size", 420)
                 if logo:
-                    descfile.write(f"[center][img={logo_size}]{logo}[/img]")  
+                    descfile.write(f"[center][img={logo_size}]{logo}[/img][/center]")  
 
             img_size = self.config["DEFAULT"].get("img_size", 500)
             inline_imgs = self.config["DEFAULT"].get("inline_imgs", 0)
