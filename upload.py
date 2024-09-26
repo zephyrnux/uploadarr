@@ -41,11 +41,12 @@ import importlib
 ####################################
 tracker_data = {
     'api': ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PSS', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'TDC', 'TTR', 'ULCX', 'UTP'],
-    'http': ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
-}
+    'http': ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG'],
+    'other': ['PTP', 'THR','TL']
+ }
 
 # Combine all trackers into one list
-tracker_list = tracker_data['api'] + tracker_data['http']
+tracker_list = tracker_data['api'] + tracker_data['http'] + tracker_data['other']
 
 # Import corresponding modules and create a dictionary mapping
 tracker_class_map = {}
