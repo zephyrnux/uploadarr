@@ -56,7 +56,7 @@ class Clients():
             self.rtorrent(path, torrent_path, torrent, meta, local_path, remote_path, client)
         elif torrent_client.lower() == "qbit":
             path = os.path.dirname(meta['path']) if meta['full_dir'] else meta['path']
-            await self.qbittorrent(path, torrent, local_path, remote_path, client, meta['is_disc'], meta['filelist'], meta)
+            await self.qbittorrent(path, torrent, local_path, remote_path, client, meta['is_disc'], meta['filelist'], meta, tracker)
         elif torrent_client.lower() == "deluge":
             if meta['full_dir'] or meta['type'] == "DISC":
                 path = os.path.dirname(meta['path'])
@@ -277,10 +277,7 @@ class Clients():
             console.print(f"[cyan]Path: {path}")
         return
 
-
-    async def qbittorrent(self, path, torrent, local_path, remote_path, client, is_disc, filelist, meta):
-        # infohash = torrent.infohash
-        #Remote path mount
+    async def qbittorrent(self, path, torrent, local_path, remote_path, client, is_disc, filelist, meta, tracker):
         isdir = os.path.isdir(path)
         if not isdir and len(filelist) == 1:
             path = os.path.dirname(path)
@@ -291,13 +288,22 @@ class Clients():
             path = path.replace(os.sep, '/')
         if not path.endswith(os.sep):
             path = f"{path}/"
-        qbt_client = qbittorrentapi.Client(host=client['qbit_url'], port=client['qbit_port'], username=client['qbit_user'], password=client['qbit_pass'], VERIFY_WEBUI_CERTIFICATE=client.get('VERIFY_WEBUI_CERTIFICATE', True))
+
+        qbt_client = qbittorrentapi.Client(
+            host=client['qbit_url'],
+            port=client['qbit_port'],
+            username=client['qbit_user'],
+            password=client['qbit_pass'],
+            VERIFY_WEBUI_CERTIFICATE=client.get('VERIFY_WEBUI_CERTIFICATE', True)
+        )
+
         console.print("[bold yellow]Adding and rechecking torrent")
         try:
             qbt_client.auth_log_in()
         except qbittorrentapi.LoginFailed:
             console.print("[bold red]INCORRECT QBIT LOGIN CREDENTIALS")
             return
+
         auto_management = False
         am_config = client.get('automatic_management_paths', '')
         if isinstance(am_config, list):
@@ -307,22 +313,42 @@ class Clients():
         else:
             if os.path.normpath(am_config).lower() in os.path.normpath(path).lower() and am_config.strip() != "": 
                 auto_management = True
-        qbt_category = client.get("qbit_cat") if not meta.get("qbit_cat") else meta.get('qbit_cat')
 
+        qbt_category = client.get("qbit_cat") if not meta.get("qbit_cat") else meta.get('qbit_cat')
         content_layout = client.get('content_layout', 'Original')
-        
-        qbt_client.torrents_add(torrent_files=torrent.dump(), save_path=path, use_auto_torrent_management=auto_management, is_skip_checking=True, content_layout=content_layout, category=qbt_category)
-        # Wait for up to 30 seconds for qbit to actually return the download
+        # Add the torrent to qBittorrent
+        qbt_client.torrents_add(
+            torrent_files=torrent.dump(), 
+            save_path=path, 
+            use_auto_torrent_management=auto_management, 
+            is_skip_checking=True, 
+            content_layout=content_layout, 
+            category=qbt_category
+        )
+
+        # Wait for up to 30 seconds for qBittorrent to return the download
         # there's an async race conditiion within qbt that it will return ok before the torrent is actually added
-        for _ in range(0, 30):
-            if len(qbt_client.torrents_info(torrent_hashes=torrent.infohash)) > 0:
+        for _ in range(30):
+            torrents = qbt_client.torrents_info(torrent_hashes=torrent.infohash)
+            if torrents:
                 break
             await asyncio.sleep(1)
-        qbt_client.torrents_resume(torrent.infohash)
-        if client.get('qbit_tag', None) != None:
-            qbt_client.torrents_add_tags(tags=client.get('qbit_tag'), torrent_hashes=torrent.infohash)
-        if meta.get('qbit_tag') != None:
-            qbt_client.torrents_add_tags(tags=meta.get('qbit_tag'), torrent_hashes=torrent.infohash)
+
+        # Check if the torrent was found after waiting
+        if not torrents:
+            console.print(f"[bold red]Warning: Torrent with hash {torrent.infohash} not found after adding.")
+        else:
+            qbt_client.torrents_resume(torrent.infohash)
+        tags = set()  # Avoid duplicates
+        if client.get('qbit_tag') is not None:
+            tags.add(client['qbit_tag'])
+        if meta.get('qbit_tag') is not None:
+            tags.add(meta['qbit_tag'])
+        if self.config['TRACKERS'][f'{tracker}'].get('qbit_tag', None) is not None:
+            tags.add(self.config['TRACKERS'][f'{tracker}']['qbit_tag'])    
+        if tags:
+            qbt_client.torrents_add_tags(tags=', '.join(tags), torrent_hashes=torrent.infohash)
+
         console.print(f"Added to: {path}")
         
 
