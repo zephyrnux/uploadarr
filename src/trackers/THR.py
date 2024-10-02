@@ -5,8 +5,9 @@ import requests
 import json
 import glob
 from difflib import SequenceMatcher
-import cli_ui
 import base64
+from rich.prompt import Prompt
+from rich.prompt import Confirm
 import os
 import re
 import platform
@@ -32,17 +33,18 @@ class THR():
         thr_name = unidecode(meta['name'].replace('DD+', 'DDP'))
 
         # Confirm the correct naming order for FL
-        cli_ui.info(f"THR name: {thr_name}")
-        if meta.get('unattended', False) == False:
-            thr_confirm = cli_ui.ask_yes_no("Correct?", default=False)
-            if thr_confirm != True:
-                thr_name_manually = cli_ui.ask_string("Please enter a proper name", default="")
+        console.print(f"THR name: {thr_name}")
+        if not meta.get('unattended', False):
+            thr_confirm = Prompt.ask("Correct?", choices=["yes", "no"], default="no")
+            if thr_confirm != "yes":
+                thr_name_manually = Prompt.ask("Please enter a proper name", default="")
                 if thr_name_manually == "":
-                    console.print('No proper name given')
+                    console.print('No proper name given', style="bold red")
                     console.print("Aborting...")
                     return
                 else:
                     thr_name = thr_name_manually
+
         torrent_name = re.sub(r"[^0-9a-zA-Z. '\-\[\]]+", " ", thr_name)
 
 
@@ -87,11 +89,12 @@ class THR():
             payload['subs[]'] = tuple(subs)
 
 
-        if meta['debug'] == False:
+        if not meta['debug']:
             thr_upload_prompt = True
         else:
-            thr_upload_prompt = cli_ui.ask_yes_no("send to takeupload.php?", default=False)
-        if thr_upload_prompt == True:
+            thr_upload_prompt = Confirm.ask("Send to takeupload.php?", default=False)
+
+        if thr_upload_prompt:
             await asyncio.sleep(0.5)
             response = session.post(url=url, files=files, data=payload, headers=headers)
             try:
