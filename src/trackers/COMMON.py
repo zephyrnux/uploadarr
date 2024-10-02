@@ -65,7 +65,7 @@ class COMMON():
             if comparison is False:
                 desc = bbcode.convert_comparison_to_collapse(desc, 1000)
 
-            if not tracker == 'OE':
+            if tracker not in ('OE', 'AITHER'):
                 add_trailer_enabled = self.config["DEFAULT"].get("add_trailer", False)    
                 if add_trailer_enabled and meta.get("category") == "MOVIE":
                     key = meta.get("youtube")
