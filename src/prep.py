@@ -1331,6 +1331,23 @@ class Prep():
             if runtime == []:
                 runtime = [60]
             meta['runtime'] = runtime[0]
+
+        logo_response = tv.images() 
+        logos = logo_response.get('logos', [])
+        english_logos = [logo for logo in logos if logo.get('iso_639_1') == 'en']
+
+        # English Logo Bias
+        if english_logos:
+            first_logo = english_logos[0] 
+        else:
+            first_logo = logos[0] if logos else None  
+
+        if first_logo:
+            logo_path = first_logo['file_path']
+            meta['logo'] = f"https://image.tmdb.org/t/p/original{logo_path}"
+        else:
+            meta['logo'] = None    
+            
         if meta['poster'] not in (None, ''):
             meta['poster'] = f"https://image.tmdb.org/t/p/original{meta['poster']}"
 
