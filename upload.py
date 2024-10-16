@@ -40,7 +40,7 @@ import importlib
 ### Add below + api or http list ###
 ####################################
 tracker_data = {
-    'api': ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PSS', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'TDC', 'TTR', 'ULCX', 'UTP'],
+    'api': ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'CBR', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PSS', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'TDC', 'TTR', 'ULCX', 'UTP'],
     'http': ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG'],
     'other': ['PTP', 'THR','TL']
  }
