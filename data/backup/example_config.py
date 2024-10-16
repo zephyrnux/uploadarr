@@ -137,6 +137,17 @@ config = {
             "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
         },
 
+        "CBR" : {
+            "api_key" : "CBR_API_KEY",
+            "announce_url" : "https://capybarabr.com/announce/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : "[url=https://codeberg.org/CvT/Uploadrr][img=69]https://capybarabr.com/img/capybara.svg[/img][/url][/center]",
+            "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
+            "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n [center][url=https://codeberg.org/CvT/Uploadrr][img=69]https://capybarabr.com/img/capybara.svg[/img][/url][/center]",
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+        },
+
+
         "FNP" : {
             "api_key" : "FNP_API_KEY",
             "announce_url" : "https://fearnopeer.com/announce/Custom_Announce_URL",
