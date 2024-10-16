@@ -83,7 +83,7 @@ class CBR():
     async def upload(self, meta):
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
-        cat_id = await self.get_cat_id(meta['category']), meta.get('keywords', '')
+        cat_id = await self.get_cat_id(meta['category'], meta.get('keywords', ''))
         type_id = await self.get_type_id(meta['type'])
         resolution_id = await self.get_res_id(meta['resolution'])
         await common.unit3d_edit_desc(meta, self.tracker)
