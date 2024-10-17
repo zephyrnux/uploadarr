@@ -38,6 +38,7 @@ Coffee timeeee.
 | ANT   |
 | BHDTV |
 | BLU   |
+| CBR   |
 | FL    |
 | FNP   |
 | HDB   |
