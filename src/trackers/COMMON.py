@@ -65,7 +65,7 @@ class COMMON():
             if comparison is False:
                 desc = bbcode.convert_comparison_to_collapse(desc, 1000)
 
-            if tracker not in ('OE', 'AITHER'):
+            if tracker not in ('AITHER', 'CBR', 'OE'):
                 add_trailer_enabled = self.config["DEFAULT"].get("add_trailer", False)    
                 if add_trailer_enabled and meta.get("category") == "MOVIE":
                     key = meta.get("youtube")
@@ -80,6 +80,8 @@ class COMMON():
                     descfile.write(f"[center][img={logo_size}]{logo}[/img][/center]")  
 
             img_size = self.config["DEFAULT"].get("img_size", 500)
+            if tracker == "CBR":
+                img_size = 350
             inline_imgs = self.config["DEFAULT"].get("inline_imgs", 0)
             descfile.write(desc)
             images = meta['image_list']
