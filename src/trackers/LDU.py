@@ -154,7 +154,7 @@ class LDU():
             mi_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/MEDIAINFO.txt", 'r', encoding='utf-8').read()
             bd_dump = None
 
-        desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r').read()
+        desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
         data = {
@@ -361,7 +361,7 @@ class LDU():
         three_d = meta.get('3D', "")
         tag = meta.get('tag', "")
         if tag == "":
-            tag = "- NOGRP"
+            tag = "-NOGRP"
         source = meta.get('source', "")
         uhd = meta.get('uhd', "")
         hdr = meta.get('hdr', "")

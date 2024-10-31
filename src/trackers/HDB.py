@@ -239,7 +239,7 @@ class HDB():
         # POST > upload/upload
 
         # Download new .torrent from site
-        hdb_desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r').read()
+        hdb_desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         torrent_path = f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent"
         with open(torrent_path, 'rb') as torrentFile:
             if len(meta['filelist']) == 1:

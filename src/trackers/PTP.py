@@ -184,9 +184,7 @@ class PTP():
         desc = bbcode.clean_ptp_description(ptp_desc, is_disc)
         console.print(f"[bold green]Successfully grabbed description from PTP")
         return desc
-    
-
-
+ 
     async def get_group_by_imdb(self, imdb):
         params = {
             'imdb' : imdb,
@@ -577,7 +575,7 @@ class PTP():
         return desc
 
     async def edit_desc(self, meta):
-        from prep_what import Prep
+        from prep import Prep
         prep = Prep(screens=meta['screens'], img_host=meta['imghost'], config=self.config)
         base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r', encoding="utf-8").read()
         with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'w', encoding="utf-8") as desc:

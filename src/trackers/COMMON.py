@@ -35,8 +35,8 @@ class COMMON():
     
     
     async def unit3d_edit_desc(self, meta, tracker, comparison=False, desc_header=""):
-        base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r', encoding='utf8').read()
-        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]DESCRIPTION.txt", 'w', encoding='utf8') as descfile:
+        base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r', encoding='utf-8').read()
+        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]DESCRIPTION.txt", 'w', encoding='utf-8') as descfile:
             if desc_header != "":
                 descfile.write(desc_header)
             
@@ -117,7 +117,7 @@ class COMMON():
                 if signature is None or anon_signature is None or pr_signature is None or anon_pr_sig is None:
                     print("[bold][red]WARN[/red]: Global Signatures are turned off, but no signature is provided for selected tracker.[/bold]")
 
-        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]DESCRIPTION.txt", 'a', encoding='utf8') as descfile:
+        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]DESCRIPTION.txt", 'a', encoding='utf-8') as descfile:
             if meta["personalrelease"]:
                 if meta["anon"] != 0 or self.config["TRACKERS"][tracker].get("anon", False):
                     descfile.write("\n" + anon_pr_sig)

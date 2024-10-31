@@ -58,7 +58,7 @@ class THR():
                 f.close()
             # bd_file = None
 
-        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[THR]DESCRIPTION.txt", 'r') as f:
+        with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[THR]DESCRIPTION.txt", 'r', encoding='utf-8') as f:
             desc = f.read()
             f.close()
         
