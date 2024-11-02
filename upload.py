@@ -40,9 +40,9 @@ import importlib
 ### Add below + api or http list ###
 ####################################
 tracker_data = {
-    'api': ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'CBR', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PSS', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'TDC', 'TTR', 'ULCX', 'UTP'],
+    'api': ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'CBR', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PSS', 'PTT', 'RF', 'R4E', 'RTF', 'SN', 'TTR', 'ULCX', 'UTP'],
     'http': ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG'],
-    'other': ['PTP', 'THR','TL']
+    'other': ['AR', 'PTP', 'THR', 'TL']
  }
 
 # Combine all trackers into one list
@@ -63,7 +63,7 @@ base_dir = os.path.dirname(os.path.realpath(__file__))
 data_dir = os.path.join(base_dir, 'data')
 config_path = os.path.abspath(os.path.join(data_dir, 'config.py'))
 old_config_path = os.path.abspath(os.path.join(data_dir, 'backup', 'old_config.py'))
-minimum_version = Version('1.0.4')
+minimum_version = Version('1.0.5')
 
 def get_backup_name(path, suffix='_bu'):
     base, ext = os.path.splitext(path)
@@ -258,7 +258,7 @@ async def do_the_thing(base_dir):
                 saved_meta = json.load(f)
                 for key, value in saved_meta.items():
                     overwrite_list = [
-                        'path', 'trackers', 'dupe', 'debug', 'anon', 'category', 'type', 'screens', 'nohash', 'manual_edition', 'imdb', 'tmdb_manual', 'mal', 'manual', 
+                        'base_dir', 'path', 'trackers', 'dupe', 'debug', 'anon', 'category', 'type', 'screens', 'nohash', 'manual_edition', 'imdb', 'tmdb_manual', 'mal', 'manual', 
                         'hdb', 'ptp', 'blu', 'no_season', 'no_aka', 'no_year', 'no_dub', 'no_tag', 'no_seed', 'client', 'desclink', 'descfile', 'desc', 'draft', 'region', 'freeleech', 
                         'personalrelease', 'unattended', 'season', 'episode', 'torrent_creation', 'qbit_tag', 'qbit_cat', 'skip_imghost_upload', 'imghost', 'manual_source', 'webdv', 'hardcoded-subs'
                     ]
@@ -425,7 +425,7 @@ async def do_the_thing(base_dir):
                     if await tracker_class.validate_credentials(meta):
                         dupes = await tracker_class.search_existing(meta)
                         dupes = await common.filter_dupes(dupes, meta)
-                        meta, skipped = dupe_check(dupes, meta)
+                        meta, skipped = dupe_check(dupes, meta, config, skipped_details, path)
                         if skipped:
                             skipped_files += 1
                             skipped_details.append((path, tracker))
@@ -456,8 +456,39 @@ async def do_the_thing(base_dir):
                         console.print(f"[green]{meta['name']}")
                         console.print(f"[green]Files can be found at: [yellow]{url}[/yellow]")  
 
+            ar = None
+            if tracker == "AR":
+                ar = tracker_class_map[tracker](config=config)
+                if meta['unattended']:
+                    upload_to_ar = True
+                else:
+                    upload_to_ar = Confirm.ask(f"Upload to AlphaRatio? {debug}", choices=["y", "N"])
+                if upload_to_ar:
+                    console.print("Uploading to AlphaRatio")               
+                    if check_banned_group(tracker, ar.banned_groups, meta, skipped_details, path):
+                        skipped_files += 1
+                        skipped_details.append((path, f"Banned group on {tracker_class.tracker}"))                
+                        continue
+                console.print("[yellow]Searching for Existing Releases")
+                if await ar.validate_credentials(meta):
+                    dupes = await ar.search_existing(meta)
+                    dupes = await common.filter_dupes(dupes, meta)
+                    meta, skipped = dupe_check(dupes, meta, config, skipped_details, path)
+                    if skipped:
+                        skipped_files += 1
+                        skipped_details.append((path, tracker))
+                        continue
+                if meta['upload']:
+                    await ar.upload(meta)
+                    #await ar.update_torrent_file
+                    await asyncio.sleep(5)
+                    await client.add_to_client(meta, "AR")
+                    successful_uploads += 1
+            if ar is not None:
+                await ar.close_session()
+                    
             if tracker == "BHD":
-                bhd = BHD(config=config)
+                bhd = tracker_class_map[tracker](config=config)
                 draft_int = await bhd.get_live(meta)
                 draft = "Draft" if draft_int == 0 else "Live"
                 if meta['unattended']:
@@ -517,7 +548,7 @@ async def do_the_thing(base_dir):
                                 break
                             else:
                                 print("Invalid YouTube URL or ID. Please enter a valid full URL.")
-                    thr = THR(config=config)
+                    thr = tracker_class_map[tracker](config=config)
                     try:
                         with requests.Session() as session:
                             console.print("[yellow]Logging in to THR")
@@ -556,7 +587,7 @@ async def do_the_thing(base_dir):
                                 break
                             else:
                                 print("Invalid IMDB id. Please try again.")
-                    ptp = PTP(config=config)
+                    ptp = tracker_class_map[tracker](config=config)
                     if check_banned_group(tracker_class.tracker, tracker_class.banned_groups, meta, skipped_details, path):
                         skipped_files += 1
                         skipped_details.append((path, f"Banned group on {tracker_class.tracker}"))                                          
@@ -823,36 +854,80 @@ def dupe_check(dupes, meta, config, skipped_details, path):
         return meta, False  # False indicates not skipped
 
     similarity_threshold = max(config['AUTO'].get('dupe_similarity', 90.00) / 100, 0.70)
+    console.print(f"Similarity: [red]{similarity_threshold}")
     size_tolerance = max(min(config['AUTO'].get('size_tolerance', 1 if meta['unattended'] else 30), 100), 1) / 100
-
+    console.print(f"Size Tolerance: [red]{size_tolerance}")
     cleaned_meta_name = preprocess_string(meta['clean_name'])
 
-    for name, dupe_size in dupes.items():
-        if isinstance(dupe_size, str) and "GB" in dupe_size:
-            dupe_size = float(dupe_size.replace(" GB", "")) * (1024 ** 3)  # Convert GB to bytes
-        elif isinstance(dupe_size, (int, float)) and dupe_size != 0:
-            meta_size = meta.get('content_size')
-            if meta_size is None:
-                meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
-            dupe_size = int(dupe_size)   
-            if abs(meta_size - size) <= size_tolerance * meta_size:
-                cleaned_dupe_name = preprocess_string(name)
-                similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
-                if similarity >= similarity_threshold:
-                    meta, skipped = handle_similarity(similarity, meta)
-                    if skipped:
-                        return meta, True  # True indicates skipped
+    for name, size in dupes.items():
+        if isinstance(size, str) and "GB" in size:
+            size = float(size.replace(" GB", "")) * (1024 ** 3)  # Convert GB to bytes
+        elif isinstance(size, (int, float)) and size != 0:
+            size = int(size)
         else:
+            console.print(f"Skipping invalid size for {name}: {size}")
+            continue  # Skip to the next iteration if size is invalid
+
+        meta_size = meta.get('content_size')
+        if meta_size is None:
+            meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
+        
+        debug_print(f"Comparing {name} with size {size} bytes to {meta['clean_name']} with size {meta_size} bytes", meta)
+        
+        if abs(meta_size - size) <= size_tolerance * meta_size:
+            debug_print(f"Size difference is within tolerance: {abs(meta_size - size)} bytes", meta)
             cleaned_dupe_name = preprocess_string(name)
             similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
+            
+            debug_print(f"Similarity calculated: {similarity:.2f} against threshold: {similarity_threshold:.2f}", meta)
+            
             if similarity >= similarity_threshold:
+                console.print("Similarity is above the threshold.")
                 meta, skipped = handle_similarity(similarity, meta)
                 if skipped:
                     return meta, True  # True indicates skipped
 
+    # If no matches found
     console.print("[yellow]No dupes found above the similarity threshold. Uploading anyways.")
     meta['upload'] = True
     return meta, False  # False indicates not skipped
+
+
+
+    # for name, size in dupes.items():
+    #     if isinstance(size, str) and "GB" in size:
+    #         size = float(size.replace(" GB", "")) * (1024 ** 3)  # Convert GB to bytes
+    #         # meta_size = meta.get('content_size')
+    #         # if meta_size is None:
+    #         #     meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
+    #         # console.print(f"Comparing {name} with size {size} bytes to {meta['clean_name']} with size {meta_size} bytes")
+    #     elif isinstance(size, (int, float)) and size != 0:
+    #         meta_size = meta.get('content_size')
+    #         # if meta_size is None:
+    #         #     meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
+    #         size = int(size)   
+    #         # console.print(f"Comparing {name} with size {size} bytes to {meta['clean_name']} with size {meta_size} bytes")
+    #         if abs(meta_size - size) <= size_tolerance * meta_size:
+    #             cleaned_dupe_name = preprocess_string(name)
+    #             similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
+    #             if similarity >= similarity_threshold:
+    #                 meta, skipped = handle_similarity(similarity, meta)
+    #                 if skipped:
+    #                     return meta, True  # True indicates skipped
+    #     else:
+    #         cleaned_dupe_name = preprocess_string(name)
+    #         similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
+    #         console.print(f"Similarity calculated: {similarity:.2f} against threshold: {similarity_threshold:.2f}")
+
+    #         if similarity >= similarity_threshold:
+    #             console.print("Similarity is above the threshold.")
+    #             meta, skipped = handle_similarity(similarity, meta)
+    #             if skipped:
+    #                 return meta, True  # True indicates skipped
+
+    # console.print("[yellow]No dupes found above the similarity threshold. Uploading anyways.")
+    # meta['upload'] = True
+    # return meta, False  # False indicates not skipped
 
 def extract_size_from_torrent(base_dir, uuid):
     torrent_path = f"{base_dir}/tmp/{uuid}/BASE.torrent"
@@ -918,6 +993,9 @@ def get_missing(meta):
 
     console.print()
     return
+
+def debug_print(message, meta):
+    console.print(message)
 
 def print_banner():
     ascii_art = r"""

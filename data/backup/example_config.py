@@ -381,16 +381,6 @@ config = {
             "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
         },
 
-        "TDC" :{
-            "api_key" : "TDC_API_KEY",
-            "announce_url" : "https://thedarkcommunity.cc/announce/Custom_Announce_URL",
-            "anon" : False,
-            "signature" : "\n[center][b]PLEASE SEED DarkCommunity[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",    
-            "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED DarkCommunity[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
-        },
-
         "THR" : {
             "username" : "username",
             "password" : "password",
