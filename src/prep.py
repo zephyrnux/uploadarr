@@ -9,46 +9,48 @@ from src.trackers.HDB import HDB
 from src.trackers.COMMON import COMMON
 
 try:
-    import traceback
-    import nest_asyncio
-    from src.discparse import DiscParse
-    import multiprocessing
-    import os
-    from os.path import basename
-    import re
-    import math
-    import sys
+    import aiofiles
+    import aiohttp
+    import anitopy
     import asyncio
-    from guessit import guessit
+    import base64
+    import datetime
+    import difflib
+    import ffmpeg
+    import glob
+    import guessit
+    import imdb
+    import itertools
+    import json
+    import langcodes
+    import math
+    import multiprocessing
+    import nest_asyncio
     import ntpath
-    from pathlib import Path
+    import os
+    import platform
+    import pyimgbox
+    import random
+    import re
+    import requests
+    import shutil
+    import subprocess
+    import time
+    import traceback
+    import tmdbsimple as tmdb
     import urllib
     import urllib.parse
-    import ffmpeg
-    import random
-    import json
-    import glob
-    import requests
-    import pyimgbox
+    from os.path import basename
+    from pathlib import Path
     from pymediainfo import MediaInfo
-    import tmdbsimple as tmdb
-    from datetime import datetime, date
-    from difflib import SequenceMatcher
-    from torf import Torrent
-    import base64
-    import time
-    import anitopy
-    import shutil
-    from imdb import Cinemagoer
-    from subprocess import Popen
-    import subprocess
-    import itertools
     from rich.prompt import Prompt
     from rich.progress import Progress, TextColumn, BarColumn, TimeRemainingColumn
     from rich.traceback import install, Traceback
-    import platform
-    import langcodes
     from requests.exceptions import HTTPError
+    from src.discparse import DiscParse
+    from torf import Torrent
+    from subprocess import Popen
+
 
 except ModuleNotFoundError:
     console.print(traceback.print_exc())

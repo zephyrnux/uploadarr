@@ -7,7 +7,7 @@
         ##-----------------------------------------------------##
 
 config = {
-    'version': '1.0.4',
+    'version': '1.0.5',
 	
     "DEFAULT" : {
 
@@ -106,6 +106,12 @@ config = {
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED ANT FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+        },
+
+    "AR": {
+            "username": "Username",
+            "password": "Password",
+            "announce_url": "http://tracker.alpharatio.cc:2710/Custom_Announce_URL/announce",
         },
 
         "BHD" : {
