@@ -14,12 +14,8 @@ try:
     import anitopy
     import asyncio
     import base64
-    import datetime
-    import difflib
     import ffmpeg
     import glob
-    import guessit
-    import imdb
     import itertools
     import json
     import langcodes
@@ -41,6 +37,10 @@ try:
     import urllib
     import urllib.parse
     from os.path import basename
+    from datetime import datetime, date
+    from difflib import SequenceMatcher
+    from guessit import guessit
+    from imdb import Cinemagoer
     from pathlib import Path
     from pymediainfo import MediaInfo
     from rich.prompt import Prompt
