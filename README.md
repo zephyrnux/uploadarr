@@ -27,52 +27,58 @@ Coffee timeeee.
 
 ## Supported Sites
 
-<details>
+<div align="center">
 
+<details>
 <summary>Click Here For Sites List</summary>
 
-| Site  |
-|-------|
-| ACM   |
-| AITHER|
-| ANT   |
-| BHDTV |
-| BLU   |
-| FL    |
-| FNP   |
-| HDB   |
-| HDT   |
-| HUNO  |
-| JPTV  |
-| LCD   |
-| LDU   |
-| LST   |
-| LT    |
-| MB    |
-| MTV   |
-| NBL   |
-| OE    |
-| OINK  |
-| OTW   |
-| PSS   |
-| PTER  |
-| PTT   |
-| R4E   |
-| RF    |
-| RTF   |
-| SN    |
-| TDC   |
-| TL    |
-| TTG   |
-| TTR   |
-| ULCX  |
-| UTP   |
-| VHD   |
+| ABV  | Sitename | Notes |
+|------|----------|-------|
+| ACM  |     AsianCinema     |       |
+| AITHER|      Aither    |       |
+| ANT  |      Anthelion    |       |
+| AR   |      Alpha Ratio    |    Movies/TV Only   |
+| BHD|     Beyond HD    |       |
+| BHDTV|     Beyond HD TV     |       |
+| BLU  |     Blutopia     |       |
+| CBR  |     Capybara BR     |       |
+| FL   |      File List    |       |
+| FNP  |    Fear No Peer      |       |
+| HDB  |      HD Bits    |       |
+| HDT  |     HD Torrents     |       |
+| HUNO |      Hawke uno    |       |
+| JPTV |       JPTV Club   |       |
+| LCD  |     Locadora    |       |
+| LDU  |    The Last Digital Underground      |      |
+| LST  |     LST     |       |
+| LT   |       Lat-Team   |       |
+| MB   |     MalayaBits     |       |
+| MTV  |      More than TV    |       |
+| NBL  |     Nebulance     |       |
+| OE   |     OnlyEncodes     |       |
+| OINK |     YOiNKED     |       |
+| OTW  |     Old Toons World     |       |
+| PSS  |     Private Silver Screen     |       |
+| PTER |     PTER     |       |
+| PTT  |     Polish Torrent     |       |
+| R4E  |     Racing4Everyone     |    Limited   |
+| RF   |    ReelFLiX      |       |
+| RHD  |    RocketHD      |       |
+| RTF  |      RetroFlix    |       |
+| SN   |    Swarmazon      |       |
+| TTG  |     TorrentHR     |       |
+| TL   |     TorrentLeech     |       |
+| TTG  |     To The Glory     |       |
+| TTR  |      Torrent Eros    |       |
+| ULCX |      Upload    |       |
+| UTP  |     Utopia     |       |
 
 </details>
 
+</div>
+
 > [!TIP]
-> To ensure proper functionality with Uploadrr, please use the exact site names as listed in list. 
+> To ensure proper functionality with Uploadrr, please use the exact ABV name as listed in list. 
 
 ## Upcoming Features
   - Enhanced support for FANRES & Adult Content.
@@ -143,3 +149,9 @@ __OR__
 ```
 docker run --rm -it --network=host -v /path/to/config.py:/Uploadrr/data/config.py -v /path/to/media:/media -v /path/to/BT_backup:/BT_backup codeberg.org/CvT/Uploadrr:master "/path/to/media" --args
 ```
+
+
+## Aknowledgements
+All credit for the building blocks of the project goes to __L4G__ (and collaborators): [Original Repo Here](https://github.com/L4GSP1KE/Upload-Assistant) 
+
+The reson for a rename isn't to discredit or steal it rather to create a distinction that the project isnt compatible. I've gone coded in some reconfiguration to ake old configs compatible but as time goes on the code will start stray further and further away as code is restructured dependancies dropped and added as needed. I thank everyone for their time and energy in going to improving the old script and this one here. Many hands make light work. :)
