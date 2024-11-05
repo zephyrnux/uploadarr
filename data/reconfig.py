@@ -73,6 +73,7 @@ def replace_values(base_dict, old_dict):
         if isinstance(value, str):
             value = value.replace("https://github.com/z-ink/Upload-Assistant", "https://codeberg.org/CvT/Uploadrr")
             value = value.replace("https://github.com/z-ink/Uploadrr", "https://codeberg.org/CvT/Uploadrr")
+            value = value.replace("https://github.com/z-ink/uploadrr", "https://codeberg.org/CvT/Uploadrr")
         return value
 
     for key, old_value in old_dict.items():
@@ -106,6 +107,8 @@ def replace_values(base_dict, old_dict):
                             )
                         elif "[url=https://github.com/z-ink/Uploadrr]" in old_value:
                             base_dict[key] = old_value.replace("https://github.com/z-ink/Uploadrr", "https://codeberg.org/CvT/Uploadrr")
+                        elif "[url=https://github.com/z-ink/uploadrr]" in old_value:
+                            base_dict[key] = old_value.replace("https://github.com/z-ink/uploadrr", "https://codeberg.org/CvT/Uploadrr")
                         else:
                             base_dict[key] = old_value
                 else:
