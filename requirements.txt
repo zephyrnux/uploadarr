@@ -20,3 +20,5 @@ Jinja2
 pyotp
 packaging
 langcodes
+aiofiles
+aiohttp
