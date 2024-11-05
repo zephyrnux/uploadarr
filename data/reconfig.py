@@ -86,11 +86,11 @@ def replace_values(base_dict, old_dict):
                         if match:
                             continue
                         elif "[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size]" in old_value:
-                            base_dict[key] = old_value.replace("[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size]", "[url=https://github.com/z-ink/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url]")
+                            base_dict[key] = old_value.replace("[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size]", "[url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url]")
                         elif "[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size]" in old_value:
-                            base_dict[key] = old_value.replace("[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size]", "[url=https://github.com/z-ink/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url]")
-                        elif "[url=https://github.com/z-ink/Upload-Assistant]" in old_value:
-                            base_dict[key] = old_value.replace("https://github.com/z-ink/Upload-Assistant", "https://github.com/z-ink/Uploadrr")
+                            base_dict[key] = old_value.replace("[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size]", "[url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url]")
+                        elif "[url=https://github.com/z-ink/Uploadrr]" in old_value:
+                            base_dict[key] = old_value.replace("https://github.com/z-ink/Uploadrr", "https://codeberg.org/CvT/Uploadrr")
                         else:
                             base_dict[key] = old_value
                 else:
