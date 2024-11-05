@@ -72,7 +72,7 @@ config = {
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]", #Only used if "use_global_sigs" : False, AND your uploading as "anon" : True, or passing -a at upload
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LDU FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]", #Only used if "use_global_sigs" : False, AND -pr
             "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]", #Only used if "use_global_sigs" : False, AND your uploading as "anon" : True, or passing -a with -pr at upload
-            #"qbit_tag": "LDU", #Uncomment and add tag, for auto tagging torrent injection for this tracker ##NOTE this may be added to any tracker, just be sure you have a comma on above line ;) 
+            #"qbit_tag": "LDU", #Uncomment and add tag, for auto tagging torrent injection for this tracker
             },   
 
         "ACM" :{
@@ -83,9 +83,11 @@ config = {
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",          
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED ACM FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
-            # FOR INTERNAL USE ONLY:
+            #"qbit_tag": "ACM",
+            ### FOR INTERNAL USE ONLY: ###
             # "internal" : True,
             # "internal_groups" : ["What", "Internal", "Groups", "Are", "You", "In"],
+
         },
 
         "AITHER" :{
@@ -95,7 +97,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED AITHER FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]", 
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED AITHER FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "AITHER",		
         },
 
         "ANT" :{
@@ -105,13 +108,15 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED ANT FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED ANT FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "",		
         },
 
     "AR": {
             "username": "Username",
             "password": "Password",
             "announce_url": "http://tracker.alpharatio.cc:2710/Custom_Announce_URL/announce",
+            #"qbit_tag": "AR",
         },
 
         "BHD" : {
@@ -122,7 +127,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED BHD FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED BHD FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "BHD",		
         },
         "BHDTV": {
             "api_key": "found under https://www.bit-hdtv.com/my.php",
@@ -130,6 +136,7 @@ config = {
             #passkey found under https://www.bit-hdtv.com/my.php
             "my_announce_url": "https://trackerr.bit-hdtv.com/passkey/announce",
             "anon" : False,
+            #"qbit_tag": "BHDTV",
         },   
 
         "BLU" : {
@@ -140,7 +147,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED BLU FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED BLU FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "BLU",		
         },
 
         "CBR" : {
@@ -150,7 +158,8 @@ config = {
             "signature" : "[url=https://codeberg.org/CvT/Uploadrr][img=69]https://capybarabr.com/img/capybara.svg[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n [center][url=https://codeberg.org/CvT/Uploadrr][img=69]https://capybarabr.com/img/capybara.svg[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "CBR",		
         },
 
 
@@ -161,7 +170,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED FNP FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",    
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED FNP FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "FnP",		
             }, 
 
         "HDB" : {
@@ -171,7 +181,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED HDB FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",       
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED HBD FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "HDB",		
             }, 
 
         "HDT" : {
@@ -180,6 +191,7 @@ config = {
             "my_announce_url": "https://hdts-announce.ru/announce.php?pid=<PASS_KEY/PID>",
             "anon" : False,
             "announce_url" : "https://hdts-announce.ru/announce.php", #DO NOT EDIT THIS LINE
+            #"qbit_tag": "HDT",
         },
 
         "HP" :{
@@ -190,6 +202,7 @@ config = {
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",      
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED HP FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            #"qbit_tag": "HP",
         },
 
         "HUNO" : {
@@ -199,7 +212,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED HUNO FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED HUNO[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	
+            #"qbit_tag": "HUNO",	
         },
 
         "JPTV" : {
@@ -208,8 +222,9 @@ config = {
             "anon" : False,
             "signature" : "\n[center][b]PLEASE SEED JPTV FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
-	    "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED JPTV FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-	    "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+	        "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED JPTV FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+	        "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	
+            #"qbit_tag": "JPTV",	
             }, 
 
         "LCD" : {
@@ -219,7 +234,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED LCD FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LCD FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",			
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "LCD",			
         },
 
         "LST" : {
@@ -229,7 +245,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED LST FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",     
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LST FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	
+            #"qbit_tag": "LST",	
         },
 
         "LT" : {
@@ -239,7 +256,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED LT FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED LT FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "LT",		
         },
 	       
         "MB": {
@@ -250,6 +268,7 @@ config = {
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED MB FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	
+            #"qbit_tag": "",
         },
 	
         "MTV": {
@@ -259,6 +278,7 @@ config = {
             'announce_url' : "get from https://www.morethantv.me/upload.php",
             'anon' : False,
             # 'otp_uri' : 'OTP URI, read the following for more information https://github.com/google/google-authenticator/wiki/Key-Uri-Format'
+            #"qbit_tag": "",
         },
 
         "NBL" : {
@@ -268,7 +288,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED Nebulance FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]", 
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED NBL FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "NBL",		
         },
 
         "OE" : {
@@ -278,7 +299,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED OnlyEncodes FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",     
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED OE FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "OE",			
             },
 
         "OINK" : {
@@ -288,7 +310,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED YOiNKED FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",     
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	
+            #"qbit_tag": "YOiNKED",	
             },            
 
         "OTW" : {
@@ -298,7 +321,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED OldToons FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",     
             "pr_signature": "\n [center]PERSONAL RELEASE[/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	
+            #"qbit_tag": "OTW",	
             },
 
         "PSS" :{
@@ -308,7 +332,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED PrivateSilverScreen FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	
+            #"qbit_tag": "PSS",	
         },
 
         "PTER" : {
@@ -318,6 +343,7 @@ config = {
             "password" : "",
             "ptgen_api": "",
             "anon": True,
+            #"qbit_tag": "PTER",
         },
 
         "PTP" : {
@@ -328,6 +354,7 @@ config = {
             "username" : "",
             "password" : "",
             "announce_url" : ""
+            #"qbit_tag": "PTP",
         },
 
         "PTT" :{
@@ -337,7 +364,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED PolishTorrent FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED PTT FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	
+            #"qbit_tag": "PTT",	
         },
 
         "R4E" :{
@@ -347,7 +375,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED Racing4Everyone FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED R4E FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "R4E",		
         },
 
         "RF" : {
@@ -357,7 +386,19 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED ReelFliX FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED RF FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "RF",		
+        },
+
+        "RHD" : {
+            "api_key" : "RHD_API_KEY",
+            "announce_url" : "https://r0k3t.li//announce/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : "\n[center][b]PLEASE SEED RocketHD[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
+            "pr_signature": "\n [center]PERSONAL RELEASE[/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "RHD",		
         },
 
         "RTF": {
@@ -368,7 +409,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED RetroFlix FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",    
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED RTF FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "RTF",		
         },
 
         "SN": {
@@ -378,7 +420,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED Swarmazon FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]", 
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED Swarmazon[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "SN",		
         },
 
         "THR" : {
@@ -390,10 +433,12 @@ config = {
             "pronfo_theme" : "pronfo theme code",
             "pronfo_rapi_id" : "pronfo remote api id",
             "anon" : False,
+            #"qbit_tag": "THR",
         },
 
         "TL": {
             "announce_key": "TL_announce_key",
+            #"qbit_tag": "TL",
         },
 
     	'TTR' : {
@@ -403,7 +448,8 @@ config = {
 	    'signature' : '\n[center][b]PLEASE SEED TorrentEros FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]',
 	    'anon_signature' : '\n[center][size=6]we are anonymous[/size][/center]',
 	    "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED TTR FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-	    "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+	    "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+        #"qbit_tag": "TTR",		
 	},
 	    
         "ULCX" : {
@@ -413,7 +459,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED ULCX FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",   
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED ULCX FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "ULCX",		
         },
 
         "UTP" : {
@@ -423,7 +470,8 @@ config = {
             "signature" : "\n[center][b]PLEASE SEED UTP FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
             "pr_signature": "\n [center]PERSONAL RELEASE[/center] \n[center][b]PLEASE SEED UTP FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
-            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",		
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "UTP",		
         },	
     
 
