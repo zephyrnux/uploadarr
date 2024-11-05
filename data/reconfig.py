@@ -68,22 +68,26 @@ def replace_values(base_dict, old_dict):
         'anon_signature': '\n[center][size=6]we are anonymous[/size][/center]'
     }
 
-    def replace_urls(text):
-        text = text.replace("https://github.com/z-ink/Uploadrr", "https://codeberg.org/CvT/Uploadrr")
-        text = text.replace("https://github.com/z-ink/Upload-Assistant", "https://codeberg.org/CvT/Uploadrr")
-        return text
+    def replace_urls(value):
+        # Only replace if the value is a string
+        if isinstance(value, str):
+            value = value.replace("https://github.com/z-ink/Upload-Assistant", "https://codeberg.org/CvT/Uploadrr")
+            value = value.replace("https://github.com/z-ink/Uploadrr", "https://codeberg.org/CvT/Uploadrr")
+        return value
 
     for key, old_value in old_dict.items():
         if key in base_dict:
             if key == 'version':
                 continue
             if isinstance(old_value, dict):
-                replace_values(base_dict[key], old_value)
-                continue
+                replace_values(base_dict[key], old_value)  # Recurse into nested dictionaries
             else:
+                # Handle special cases
                 if key in special_cases and old_value == special_cases[key]:
                     continue
-                elif key == 'signature':
+
+                # Handle signature replacement
+                if key == 'signature':
                     if key in special_cases:
                         base_dict[key] = special_cases[key]
                     else:
@@ -91,9 +95,15 @@ def replace_values(base_dict, old_dict):
                         if match:
                             continue
                         elif "[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size]" in old_value:
-                            base_dict[key] = old_value.replace("[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size]", "[url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url]")
+                            base_dict[key] = old_value.replace(
+                                "[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.4)[/url][/size]", 
+                                "[url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url]"
+                            )
                         elif "[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size]" in old_value:
-                            base_dict[key] = old_value.replace("[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size]", "[url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url]")
+                            base_dict[key] = old_value.replace(
+                                "[size=6][url=https://github.com/z-ink/Upload-Assistant]Upload Assistant(CvT Mod v0.3)[/url][/size]", 
+                                "[url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url]"
+                            )
                         elif "[url=https://github.com/z-ink/Uploadrr]" in old_value:
                             base_dict[key] = old_value.replace("https://github.com/z-ink/Uploadrr", "https://codeberg.org/CvT/Uploadrr")
                         else:
