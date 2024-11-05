@@ -68,6 +68,11 @@ def replace_values(base_dict, old_dict):
         'anon_signature': '\n[center][size=6]we are anonymous[/size][/center]'
     }
 
+    def replace_urls(text):
+        text = text.replace("https://github.com/z-ink/Uploadrr", "https://codeberg.org/CvT/Uploadrr")
+        text = text.replace("https://github.com/z-ink/Upload-Assistant", "https://codeberg.org/CvT/Uploadrr")
+        return text
+
     for key, old_value in old_dict.items():
         if key in base_dict:
             if key == 'version':
@@ -94,9 +99,11 @@ def replace_values(base_dict, old_dict):
                         else:
                             base_dict[key] = old_value
                 else:
-                    base_dict[key] = old_value
+                    # Apply URL replacements globally to other values
+                    base_dict[key] = replace_urls(old_value)
         else:
-            base_dict[key] = old_value
+            # Apply URL replacements globally if the key doesn't exist in base_dict
+            base_dict[key] = replace_urls(old_value)
 
 parser = argparse.ArgumentParser(description='Reconfigure the config file.')
 parser.add_argument('--output-dir', type=str, required=True, help='The directory where the new config.py should be written.')
