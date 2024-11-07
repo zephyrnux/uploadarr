@@ -69,7 +69,6 @@ def replace_values(base_dict, old_dict):
     }
 
     def replace_urls(value):
-        # Only replace if the value is a string
         if isinstance(value, str):
             value = value.replace("https://github.com/z-ink/Upload-Assistant", "https://codeberg.org/CvT/Uploadrr")
             value = value.replace("https://github.com/z-ink/Uploadrr", "https://codeberg.org/CvT/Uploadrr")

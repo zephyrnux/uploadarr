@@ -401,14 +401,17 @@ async def do_the_thing(base_dir):
                 if meta['upload']:
                     #await tracker_class.upload(meta)    
                     upload_success = await tracker_class.upload(meta)
-                    if upload_success:
+                    if upload_success and not meta['debug']:
                         if tracker == 'SN':
                             await asyncio.sleep(16)
                         await client.add_to_client(meta, tracker_class.tracker)
                         successful_uploads += 1
                     else:
                         skipped_files += 1
-                        skipped_details.append((path, f"{tracker_class.tracker} Rejected Upload"))
+                        if meta['debug']:
+                            skipped_details.append((path, f"{tracker_class.tracker} (DEBUG MODE)"))
+                        else:
+                            skipped_details.append((path, f"{tracker_class.tracker} Rejected Upload"))
             
             if tracker in tracker_data['http']:
                 tracker_class = tracker_class_map[tracker](config=config)
@@ -430,7 +433,7 @@ async def do_the_thing(base_dir):
                             skipped_files += 1
                             skipped_details.append((path, tracker))
                             continue
-                        if meta['upload']:
+                        if upload_success and not meta['debug']:
                             await tracker_class.upload(meta)
                             await client.add_to_client(meta, tracker_class.tracker)
                             successful_uploads += 1
