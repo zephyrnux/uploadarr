@@ -3,6 +3,7 @@ import asyncio
 import requests
 import json
 import os
+import re
 import platform
 
 from src.trackers.COMMON import COMMON
@@ -123,9 +124,12 @@ class RHD():
         params = {
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip()
         }
-        
+
+        if meta['debug']:
+            console.print(f'\n[dim][red]RHD NAME:[/red][blue]{await self.get_name(meta)}')
+
+        success = 'Unknown'
         if not meta['debug']:
-            success = 'Unknown'
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
                 response.raise_for_status()                
@@ -157,34 +161,45 @@ class RHD():
             except Exception as e:
                 console.print(f"[red]Failed to close torrent file: {e}[/red]")
 
-            return success 
+        return success 
 
 
-    def get_language_tag(self, meta):
-        lang_tag = ""  
-        has_eng_audio = False
-        audio_lang = ""
+    def get_language_tag(self, meta):            
+        audio_languages = []
+        text_languages = []
+        lang_tag = ""
+
         if meta['is_disc'] != "BDMV":
-            try:
-                with open(f"{meta.get('base_dir')}/tmp/{meta.get('uuid')}/MediaInfo.json", 'r', encoding='utf-8') as f:
-                    mi = json.load(f)
-                for track in mi['media']['track']:
-                    if track['@type'] == "Audio":
-                        if track.get('Language', 'None').startswith('en'):
-                            has_eng_audio = True
-                        if not has_eng_audio:
-                            audio_lang = mi['media']['track'][2].get('Language_String', "").upper()
-            except Exception as e:
-                print(f"Error: {e}")
+            with open(f"{meta.get('base_dir')}/tmp/{meta.get('uuid')}/MediaInfo.json", 'r', encoding='utf-8') as f:
+                mi = json.load(f)
+
+            audio_language_list = mi['media']['track'][0].get('Audio_Language_List', '')
+            text_language_list = mi['media']['track'][0].get('Text_Language_List', '')
+            audio_languages = [lang.strip().lower() for lang in audio_language_list.split(',')] if audio_language_list else []
+            text_languages = [lang.strip().lower() for lang in text_language_list.split(',')] if text_language_list else []
+
         else:
-            for audio in meta['bdinfo']['audio']:
-                if audio['language'] == 'English':
-                    has_eng_audio = True
-                if not has_eng_audio:
-                    audio_lang = meta['bdinfo']['audio'][0]['language'].upper()
-        if audio_lang != "":
-            lang_tag = audio_lang
+            with open(f"{meta.get('base_dir')}/tmp/{meta.get('uuid')}/BD_SUMMARY_00", 'r', encoding='utf-8') as f:
+                bd_summary = f.read()
+
+            audio_languages = re.findall(r"Audio:\s*([^/]+)", bd_summary, re.IGNORECASE)  # Match audio languages
+            subtitle_languages = re.findall(r"Subtitle:\s*([^/]+)", bd_summary, re.IGNORECASE)  # Match subtitle languages
+            audio_languages = [lang.strip().lower() for lang in audio_languages] if audio_languages else []
+            text_languages = [lang.strip().lower() for lang in subtitle_languages] if subtitle_languages else []
+
+        has_german_audio = any('german' in lang for lang in audio_languages)
+        has_german_subtitles = any('german' in lang for lang in text_languages)
+        distinct_audio_languages = set(audio_languages)  # Remove duplicates
+
+        if has_german_audio and len(distinct_audio_languages) == 1:
+            lang_tag = "GERMAN"
+        elif has_german_audio and len(distinct_audio_languages) > 1:
+            lang_tag = "GERMAN DL"
+        elif not has_german_audio and has_german_subtitles:
+            lang_tag = "GERMAN SUBBED"
+
         return lang_tag
+        
 
     def get_basename(self, meta):
         path = next(iter(meta['filelist']), meta['path'])
