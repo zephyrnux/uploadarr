@@ -164,26 +164,34 @@ class RHD():
         return success 
 
 
-    def get_language_tag(self, meta):            
+    def get_language_tag(self, meta):
         audio_languages = []
         text_languages = []
         lang_tag = ""
-
+        ignored_keywords = ["commentary", "music", "director", "cast", "party"]
+        
         if meta['is_disc'] != "BDMV":
             with open(f"{meta.get('base_dir')}/tmp/{meta.get('uuid')}/MediaInfo.json", 'r', encoding='utf-8') as f:
                 mi = json.load(f)
 
-            audio_language_list = mi['media']['track'][0].get('Audio_Language_List', '')
+            for track in mi['media']['track']:
+                if track.get('@type') == 'Audio':
+                    title = track.get('Title', '').lower()
+                    if not any(keyword in title for keyword in ignored_keywords):
+                        language = track.get('Language_String', '').lower()
+                        if language:
+                            audio_languages.append(language)
+            
             text_language_list = mi['media']['track'][0].get('Text_Language_List', '')
-            audio_languages = [lang.strip().lower() for lang in audio_language_list.split(',')] if audio_language_list else []
             text_languages = [lang.strip().lower() for lang in text_language_list.split(',')] if text_language_list else []
 
         else:
             with open(f"{meta.get('base_dir')}/tmp/{meta.get('uuid')}/BD_SUMMARY_00", 'r', encoding='utf-8') as f:
                 bd_summary = f.read()
-
-            audio_languages = re.findall(r"Audio:\s*([^/]+)", bd_summary, re.IGNORECASE)  # Match audio languages
-            subtitle_languages = re.findall(r"Subtitle:\s*([^/]+)", bd_summary, re.IGNORECASE)  # Match subtitle languages
+            
+            # Extract audio and subtitle languages
+            audio_languages = re.findall(r"Audio:\s*([^/]+)", bd_summary, re.IGNORECASE)
+            subtitle_languages = re.findall(r"Subtitle:\s*([^/]+)", bd_summary, re.IGNORECASE)
             audio_languages = [lang.strip().lower() for lang in audio_languages] if audio_languages else []
             text_languages = [lang.strip().lower() for lang in subtitle_languages] if subtitle_languages else []
 
@@ -327,7 +335,8 @@ class RHD():
                 name = f"{title} {year} {alt_title} {season}{episode} {episode_title} {part} {lang_tag} {cut} {ratio} {edition} {repack} {resolution} {source} {audio} {video_encode}{tag}"
                 potential_missing = []
 
-        
+        if lang_tag == "GERMAN DL":
+            name = name.replace("Dual-Audio ", "")
         return ' '.join(name.split())
 
 
