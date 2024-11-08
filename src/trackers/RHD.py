@@ -232,7 +232,7 @@ class RHD():
         three_d = meta.get('3D', "")
         tag = meta.get('tag', "")
         if tag == "":
-            tag = "- NOGRP"
+            tag = "-NOGRP"
         source = meta.get('source', "")
         uhd = meta.get('uhd', "")
         hdr = meta.get('hdr', "")
