@@ -174,6 +174,15 @@ config = {
             #"qbit_tag": "FnP",		
             }, 
 
+        "FL": {
+            "username": "FL_Username",
+            "password": "FL_Password",
+            "announce_url" : "",
+            "uploader_name": "",
+            "anon": False,
+            #"qbit_tag": "FL",
+        },
+
         "HDB" : {
             "api_key" : "HDB_API_KEY",
             "announce_url" : "https://hdbits.org/announce/Custom_Announce_URL",
