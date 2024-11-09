@@ -5,6 +5,7 @@ import json
 import os
 import re
 import platform
+import time
 
 from src.trackers.COMMON import COMMON
 from src.console import console
@@ -81,9 +82,10 @@ class RHD():
             bd_dump = None
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
+        rhd_name = await self.get_name(meta)
         files = {'torrent': open_torrent}
         data = {
-            'name' : await self.get_name(meta),
+            'name' : rhd_name,
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump, 
@@ -126,7 +128,7 @@ class RHD():
         }
 
         if meta['debug']:
-            console.print(f'\n[dim][red]RHD NAME:[/red][blue]{await self.get_name(meta)}')
+            console.print(f'\n[red]RHD NAME:[/red][blue]{rhd_name}')
 
         success = 'Unknown'
         if not meta['debug']:
@@ -207,6 +209,12 @@ class RHD():
             lang_tag = "GERMAN ML"
         elif not has_german_audio and has_german_subtitles:
             lang_tag = "GERMAN SUBBED"
+
+        if not has_german_audio and not has_german_subtitles:
+            console.print('[bold red]WARN[/bold red]:[yellow][bold] NO GERMAN[/bold] track.')
+            for i in range(3, 0, -1):
+                console.print(f"[yellow] Uploading Anyway in.. {i}", end='\r')
+                time.sleep(1)
 
         return lang_tag
         
