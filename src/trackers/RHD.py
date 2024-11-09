@@ -201,8 +201,10 @@ class RHD():
 
         if has_german_audio and len(distinct_audio_languages) == 1:
             lang_tag = "GERMAN"
-        elif has_german_audio and len(distinct_audio_languages) > 1:
+        elif has_german_audio and len(distinct_audio_languages) == 2:
             lang_tag = "GERMAN DL"
+        elif has_german_audio and len(distinct_audio_languages) > 2:
+            lang_tag = "GERMAN ML"
         elif not has_german_audio and has_german_subtitles:
             lang_tag = "GERMAN SUBBED"
 
