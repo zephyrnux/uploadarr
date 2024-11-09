@@ -19,7 +19,7 @@ class OINK():
         self.upload_url = 'https://yoinked.org/api/torrents/upload'
         self.search_url = 'https://yoinked.org/api/torrents/filter'
         self.signature = None
-        self.banned_groups = ["YTS", "YiFY", "LAMA", "MeGUSTA", "NAHOM", "GalaxyRG"]
+        self.banned_groups = ["GalaxyRG", "LAMA", "MeGUSTA", "NAHOM", "RARBG", "YTS", "YiFY",]
         pass
     
     async def get_cat_id(self, category_name):
