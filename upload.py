@@ -798,10 +798,15 @@ def get_confirmation(meta):
     return confirm
 
 def dupe_check(dupes, meta, config, skipped_details, path):
+    if meta.get('dupe', False):
+        console.print("[yellow]Skipping duplicate check as requested.")
+        meta['upload'] = True   
+        return meta, False  
+    
     if not dupes:
         console.print("[green]No dupes found")
         meta['upload'] = True   
-        return meta, False  # False indicates not skipped
+        return meta, False  
 
     table = Table(
         title="Are these dupes?",
