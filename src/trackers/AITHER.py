@@ -113,7 +113,20 @@ class AITHER():
                 success = False
                 data = {}
 
+            if success == 'Unknown':
+                console.print("[bold yellow]Status of upload is unknown, please go check..")
+                success = False
+            elif success:
+                console.print("[bold green]Torrent uploaded successfully!")
+            else:
+                console.print("[bold red]Torrent upload failed.")
+    
+            try:
+                open_torrent.close()
+            except Exception as e:
+                console.print(f"[red]Failed to close torrent file: {e}[/red]")
 
+            return success 
 
     async def edit_name(self, meta):
         aither_name = meta['name']
