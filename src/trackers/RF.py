@@ -4,7 +4,7 @@ import asyncio
 import requests
 import os
 import platform
-
+from rich.pretty import Pretty
 from src.trackers.COMMON import COMMON
 from src.console import console
 
@@ -83,16 +83,38 @@ class RF():
         }
         if meta.get('category') == "TV":
             console.print('[bold red]This site only ALLOWS Movies.')
-        if not meta['debug']:
+            success = False
+            return success
+
+        if meta['debug']:
+            console.print(f"[blue]DATA 2 SEND[/blue]:")
+            console.print(Pretty(data))
+
+        else:
             success = 'Unknown'
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
-                response.raise_for_status()                
-                response_json = response.json()
-                success = response_json.get('success', False)
-                data = response_json.get('data', {})
-            except Exception as e:
+                if response.status_code >= 200 and response.status_code < 300:
+                    response_json = response.json()
+                    success = response_json.get('success', False)
+                    data = response_json.get('data', {})
+
+                    if not success:
+                        message = response_json.get('message', 'No message provided')
+                        console.print(f"[red]Upload failed: {message}[/red]")
+                        if data:
+                            console.print(f"[cyan]Error details:[/cyan] {data}")
+
+                else:
+                    console.print(f"[red]Encountered HTTP Error: {response.status_code}[/red]")
+                    console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    success = False
+                    data = {}
+
+            except requests.exceptions.RequestException as e:
                 console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
+                success = False
+                data = {}
 
             if success == 'Unknown':
                 console.print("[bold yellow]Status of upload is unknown, please go check..")
@@ -101,15 +123,6 @@ class RF():
                 console.print("[bold green]Torrent uploaded successfully!")
             else:
                 console.print("[bold red]Torrent upload failed.")
-
-            if data:
-                if 'name' in data and 'The name has already been taken.' in data['name']:
-                    console.print("[red]Name has already been taken.")
-                if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
-                    console.print("[red]Info hash has already been taken.")                
-            else:
-                console.print("[cyan]Request Data:")
-                console.print(data)
     
             try:
                 open_torrent.close()
