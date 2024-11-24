@@ -8,6 +8,7 @@ import re
 import langcodes
 import platform
 from datetime import datetime
+from rich.pretty import Pretty
 
 from src.trackers.COMMON import COMMON
 from src.console import console
@@ -30,70 +31,75 @@ class LDU():
         soundmix = meta.get('imdb_info', {}).get('soundmix', [])
         is_silent = 'silent' in soundmix if soundmix else False
         release_date = meta.get('full_date', '')
+        
+        # Handle release date parsing
         if isinstance(release_date, str):
             try:
                 release_date = datetime.strptime(release_date, '%Y-%m-%d')
             except ValueError:
                 year = meta.get('year')
                 if year is not None:
-                    release_date = datetime.strptime(f'{year}-01-01', '%Y-%m-%d') 
-        year = meta.get('year','')
-        tag = self.get_language_tag(meta)
-        if tag:
-            tags = tag.split(']')
-            tags = [t[1:] for t in tags if t]
+                    release_date = datetime.strptime(f'{year}-01-01', '%Y-%m-%d')
+
+        year = meta.get('year', '')
+        tag = self.get_language_tag(meta) or ''
+        tags = [t[1:] for t in tag.split(']') if t] if tag else []
+
+        anime = meta.get('anime', False)
         category_id = {
             'MOVIE': '1', 
             'TV': '2', 
-            'Anime' : '8',
-            'FANRES' : '12',
-            }.get(category_name, '0') 
+            'Anime': '8',
+            'FANRES': '12',
+        }.get(category_name, '0')
+
+        keyword_list = [k.strip() for k in keywords.lower().split(',')]
+        genre_list = [g.strip() for g in genres.lower().split(',')]
+
         if category_name == 'MOVIE':
-            if adult and ('hentai' in map(str.strip, keywords.lower().split(',')) or 'animation' in map(str.strip, keywords.lower().split(','))):
+            if (adult and anime) or 'hentai' in keyword_list or (adult and 'animation' in keyword_list):
                 category_id = '10'
-            elif adult is True:
+            elif adult:
                 category_id = '6'
-            elif '???' in tags[0]:
+            elif '???' in tags:
                 category_id = '27'
-            elif tag and 'ENG' not in ''.join(tags):
+            elif 'ENG' not in ''.join(tags):
                 category_id = '22'
             elif '3D' in edition:
                 category_id = '21'
-            elif 'FANRES' in edition.upper() or 'FANEDIT' in edition.upper() or 'RESTORATION' in edition.upper():
+            elif any(x in edition.upper() for x in ['FANRES', 'FANEDIT', 'FANFIX', 'RESTORATION']):
                 category_id = '12'
-            elif release_date != '' and release_date < datetime(1927, 10, 1):
+            elif anime or 'anime' in keyword_list:
+                category_id = '8'
+            elif (release_date and release_date < datetime(1927, 10, 1)) or (year and int(year) <= 1926) or 'silent film' in keyword_list or is_silent:
                 category_id = '18'
-            elif year != '' and year <= 1926:
-                category_id = '18'     
-            elif 'silent film' in map(str.strip, keywords.lower().split(',')):
-                category_id = '18'
-            elif is_silent:
-                category_id = '18'          
-            elif 'holiday' in map(str.strip, keywords.lower().split(',')):
-                category_id = '24'     
-            elif 'musical' in map(str.strip, keywords.lower().split(',')):
-                category_id = '25'                
-            elif 'documentary' in map(str.strip, genres.lower().split(',')):
+            elif 'holiday' in keyword_list:
+                category_id = '24'
+            elif 'musical' in keyword_list:
+                category_id = '25'
+            elif 'documentary' in genre_list:
                 category_id = '17'
-            elif 'stand-up' in map(str.strip, keywords.lower().split(',')):
+            elif 'stand-up' in keyword_list:
                 category_id = '20'
-            elif 'short film' in map(str.strip, keywords.lower().split(',')):
-                category_id = '19'                 
+            elif 'short film' in keyword_list:
+                category_id = '19'
             else:
-                category_id = '1'                                                            
+                category_id = '1'
+
         elif category_name == 'TV':
-            if adult and ('hentai' in map(str.strip, keywords.lower().split(',')) or 'animation' in map(str.strip, keywords.lower().split(','))):
+            if (adult and anime) or 'hentai' in keyword_list or (adult and 'animation' in keyword_list):
                 category_id = '10'
-            elif adult is True:
-                category_id = '6'            
+            elif adult:
+                category_id = '6'
             elif tag and not all(char.isalpha() or char.isspace() for char in tags[0]):
                 category_id = '31'
-            elif tag and 'ENG' not in ''.join(tags):
+            elif 'ENG' not in ''.join(tags):
                 category_id = '29'
-            elif category_name == 'TV' and 'anime' in map(str.strip,keywords.lower().split(',')):    
+            elif anime or 'anime' in keyword_list:
                 category_id = '9'
             else:
                 category_id = '2'
+
         return category_id
 
     async def get_type_id(self, type, edition):
@@ -155,6 +161,16 @@ class LDU():
             bd_dump = None
 
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
+        if cat_id == '10':
+            poster = meta.get('poster')
+            backdrop = meta.get('backdrop')
+            url_string = ""
+            if poster:
+                url_string += f"[url=torrent-cover={poster} ] [/url] \n"
+            if backdrop:
+                url_string += f"[url=torrent-banner={backdrop} ] [/url]"
+            desc += url_string
+
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
         data = {
@@ -190,7 +206,7 @@ class LDU():
             data['region_id'] = region_id
         if distributor_id != 0:
             data['distributor_id'] = distributor_id
-        if meta.get('category') == "TV":
+        if meta.get('category') == "TV" and not cat_id == '10':
             data['season_number'] = int(meta.get('season_int', '0'))
             data['episode_number'] = int(meta.get('episode_int', '0'))
         headers = {
@@ -200,16 +216,35 @@ class LDU():
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip()
         }
         
-        if not meta['debug']:
+        if meta['debug']:
+            console.print(f"[blue]DATA 2 SEND[/blue]:")
+            console.print(Pretty(data))
+
+        else:
             success = 'Unknown'
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
-                response.raise_for_status()                
-                response_json = response.json()
-                success = response_json.get('success', False)
-                data = response_json.get('data', {})
-            except Exception as e:
+                if response.status_code >= 200 and response.status_code < 300:
+                    response_json = response.json()
+                    success = response_json.get('success', False)
+                    data = response_json.get('data', {})
+
+                    if not success:
+                        message = response_json.get('message', 'No message provided')
+                        console.print(f"[red]Upload failed: {message}[/red]")
+                        if data:
+                            console.print(f"[cyan]Error details:[/cyan] {data}")
+
+                else:
+                    console.print(f"[red]Encountered HTTP Error: {response.status_code}[/red]")
+                    console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    success = False
+                    data = {}
+
+            except requests.exceptions.RequestException as e:
                 console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
+                success = False
+                data = {}
 
             if success == 'Unknown':
                 console.print("[bold yellow]Status of upload is unknown, please go check..")
@@ -218,15 +253,6 @@ class LDU():
                 console.print("[bold green]Torrent uploaded successfully!")
             else:
                 console.print("[bold red]Torrent upload failed.")
-
-            if data:
-                if 'name' in data and 'The name has already been taken.' in data['name']:
-                    console.print("[red]Name has already been taken.")
-                if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
-                    console.print("[red]Info hash has already been taken.")                
-            else:
-                console.print("[cyan]Request Data:")
-                console.print(data)
     
             try:
                 open_torrent.close()

@@ -2,11 +2,13 @@
 from sys import meta_path
 from src.args import Args
 from src.console import console
+from src.discparse import DiscParse
 from src.exceptions import *
 from src.trackers.PTP import PTP
 from src.trackers.BLU import BLU
 from src.trackers.HDB import HDB
 from src.trackers.COMMON import COMMON
+
 
 try:
     import aiofiles
@@ -47,7 +49,6 @@ try:
     from rich.progress import Progress, TextColumn, BarColumn, TimeRemainingColumn
     from rich.traceback import install, Traceback
     from requests.exceptions import HTTPError
-    from src.discparse import DiscParse
     from torf import Torrent
     from subprocess import Popen
 
@@ -1259,19 +1260,23 @@ class Prep():
             # Fetch logos from the images endpoint
             logo_response = movie.images()
             logos = logo_response.get('logos', [])
-            english_logos = [logo for logo in logos if logo.get('iso_639_1') == 'en']
-
-            # English Logo Bias
-            if english_logos:
-                first_logo = english_logos[0] 
-            else:
-                first_logo = logos[0] if logos else None  
+            first_logo = next((logo for logo in logos if logo.get('iso_639_1') == 'en'), None) or (logos[0] if logos else None)
 
             if first_logo:
                 logo_path = first_logo['file_path']
                 meta['logo'] = f"https://image.tmdb.org/t/p/original{logo_path}"
             else:
-                meta['logo'] = None 
+                meta['logo'] = None
+
+            #Get backdrop for non-tmdb linked categories
+            backdrop_response = movie.images()
+            backdrops = backdrop_response.get('backdrops', [])  
+            first_backdrop = next((backdrop for backdrop in backdrops if backdrop.get('iso_639_1') == 'en'), None) or (backdrops[0] if backdrops else None)
+            if first_backdrop:
+                backdrop_path = first_backdrop['file_path']
+                meta['backdrop'] = f"https://image.tmdb.org/t/p/original{backdrop_path}"
+            else:
+                meta['backdrop'] = None
 
             meta['overview'] = response['overview']
             meta['tmdb_type'] = 'Movie'
@@ -1336,20 +1341,24 @@ class Prep():
 
             logo_response = tv.images() 
             logos = logo_response.get('logos', [])
-            english_logos = [logo for logo in logos if logo.get('iso_639_1') == 'en']
-
-            # English Logo Bias
-            if english_logos:
-                first_logo = english_logos[0] 
-            else:
-                first_logo = logos[0] if logos else None  
+            first_logo = next((logo for logo in logos if logo.get('iso_639_1') == 'en'), None) or (logos[0] if logos else None)
 
             if first_logo:
                 logo_path = first_logo['file_path']
                 meta['logo'] = f"https://image.tmdb.org/t/p/original{logo_path}"
             else:
-                meta['logo'] = None    
-            
+                meta['logo'] = None 
+                
+            #Get backdrop for non-tmdb linked categories
+            backdrop_response = tv.images()
+            backdrops = backdrop_response.get('backdrops', [])
+            first_backdrop = next((backdrop for backdrop in backdrops if backdrop.get('iso_639_1') == 'en'), None) or (backdrops[0] if backdrops else None)
+            if first_backdrop:
+                backdrop_path = first_backdrop['file_path']
+                meta['backdrop'] = f"https://image.tmdb.org/t/p/original{backdrop_path}"
+            else:
+                meta['backdrop'] = None
+
         if meta['poster'] not in (None, ''):
             meta['poster'] = f"https://image.tmdb.org/t/p/original{meta['poster']}"
 
