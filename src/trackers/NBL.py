@@ -39,14 +39,34 @@ class NBL():
     async def upload(self, meta):
         if meta['category'] != 'TV':
             console.print("[red]Only TV Is allowed at NBL")
-            return
+            return False
+
+        if (meta.get('tvmaze_id', 0) == 0 or meta.get('tvmaze_id') is None):
+            if not meta.get('auto_queue', False):
+                while True:
+                    tvmaze_id_input = console.input("[yellow]Please enter a valid TVMaze ID[/yellow] [dim](or type `skip` to skip): ").strip()
+                    
+                    if tvmaze_id_input.lower() == 'skip':
+                        console.print("[yellow]User skipped entering TVMaze ID.")
+                        return False                    
+                    try:
+                        tvmaze_id = int(tvmaze_id_input)
+                        meta['tvmaze_id'] = tvmaze_id
+                        break 
+                    except ValueError:
+                        console.print("[red]Invalid TVMaze ID entered. Please enter a valid integer.")
+
+            else:
+                console.print("[yellow]No valid TVMaze ID..")
+                return False
+            
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
 
         if meta['bdinfo'] != None:
             mi_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/BD_SUMMARY_00.txt", 'r', encoding='utf-8').read()
         else:
-            mi_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/MEDIAINFO.txt", 'r', encoding='utf-8').read()[:-65].strip()
+            mi_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/MEDIAINFO_CLEANPATH.txt", 'r', encoding='utf-8').read()[:-65].strip()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'file_input': open_torrent}
         data = {
@@ -57,24 +77,32 @@ class NBL():
             'ignoredupes' : 'on'
         }
 
-        if not meta['debug']:
-            success = 'Unknown'
-            try:
-                if response.ok:
-                    response = response.json()
-                    console.print(response.get('message', response))
+        if meta['debug']:
+            console.print(f'[blue]Data 2 Send[/blue]: \n {data}')
+            return False
+        
+        success = 'Unknown'
+        try:
+            response = requests.post(url=self.upload_url, files=files, data=data)
+
+            if response.ok:
+                response_json = response.json()
+
+                if 'message' in response_json:
+                    console.print(response_json.get('message', response_json))
                     success = True
-                else:
-                    console.print(response)
-                    console.print(response.text)
-            except Exception:
-                console.print_exception()
-                console.print("[bold yellow]It may have uploaded, go check")
-                return
-        else:
-            console.print("[cyan]Request Data:")
-            console.print(data)
-            success = False
+                elif 'error' in response_json:
+                    console.print(f"[red]Error: {response_json['error']}")
+                    success = False
+            else:
+                console.print(response)
+                console.print(response.text)
+                success = False
+        
+        except Exception:
+            console.print_exception()
+            console.print("[bold yellow]It may have uploaded, go check")
+
         open_torrent.close()
         return success
 
