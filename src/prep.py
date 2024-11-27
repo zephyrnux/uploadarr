@@ -550,6 +550,7 @@ class Prep():
         musicloc = os.path.normpath(os.path.abspath(musicloc))
         music_extensions = ['.mp3', '.flac', '.wav', '.m4a', '.aac', '.alac']
         cover = None
+        proof = None
         
         if os.path.isdir(musicloc):
             for entry in os.listdir(musicloc):
@@ -571,8 +572,7 @@ class Prep():
                             if cover is None:  # Only assign if we haven't found another cover yet
                                 cover = entry_path
                         elif entry.lower().endswith(('.jpg', '.jpeg')) and 'proof' in entry.lower():
-                            if cover is None:  # upload proof
-                                proof = entry_path
+                            proof = entry_path
 
             track_count = len(filelist)
             if filelist:
@@ -599,6 +599,8 @@ class Prep():
                     elif entry.lower().endswith(('.jpg', '.jpeg')) and 'proof' not in entry.lower():
                         if cover is None:
                             cover = entry_path
+                    elif entry.lower().endswith(('.jpg', '.jpeg')) and 'proof' in entry.lower():
+                            proof = entry_path
 
         return music, filelist, track_count, cover, proof
 
