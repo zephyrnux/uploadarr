@@ -645,38 +645,12 @@ class Prep():
         meta['category'] = "MUSIC"
         mi = self.exportInfo(first_audio_file, meta['isdir'], meta['uuid'], base_dir, export_text=True)
         meta['mediainfo'] = mi
-
         album_fname = meta['uuid']   
         album_fname = album_fname.replace('&', 'AANDD')
         normalized_af = re.sub(r'[^a-zA-Z0-9\sAANDD]', ' ', album_fname)
         normalized_af = normalized_af.replace('AANDD', '&')
         meta['source'] = self.get_music_source(normalized_af)
-        album_fname = re.sub(r'hi-res', '', album_fname, flags=re.IGNORECASE)
-        last_hyphen_index = album_fname.rfind('-')
-
-        if last_hyphen_index != -1:
-            after_last_hyphen = album_fname[last_hyphen_index + 1:].strip()
-            bracket_tag_match = re.search(r'\[([^\[\]]+)\]$', after_last_hyphen)
-            if bracket_tag_match:
-                tag = bracket_tag_match.group(1).strip()
-
-                if self.is_valid_tag(tag):
-                    meta['tag'] = f'-{tag}'
-                else:
-                    meta['tag'] = ''
-            else:
-                tag_match = re.search(r'^[^-\[\]]+$', after_last_hyphen)
-                if tag_match:
-                    tag = tag_match.group(0).strip()
-
-                    if self.is_valid_tag(tag):
-                        meta['tag'] = f'-{tag}'
-                    else:
-                        meta['tag'] = ''
-                else:
-                    meta['tag'] = ''
-        else:
-            meta['tag'] = ''
+        meta['tag'] = self.extract_tag(album_fname)
 
         track = next((track for track in mi['media']['track'] if track['@type'] == 'General'), None)
         if track:
@@ -809,9 +783,54 @@ class Prep():
         await mb.search_releases_by_title_artist(release_title, artist_name, track_count, meta)
 
 
+    """ 
+      Music TAG Processing 
+    """
+    def extract_tag(self, album_fname):
+        album_fname = re.sub(r'hi-res', '', album_fname, flags=re.IGNORECASE)
+        last_hyphen_index = album_fname.rfind('-')
+
+        tag_match = ''
+
+        if last_hyphen_index != -1:
+            after_last_hyphen = album_fname[last_hyphen_index + 1:].strip()
+            outside_parentheses = re.sub(r'\(.*?\)', '', after_last_hyphen).strip()
+
+            if outside_parentheses:
+                bracket_tag_match = re.search(r'\[([^\[\]]+)\]$', outside_parentheses)
+                if bracket_tag_match:
+                    tag = bracket_tag_match.group(1).strip()
+
+                    if self.is_valid_tag(tag):
+                        tag_match = f'-{tag}'
+
+                else:
+                    tag = re.search(r'^[^-\[\]]+$', outside_parentheses)
+                    if tag:
+                        tag = tag.group(0).strip()
+
+                        if self.is_valid_tag(tag):
+                            tag_match = f'-{tag}'
+
+        return tag_match if tag_match else ''
+
+    def is_valid_tag(self, tag):
+        reject_terms = ['web', 'flac', 'alac', 'mp3', 'm4a', 'wav', 'vinyl']
+        if any(term in tag.lower() for term in reject_terms):
+            return False
+        if re.search(r'\d{2,}', tag):
+            return False
+        if 'khz' in tag.lower():
+            return False
+        if ' ' in tag: 
+            return False        
+        if not re.match(r'^[a-zA-Z0-9\s&]+$', tag):
+            return False        
+        return True
+
     def extract_catalog_number(self, album_fname: str, extra: Dict[str, Any]) -> Optional[str]:
         """
-        Extract catalog number from album_fname or MediaInfo extra metadata.
+        Extract CATALOG_NUMBER from album_fname or MediaInfo
         """
         catalog_number = extra.get('CATALOG_NUMBER', None) or extra.get('CATNO', None) or extra.get('LABELNO', None)
         if catalog_number:
@@ -852,11 +871,11 @@ class Prep():
                     if discogs_id_match:
                         discogs_id = discogs_id_match.group(1)
                         meta['discogs_id'] = discogs_id
-                        print(f"Extracted Discogs ID from master URL: {discogs_id}")
+                        log.degug(f"Extracted Discogs ID from master URL: {discogs_id}")
                     else:
-                        print("Failed to extract Discogs ID from master release URL.")
+                        log.error("Failed to extract Discogs ID from master release URL.")
                 else:
-                    print(f"Failed to fetch master data for master ID {master_id}")
+                    log.error(f"Failed to fetch master data for master ID {master_id}")
 
         if discogs_id:
             release_data = await dc.fetch_discogs_release(discogs_id)
@@ -872,18 +891,6 @@ class Prep():
         else:
             log.error("No valid Discogs ID found or could not extract it from the URL.")
 
-
-    def is_valid_tag(self, tag):
-        reject_terms = ['web', 'flac', 'alac', 'mp3', 'm4a', 'wav', 'vinyl']
-        if any(term in tag.lower() for term in reject_terms):
-            return False
-        if re.search(r'\d{2,}', tag):
-            return False
-        if 'khz' in tag.lower():
-            return False
-        if ' ' in tag:
-            return False
-        return True
 
     def get_music_source(self, normalized_af):
         nafu = normalized_af.upper()
