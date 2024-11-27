@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*- 
-from sys import meta_path
+import sys
 from src.args import Args
-from src.console import console
+from src.console import console, log
 from src.exceptions import *
 from src.trackers.PTP import PTP
 from src.trackers.BLU import BLU
 from src.trackers.HDB import HDB
 from src.trackers.COMMON import COMMON
+from src.musicbrainz import MusicBrainzAPI
+from src.discparse import DiscParse
+from src.discogs import DiscogsAPI
 
 try:
     import aiofiles
@@ -19,6 +22,7 @@ try:
     import itertools
     import json
     import langcodes
+    import logging
     import math
     import multiprocessing
     import nest_asyncio
@@ -37,7 +41,7 @@ try:
     import urllib
     import urllib.parse
     from os.path import basename
-    from datetime import datetime, date
+    from datetime import datetime, date, timedelta
     from difflib import SequenceMatcher
     from guessit import guessit
     from imdb import Cinemagoer
@@ -47,8 +51,8 @@ try:
     from rich.progress import Progress, TextColumn, BarColumn, TimeRemainingColumn
     from rich.traceback import install, Traceback
     from requests.exceptions import HTTPError
-    from src.discparse import DiscParse
     from torf import Torrent
+    from typing import Dict, Any, Optional
     from subprocess import Popen
 
 
@@ -68,19 +72,26 @@ class Prep():
         Database Identifiers (TMDB/IMDB/MAL/etc)
         Create Name
     """
-    def __init__(self, screens, img_host, config):
+    def __init__(self, screens, img_host, config, debug=False):
         self.screens = screens
         self.config = config
         self.img_host = img_host.lower()
         tmdb.API_KEY = config['DEFAULT']['tmdb_api']
 
+        if debug:
+            log.setLevel(logging.DEBUG)
+            log.debug("Debug mode enabled.")
+        else:
+            log.setLevel(logging.INFO)
 
     async def gather_prep(self, meta, mode):
         meta['mode'] = mode
         base_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
         meta['isdir'] = os.path.isdir(meta['path'])
-        base_dir = meta['base_dir']
+        meta['base_dir'] = base_dir
+        meta['is_music'] = False
 
+        # Setup UUID and create temp directory
         if meta.get('uuid', None) == None:
             folder_id = os.path.basename(meta['path'])
             meta['uuid'] = folder_id 
@@ -90,8 +101,65 @@ class Prep():
         if meta['debug']:
             console.print(f"[cyan]ID: {meta['uuid']}")
 
-        
-        meta['is_disc'], videoloc, bdinfo, meta['discs'] = await self.get_disc(meta)
+        # Check if path is a directory and determine content
+        if meta['isdir']:
+            files = os.listdir(meta['path'])
+            # Filter out system and sample files
+            filtered_files = [f for f in files if not f.startswith('._') and not f.lower().endswith('sample.mp3') and not f.lower().startswith('!sample')]
+
+            video_files = [f for f in filtered_files if any(f.lower().endswith(ext) for ext in ['.mkv', '.mp4', '.ts'])]
+            audio_files = [f for f in filtered_files if any(f.lower().endswith(ext) for ext in ['.mp3', '.flac', '.wav', '.m4a', '.aac', '.alac'])]
+            log_file = [f for f in filtered_files if any(f.lower().endswith(ext) for ext in ['.log'])]
+
+            if audio_files or log_file:
+                meta['is_music'] = True
+                if log_file:
+                    meta['log_file'] = os.path.join(meta['path'], log_file[0])
+            
+            # Handle multi-disc album case
+            if not audio_files and not video_files:  # Only proceed if we haven't found music or video files yet
+                disc_subdirs = [d for d in filtered_files if (
+                    d.lower().startswith('disc') or d.lower().startswith('cd')
+                ) and os.path.isdir(os.path.join(meta['path'], d))]
+                
+                if disc_subdirs:
+                    console.print('[yellow]Multi-disc album detected. Checking subdirectories for music files.')
+                    for subdir in disc_subdirs:
+                        subdir_path = os.path.join(meta['path'], subdir)
+                        subdir_files = os.listdir(subdir_path)
+                        audio_files_in_subdir = [f for f in subdir_files if any(f.lower().endswith(ext) for ext in ['.mp3', '.flac', '.wav', '.m4a', '.aac', '.alac'])]
+                        if audio_files_in_subdir:
+                            meta['is_music'] = True
+                            # Instead of changing path, we'll just note that there are subdirectories to process
+                            meta['cd_paths'] = meta.get('cd_paths', []) + [subdir_path]
+                            break  # We could break here if we only need to know if any subdir contains music, or continue to check all for completeness
+
+            if meta['is_music']:
+                console.print('[blue]Processing as music')
+                if not self.has_sufficient_music_metadata(meta):
+                    await self.process_music(meta, base_dir)
+                meta = await self.gen_desc(meta)
+                return meta  # Return here since we've found music to process
+
+            if not video_files and not meta['is_music']:
+                console.print('[yellow]No media files found in directory')
+                # return meta  # Or handle this case appropriately
+
+        else:  # Single file scenario
+            file_extension = os.path.splitext(meta['path'])[-1].lower()
+            meta['is_music'] = file_extension in ['.mp3', '.flac', '.wav', '.m4a', '.aac', '.alac'] 
+
+        if meta['is_music']:
+            console.print('[blue]Processing as music')
+            if not self.has_sufficient_music_metadata(meta):
+                await self.process_music(meta, base_dir)
+            meta = await self.gen_desc(meta)
+            return meta
+
+
+        # Video processing logic
+        console.print('[red]Processing as video')
+        meta['is_disc'], videoloc, bdinfo, meta['discs'] = await self.get_disc(meta)        
         
         # If BD:
         if meta['is_disc'] == "BDMV":
@@ -192,8 +260,6 @@ class Prep():
 
         meta['bdinfo'] = bdinfo
         
-
-
 
 
         # Reuse information from other trackers
@@ -382,8 +448,6 @@ class Prep():
         return meta
 
 
-
-
     """
     Determine if disc and if so, get bdinfo
     """
@@ -447,69 +511,422 @@ class Prep():
         return is_disc, videoloc, bdinfo, discs
 
 
-   
 
     """
     Get video files
 
     """
+
     def get_video(self, videoloc, mode):
         filelist = []
         videoloc = os.path.normpath(os.path.abspath(videoloc))
+        video_extensions = ['.mkv', '.mp4', '.ts']
+        
         if os.path.isdir(videoloc):
-            globlist = glob.glob1(videoloc, "*.mkv") + glob.glob1(videoloc, "*.mp4") + glob.glob1(videoloc, "*.ts")
-            for file in globlist:
-                if not file.lower().endswith('sample.mkv') or "!sample" in file.lower():
-                    filelist.append(os.path.abspath(f"{videoloc}{os.sep}{file}"))
-            try:
-                video = sorted(filelist)[0]       
-            except IndexError:
-                console.print("[bold red]No Video files found")
+            for file in os.listdir(videoloc):
+                full_path = os.path.join(videoloc, file)
+                if not file.startswith('._'):
+                    if os.path.isfile(full_path) and any(file.lower().endswith(ext) for ext in video_extensions):
+                        if not (file.lower().endswith('sample.mkv') or file.lower().startswith('!sample')):
+                            filelist.append(full_path)
+
+            if filelist:
+                video = sorted(filelist)[0]
+            else:
+                console.print(f"[red]No video files found in {videoloc}")
                 if mode == 'cli':
                     exit()
+                return None, []
         else:
             video = videoloc
-            filelist.append(videoloc)
-        filelist = sorted(filelist)
+            if not os.path.basename(videoloc).startswith('._') and os.path.splitext(videoloc)[1].lower() in video_extensions:
+                filelist.append(videoloc)
+        
         return video, filelist
 
 
+    def get_music(self, musicloc, mode):
+        filelist = []
+        musicloc = os.path.normpath(os.path.abspath(musicloc))
+        music_extensions = ['.mp3', '.flac', '.wav', '.m4a', '.aac', '.alac']
+        cover = None
+        
+        if os.path.isdir(musicloc):
+            for entry in os.listdir(musicloc):
+                entry_path = os.path.join(musicloc, entry)
+                if os.path.isdir(entry_path) and (entry.lower().startswith('disc') or entry.lower().startswith('cd')):
+                    console.print(f"[yellow]Checking subdirectory: {entry_path}")
+                    subfilelist = self.list_music(entry_path, mode)
+                    filelist.extend(subfilelist)
+                elif not entry.startswith('._'):    
+                    if os.path.isfile(entry_path):
+                        if any(entry.lower().endswith(ext) for ext in music_extensions):
+                            if not (entry.lower().endswith('sample.mp3') or entry.lower().startswith('!sample')):
+                                filelist.append(entry_path)
+                        # Check for cover image
+                        elif entry.lower() in ('cover.jpg', 'cover.jpeg', 'front.jpg', 'front.jpeg'):
+                            cover = entry_path
+                            break 
+                        elif entry.lower().endswith(('.jpg', '.jpeg')) and 'proof' not in entry.lower():
+                            if cover is None:  # Only assign if we haven't found another cover yet
+                                cover = entry_path
+                        elif entry.lower().endswith(('.jpg', '.jpeg')) and 'proof' in entry.lower():
+                            if cover is None:  # upload proof
+                                proof = entry_path
+
+            track_count = len(filelist)
+            if filelist:
+                music = filelist[0]
+            else:
+                console.print(f"[red]No music files found in {musicloc}")
+                if mode == 'cli':
+                    exit()
+                return None, [], 0, None
+        else:
+            music = musicloc
+            if not os.path.basename(musicloc).startswith('._') and any(os.path.splitext(musicloc)[1].lower() in music_extensions):
+                filelist.append(musicloc)
+            track_count = None
+
+            # Look for cover in the parent directory if it's a single file
+            parent_dir = os.path.dirname(musicloc)
+            for entry in os.listdir(parent_dir):
+                entry_path = os.path.join(parent_dir, entry)
+                if os.path.isfile(entry_path):
+                    if entry.lower() in ('cover.jpg', 'cover.jpeg'):
+                        cover = entry_path
+                        break
+                    elif entry.lower().endswith(('.jpg', '.jpeg')) and 'proof' not in entry.lower():
+                        if cover is None:
+                            cover = entry_path
+
+        return music, filelist, track_count, cover, proof
+
+    def list_music(self, path, mode):
+        filelist = []
+        for file in os.listdir(path):
+            full_path = os.path.join(path, file)
+            if os.path.isfile(full_path) and any(file.lower().endswith(ext) for ext in ['.mp3', '.flac', '.wav', '.m4a', '.aac', '.alac']):
+                if not (file.lower().endswith('sample.mp3') or file.lower().startswith('!sample')):
+                    filelist.append(full_path)
+        return filelist
+
+
+    """
+    Process Music
+
+    """
+    def has_sufficient_music_metadata(self, meta):
+        required_keys = ['artist', 'album', 'year', 'source', 'type', 'bitrate', 'duration', 'mbid', 'album_cover']
+        return all(meta.get(key, None) for key in required_keys)
+
+    async def process_music(self, meta, base_dir):   
+        mb = MusicBrainzAPI("Art2Album / 1.0")
+
+        if self.has_sufficient_music_metadata(meta):
+            return meta
+
+        #INITIALIZE META 
+        meta['is_disc'] = False
+        meta['screens'] = 0
+        meta['edition'] = ''
+        meta['bdinfo'] = None
+        meta['tmdb'] = 0
+        meta['imdb'] = 0
+        meta['tvdb_id'] = 0
+        meta['mal_id'] = 0
+        meta['sd'] = 0
+        meta['keywords'] = ''
+        audio_path, meta['filelist'], track_count, meta['user_cover'], meta['user_proof'] = self.get_music(meta['path'], meta.get('mode', 'discord'))
+        meta['track_count'] = track_count
+        first_audio_file = meta['filelist'][0] if meta['filelist'] else None      
+        meta['category'] = "MUSIC"
+        mi = self.exportInfo(first_audio_file, meta['isdir'], meta['uuid'], base_dir, export_text=True)
+        meta['mediainfo'] = mi
+
+        album_fname = meta['uuid']   
+        album_fname = album_fname.replace('&', 'AANDD')
+        normalized_af = re.sub(r'[^a-zA-Z0-9\sAANDD]', ' ', album_fname)
+        normalized_af = normalized_af.replace('AANDD', '&')
+        meta['source'] = self.get_music_source(normalized_af)
+        album_fname = re.sub(r'hi-res', '', album_fname, flags=re.IGNORECASE)
+        last_hyphen_index = album_fname.rfind('-')
+
+        if last_hyphen_index != -1:
+            after_last_hyphen = album_fname[last_hyphen_index + 1:].strip()
+            bracket_tag_match = re.search(r'\[([^\[\]]+)\]$', after_last_hyphen)
+            if bracket_tag_match:
+                tag = bracket_tag_match.group(1).strip()
+
+                if self.is_valid_tag(tag):
+                    meta['tag'] = f'-{tag}'
+                else:
+                    meta['tag'] = ''
+            else:
+                tag_match = re.search(r'^[^-\[\]]+$', after_last_hyphen)
+                if tag_match:
+                    tag = tag_match.group(0).strip()
+
+                    if self.is_valid_tag(tag):
+                        meta['tag'] = f'-{tag}'
+                    else:
+                        meta['tag'] = ''
+                else:
+                    meta['tag'] = ''
+        else:
+            meta['tag'] = ''
+
+        track = next((track for track in mi['media']['track'] if track['@type'] == 'General'), None)
+        if track:
+            meta['type'] = track.get('Format')
+            # meta['bitrate'] = track.get('OverallBitRate', 'Unknown')
+            meta['duration'] = track.get('Duration', 'Unknown')
+            meta['artist'] = track.get('Performer', track.get('Album_Performer', None))
+            meta['album'] = track.get('Album', None)
+            recorded_date = track.get('Recorded_Date', track.get('Released_Date', track.get('Year', None)))
+            if recorded_date and '-' in recorded_date:
+                meta['year'] = recorded_date.split('-')[0]
+                meta['release_date'] = recorded_date
+            else:
+                meta['year'] = recorded_date
+                meta['release_date'] = ''
+            extra = track.get('extra', {}) if track else {}
+            meta['artist'] = meta['artist'] or extra.get('Performer', None)
+            meta['album'] = meta['album'] or extra.get('Album', None)
+            meta['year'] = meta['year'] or extra.get('Year', extra.get('Recorded_Date', extra.get('Released_Date', None)))
+            
+            barcode = extra.get('BARCODE', None) 
+            upc = extra.get('UPC', None)
+            meta['barcode'] = track.get('Barcode', None) or track.get('UPC', None) or barcode or upc
+
+        audio_track = next((track for track in mi['media']['track'] if track['@type'] == 'Audio'), None)
+        if audio_track: 
+            meta['bit_depth'] = audio_track.get('BitDepth', '')
+            meta['bitrate'] = audio_track.get('BitRate_String', '').replace('/', '').replace(' ', '') 
+
+        meta['catalog_number'] = self.extract_catalog_number(meta['uuid'], extra)
+        mbid = meta.get('mbid_manual') or meta.get('mbid')
+        if mbid:
+            await mb.fetch_musicbrainz_mbid(mbid, meta)
+        else:
+            # Try different methods of searching in sequence if no MBID is present
+            methods_to_try = [
+                ("barcode", self.search_by_barcode),
+                ("catalog_number", self.search_by_catalog_number),
+                ("title_artist", self.search_by_title_artist)
+            ]
+
+            success = False
+            for method_name, search_func in methods_to_try:
+                if await self.try_search_method(meta, mb, method_name, search_func):
+                    success = True
+                    break  # Exit the loop if a successful search was performed
+
+            if not success:
+                console.print("[red]WARN[/red]: No MusicBrainz data found using any method.")                 
+
+        await self.process_with_discogs(meta)
+
+        # Check if album cover is not set
+        if not meta.get('album_cover'):
+            user_cover = meta.get('user_cover')
+            if user_cover and os.path.isfile(user_cover) and user_cover.lower().endswith('.jpg'):
+                console.print(f"[yellow]Uploading user cover image: {user_cover}")
+                
+                # Prepare parameters for upload_screens
+                image_list, _ = self.upload_screens(meta, 1, 1, 0, 1, [user_cover], {})
+                
+                if image_list:
+                    meta['album_cover'] = image_list[0]['raw_url']
+                    console.print(f"[green]Successfully uploaded and set album cover: {meta['album_cover']}")
+                else:
+                    console.print("[red]Failed to upload album cover.")
+
+        proof_image = meta.get('user_proof')
+        if proof_image and os.path.isfile(proof_image) and proof_image.lower().endswith(('.jpg', '.jpeg')):
+            console.print(f"[yellow]Uploading proof image: {proof_image}")
+            proof_list, _ = self.upload_screens(meta, 1, 1, 0, 1, [proof_image], {})
+            
+            if proof_list:
+                meta['album_proof'] = proof_list[0]['raw_url']
+                console.print(f"[green]Successfully uploaded and set proof image: {meta['album_proof']}")
+            else:
+                console.print("[red]Failed to upload proof image.")
+
+
+        if not os.path.exists(f"{base_dir}/tmp/{meta['uuid']}/MediaInfo.json"):
+            self.export_audio_info(audio_path, meta['uuid'], base_dir)
+
+        if 'discogs_id' in meta and meta['discogs_id']:
+            meta['keywords'] += f", Discogs: {meta['discogs_id']}"
+
+        if 'catalog_number' in meta and meta['catalog_number']:
+            meta['keywords'] += f", CATNO: {meta['catalog_number']}"
+
+        if 'barcode' in meta and meta['barcode']:
+            meta['keywords'] += f", UPC: {meta['barcode']}"
+
+
+        return meta
+    
+    async def try_search_method(self, meta, mb, method_name, search_func):
+        """Try to search with the given method and update meta if successful."""
+        try:
+            if method_name == "barcode":
+                barcode = meta.get('barcode')
+                if not barcode:
+                    barcode_match = re.search(r'(barcode|upc)-([0-9]+)', meta['uuid'], re.IGNORECASE)
+                    if barcode_match:
+                        barcode = barcode_match.group(2)
+                        meta['barcode'] = barcode
+                if barcode:
+                    await search_func(barcode, meta, mb)
+            elif method_name == "catalog_number" and meta.get('catalog_number'):
+                await search_func(meta.get('catalog_number'), meta, mb)
+            elif method_name == "title_artist":
+                release_title = meta.get('album', '')
+                artist_name = meta.get('artist', '')
+                track_count = meta.get('track_count', 0)
+                if release_title and artist_name:
+                    await search_func(release_title, artist_name, track_count, meta, mb)
+            
+            if meta.get('mbid'):  # Check if we've found an mbid
+                log.info(f"MusicBrainz data found using {method_name}.")
+                return True
+        except Exception as e:
+            log.error(f"Error occurred while trying to search by {method_name}: {e}")
+        return False
+
+    async def search_by_barcode(self, barcode, meta, mb):
+        await mb.search_musicbrainz_by_barcode(barcode, meta)
+
+    async def search_by_catalog_number(self, catalog_number, meta, mb):
+        await mb.search_by_catalog_number(catalog_number, meta)
+
+    async def search_by_title_artist(self, release_title, artist_name, track_count, meta, mb):
+        await mb.search_releases_by_title_artist(release_title, artist_name, track_count, meta)
+
+
+    def extract_catalog_number(self, album_fname: str, extra: Dict[str, Any]) -> Optional[str]:
+        """
+        Extract catalog number from album_fname or MediaInfo extra metadata.
+        """
+        catalog_number = extra.get('CATALOG_NUMBER', None) or extra.get('CATNO', None) or extra.get('LABELNO', None)
+        if catalog_number:
+            return re.sub(r'[ -]', '', catalog_number.strip())
+
+        # Look for catalog number in album_fname (e.g., {CAT1234})
+        catalog_match = re.search(r'\{([^}]+)\}', album_fname)
+        if catalog_match:
+            catalog_number = catalog_match.group(1).strip()
+            return re.sub(r'[ -]', '', catalog_number)
+
+        extra_lower = {k.lower(): v for k, v in extra.items()}
+        return extra_lower.get('catalog_number', None) or extra_lower.get('catno', None) or extra_lower.get('catalog', None) or extra_lower.get('labelno', None)
+
+
+    async def process_with_discogs(self, meta: Dict[str, Any]) -> None:
+        """
+        Query Discogs API to find metadata when barcode or MBID is missing.
+        """
+        dc = DiscogsAPI("Art2Album / 1.0")
+        mb = MusicBrainzAPI("Art2Album / 1.0")
+        discogs_id = meta.get('discogs_id') or meta.get('DISCOGS_RELEASE_ID')
+        discogs_url = meta.get('discogs_url')
+
+        if not discogs_id and not discogs_url:
+            print("No Discogs ID or URL found in meta.")
+            return
+
+        # Extract Discogs ID from URL if no ID is present
+        if not discogs_id and discogs_url:
+            master_match = re.search(r"discogs\.com/master/(\d+)", discogs_url)
+            if master_match:
+                master_id = master_match.group(1)
+                master_data = await dc.fetch_master_data(master_id)
+                if master_data:
+                    main_release_url = master_data.get("main_release_url", "")
+                    discogs_id_match = re.search(r"releases/(\d+)", main_release_url)
+                    if discogs_id_match:
+                        discogs_id = discogs_id_match.group(1)
+                        meta['discogs_id'] = discogs_id
+                        print(f"Extracted Discogs ID from master URL: {discogs_id}")
+                    else:
+                        print("Failed to extract Discogs ID from master release URL.")
+                else:
+                    print(f"Failed to fetch master data for master ID {master_id}")
+
+        if discogs_id:
+            release_data = await dc.fetch_discogs_release(discogs_id)
+            if release_data:
+                barcode = dc.extract_barcode(release_data)
+                if barcode and not meta.get('mbid'):
+                    meta['barcode'] = barcode
+                    print(f"Extracted Barcode: {barcode}")
+                    # Retry MusicBrainz search if there's no MBID
+                    await mb.search_musicbrainz_by_barcode(barcode, meta)
+
+                dc.extract_metadata(release_data, meta)
+        else:
+            log.error("No valid Discogs ID found or could not extract it from the URL.")
+
+
+    def is_valid_tag(self, tag):
+        reject_terms = ['web', 'flac', 'alac', 'mp3', 'm4a', 'wav', 'vinyl']
+        if any(term in tag.lower() for term in reject_terms):
+            return False
+        if re.search(r'\d{2,}', tag):
+            return False
+        if 'khz' in tag.lower():
+            return False
+        if ' ' in tag:
+            return False
+        return True
+
+    def get_music_source(self, normalized_af):
+        nafu = normalized_af.upper()
+        if ' CD ' in nafu:
+            return 'CD' 
+        elif ' VINYL ' in nafu:
+            return 'VINYL'    
+        elif ' WEB ' in nafu:
+            return 'WEB'
+        else:
+            return ''
 
 
     """
     Get and parse mediainfo
     """
-    def exportInfo(self, video, isdir, folder_id, base_dir, export_text):
-        video = os.path.normpath(video)
+    def exportInfo(self, media_path, isdir, folder_id, base_dir, export_text=True):
+        media_path = os.path.normpath(media_path)
         try:
-            if os.path.exists(f"{base_dir}/tmp/{folder_id}/MEDIAINFO.txt") == False and export_text != False:
-                console.print("[bold yellow]Exporting MediaInfo...")
-            #MediaInfo to text
-                if isdir == False:
-                    os.chdir(os.path.dirname(video))
-                media_info = MediaInfo.parse(video, output="STRING", full=False, mediainfo_options={'inform_version' : '1'})
-                with open(f"{base_dir}/tmp/{folder_id}/MEDIAINFO.txt", 'w', newline="", encoding='utf-8') as export:
-                    export.write(media_info)
-                    export.close()
-                with open(f"{base_dir}/tmp/{folder_id}/MEDIAINFO_CLEANPATH.txt", 'w', newline="", encoding='utf-8') as export_cleanpath:
-                    export_cleanpath.write(media_info.replace(video, os.path.basename(video)))
-                    export_cleanpath.close()
-                console.print("[bold green]MediaInfo Exported.")
+            if export_text:
+                if not os.path.exists(f"{base_dir}/tmp/{folder_id}/MEDIAINFO.txt"):
+                    console.print("[bold yellow]Exporting MediaInfo...")
+                    # Change to the directory of the media file for MediaInfo to work correctly with relative paths
+                    os.chdir(os.path.dirname(media_path))
+                    media_info = MediaInfo.parse(media_path, output="STRING", full=False, mediainfo_options={'inform_version' : '1'})
+                    with open(f"{base_dir}/tmp/{folder_id}/MEDIAINFO.txt", 'w', newline="", encoding='utf-8') as export:
+                        export.write(media_info)
+                    with open(f"{base_dir}/tmp/{folder_id}/MEDIAINFO_CLEANPATH.txt", 'w', newline="", encoding='utf-8') as export_cleanpath:
+                        # Replace full path with just the filename to sanitize the path
+                        export_cleanpath.write(media_info.replace(media_path, os.path.basename(media_path)))
+                    console.print("[bold green]MediaInfo text Exported.")
 
-            if os.path.exists(f"{base_dir}/tmp/{folder_id}/MediaInfo.json.txt") == False:
-                #MediaInfo to JSON
-                media_info = MediaInfo.parse(video, output="JSON", mediainfo_options={'inform_version' : '1'})
-                export = open(f"{base_dir}/tmp/{folder_id}/MediaInfo.json", 'w', encoding='utf-8')
-                export.write(media_info)
-                export.close()
+            if not os.path.exists(f"{base_dir}/tmp/{folder_id}/MediaInfo.json"):
+                # MediaInfo to JSON
+                media_info = MediaInfo.parse(media_path, output="JSON", mediainfo_options={'inform_version' : '1'})
+                with open(f"{base_dir}/tmp/{folder_id}/MediaInfo.json", 'w', encoding='utf-8') as export:
+                    export.write(media_info)
+                console.print("[bold green]MediaInfo JSON Exported.")
+
             with open(f"{base_dir}/tmp/{folder_id}/MediaInfo.json", 'r', encoding='utf-8') as f:
-                mi = json.load(f)
-        
-            return mi
+                return json.load(f)
 
         except FileNotFoundError:
-            console.print(f"[bold red]File not found: {video}")
-            sys.exit() 
+            console.print(f"[bold red]File not found: {media_path}")
+            sys.exit()
 
 
     """
@@ -1519,189 +1936,222 @@ class Prep():
     Mediainfo/Bdinfo > meta
     """
     def get_audio_v2(self, mi, meta, bdinfo):
-        extra = dual = ""
-        has_commentary = False
-        #Get formats
-        if bdinfo != None: #Disks
-            format_settings = ""
-            format = bdinfo['audio'][0]['codec']
-            commercial = format
-            try:
-                additional = bdinfo['audio'][0]['atmos_why_you_be_like_this']
-            except:
-                additional = ""
-            #Channels
-            chan = bdinfo['audio'][0]['channels']
+        if meta.get('is_music', False):  
+            if not mi or 'media' not in mi or 'track' not in mi.get('media', {}):
+                return "Unknown", "Unknown", False
 
+            audio_tracks = mi['media'].get('track', [])
+            if not audio_tracks:
+                return "No Audio", "Unknown", False
 
-        else: 
-            track_num = 2
-            for i in range(len(mi['media']['track'])):
-                t = mi['media']['track'][i]
-                if t['@type'] != "Audio":
-                    pass
-                else: 
-                    if t.get('Language', "") == meta['original_language'] and "commentary" not in t.get('Title', '').lower():
-                        track_num = i
-                        break
-            format = mi['media']['track'][track_num]['Format']
-            commercial = mi['media']['track'][track_num].get('Format_Commercial', '')
-            if mi['media']['track'][track_num].get('Language', '') == "zxx":
+            track = audio_tracks[0]
+            format = track.get('Format', 'Unknown')
+            channels = track.get('Channels', 'Unknown')
+            if channels.isdigit():
+                channels = f"{channels}.0"
+
+            if track.get('Language', '') == "zxx":
                 meta['silent'] = True
-            try:
-                additional = mi['media']['track'][track_num]['Format_AdditionalFeatures']
-                # format = f"{format} {additional}"
-            except:
-                additional = ""
-            try:
-                format_settings = mi['media']['track'][track_num]['Format_Settings']
-                if format_settings in ['Explicit']:
-                    format_settings = ""
-            except:
+
+            # Simple codec mapping for music
+            codec_map = {
+                "DTS": "DTS",
+                "AAC": "AAC",
+                "AC-3": "DD",
+                "E-AC-3": "DD+",
+                "MLP FBA": "TrueHD",
+                "FLAC": "FLAC",
+                "Opus": "Opus",
+                "Vorbis": "Vorbis",
+                "PCM": "LPCM",
+            }
+            codec = codec_map.get(format, format)
+
+            return f"{codec} {channels}", channels, False
+        else:
+            extra = dual = ""
+            has_commentary = False
+            #Get formats
+            if bdinfo != None: #Disks
                 format_settings = ""
-            #Channels
-            channels = mi['media']['track'][track_num].get('Channels_Original', mi['media']['track'][track_num]['Channels'])
-            if not str(channels).isnumeric():
-                channels = mi['media']['track'][track_num]['Channels']
-            try:
-                channel_layout = mi['media']['track'][track_num]['ChannelLayout']
-            except:
+                format = bdinfo['audio'][0]['codec']
+                commercial = format
                 try:
-                    channel_layout = mi['media']['track'][track_num]['ChannelLayout_Original']
+                    additional = bdinfo['audio'][0]['atmos_why_you_be_like_this']
                 except:
-                    channel_layout = ""
-            if "LFE" in channel_layout:
-                chan = f"{int(channels) - 1}.1"
-            elif channel_layout == "":
-                if int(channels) <= 2:
-                    chan = f"{int(channels)}.0"
-                else:
-                    chan = f"{int(channels) - 1}.1"
-            else:
-                chan = f"{channels}.0"
-            
-            if meta['original_language'] != 'en':
-                eng, orig = False, False
+                    additional = ""
+                #Channels
+                chan = bdinfo['audio'][0]['channels']
+
+
+            else: 
+                track_num = 2
+                for i in range(len(mi['media']['track'])):
+                    t = mi['media']['track'][i]
+                    if t['@type'] != "Audio":
+                        pass
+                    else: 
+                        if t.get('Language', "") == meta['original_language'] and "commentary" not in t.get('Title', '').lower():
+                            track_num = i
+                            break
+                format = mi['media']['track'][track_num]['Format']
+                commercial = mi['media']['track'][track_num].get('Format_Commercial', '')
+                if mi['media']['track'][track_num].get('Language', '') == "zxx":
+                    meta['silent'] = True
                 try:
-                    for t in mi['media']['track']:
-                        if t['@type'] != "Audio":
-                            pass
-                        else: 
-                            audio_language = t.get('Language', '')
-                            # Check for English Language Track
-                            if audio_language == "en" and "commentary" not in t.get('Title', '').lower():
-                                eng = True
-                            # Check for original Language Track
-                            if audio_language == meta['original_language'] and "commentary" not in t.get('Title', '').lower():
-                                orig = True
-                            # Catch Chinese / Norwegian variants
-                            variants = ['zh', 'cn', 'cmn', 'no', 'nb']
-                            if audio_language in variants and meta['original_language'] in variants:
-                                orig = True
-                            # Check for additional, bloated Tracks
-                            if audio_language != meta['original_language'] and audio_language != "en":
-                                if meta['original_language'] not in variants and audio_language not in variants:
-                                    audio_language = "und" if audio_language == "" else audio_language
-                                    console.print(f"[bold red]This release has a(n) {audio_language} audio track, and may be considered bloated")
-                                    time.sleep(5)
-                    if eng and orig == True:
-                        dual = "Dual-Audio"
-                    elif eng == True and orig == False and meta['original_language'] not in ['zxx', 'xx', None] and meta.get('no_dub', False) == False:
-                        dual = "Dubbed"
-                except Exception:
-                    console.print(traceback.print_exc())
-                    pass
-        
+                    additional = mi['media']['track'][track_num]['Format_AdditionalFeatures']
+                    # format = f"{format} {additional}"
+                except:
+                    additional = ""
+                try:
+                    format_settings = mi['media']['track'][track_num]['Format_Settings']
+                    if format_settings in ['Explicit']:
+                        format_settings = ""
+                except:
+                    format_settings = ""
+                #Channels
+                channels = mi['media']['track'][track_num].get('Channels_Original', mi['media']['track'][track_num]['Channels'])
+                if not str(channels).isnumeric():
+                    channels = mi['media']['track'][track_num]['Channels']
+                try:
+                    channel_layout = mi['media']['track'][track_num]['ChannelLayout']
+                except:
+                    try:
+                        channel_layout = mi['media']['track'][track_num]['ChannelLayout_Original']
+                    except:
+                        channel_layout = ""
+                if "LFE" in channel_layout:
+                    chan = f"{int(channels) - 1}.1"
+                elif channel_layout == "":
+                    if int(channels) <= 2:
+                        chan = f"{int(channels)}.0"
+                    else:
+                        chan = f"{int(channels) - 1}.1"
+                else:
+                    chan = f"{channels}.0"
+                
+                if meta['original_language'] != 'en':
+                    eng, orig = False, False
+                    try:
+                        for t in mi['media']['track']:
+                            if t['@type'] != "Audio":
+                                pass
+                            else: 
+                                audio_language = t.get('Language', '')
+                                # Check for English Language Track
+                                if audio_language == "en" and "commentary" not in t.get('Title', '').lower():
+                                    eng = True
+                                # Check for original Language Track
+                                if audio_language == meta['original_language'] and "commentary" not in t.get('Title', '').lower():
+                                    orig = True
+                                # Catch Chinese / Norwegian variants
+                                variants = ['zh', 'cn', 'cmn', 'no', 'nb']
+                                if audio_language in variants and meta['original_language'] in variants:
+                                    orig = True
+                                # Check for additional, bloated Tracks
+                                if audio_language != meta['original_language'] and audio_language != "en":
+                                    if meta['original_language'] not in variants and audio_language not in variants:
+                                        audio_language = "und" if audio_language == "" else audio_language
+                                        console.print(f"[bold red]This release has a(n) {audio_language} audio track, and may be considered bloated")
+                                        time.sleep(5)
+                        if eng and orig == True:
+                            dual = "Dual-Audio"
+                        elif eng == True and orig == False and meta['original_language'] not in ['zxx', 'xx', None] and meta.get('no_dub', False) == False:
+                            dual = "Dubbed"
+                    except Exception:
+                        console.print(traceback.print_exc())
+                        pass
             
-            for t in mi['media']['track']:
-                if t['@type'] != "Audio":
-                    pass
-                else: 
-                    if "commentary" in t.get('Title', '').lower():
-                        has_commentary = True
-        
-        
-        #Convert commercial name to naming conventions
-        audio = {
-            #Format
-            "DTS": "DTS",
-            "AAC": "AAC",
-            "AAC LC": "AAC",
-            "AC-3": "DD",
-            "E-AC-3": "DD+",
-            "MLP FBA": "TrueHD",
-            "FLAC": "FLAC",
-            "Opus": "Opus",
-            "Vorbis": "Vorbis",
-            "PCM": "LPCM",
+                
+                for t in mi['media']['track']:
+                    if t['@type'] != "Audio":
+                        pass
+                    else: 
+                        if "commentary" in t.get('Title', '').lower():
+                            has_commentary = True
+            
+            
+            #Convert commercial name to naming conventions
+            audio = {
+                #Format
+                "DTS": "DTS",
+                "AAC": "AAC",
+                "AAC LC": "AAC",
+                "AC-3": "DD",
+                "E-AC-3": "DD+",
+                "MLP FBA": "TrueHD",
+                "FLAC": "FLAC",
+                "Opus": "Opus",
+                "Vorbis": "Vorbis",
+                "PCM": "LPCM",
 
-            #BDINFO AUDIOS
-            "LPCM Audio" : "LPCM",
-            "Dolby Digital Audio" : "DD",
-            "Dolby Digital Plus Audio" : "DD+",
-            # "Dolby TrueHD" : "TrueHD",
-            "Dolby TrueHD Audio" : "TrueHD",
-            "DTS Audio" : "DTS", 
-            "DTS-HD Master Audio" : "DTS-HD MA",
-            "DTS-HD High-Res Audio" : "DTS-HD HRA",
-            "DTS:X Master Audio" : "DTS:X"
-        }
-        audio_extra = {
-            "XLL": "-HD MA",
-            "XLL X": ":X",
-            "ES": "-ES",
-        }
-        format_extra = {
-            "JOC": " Atmos",
-            "16-ch": " Atmos",
-            "Atmos Audio": " Atmos",
-        }
-        format_settings_extra = {
-            "Dolby Surround EX" : "EX"
-        }
-
-        commercial_names = {
-            "Dolby Digital" : "DD",
-            "Dolby Digital Plus" : "DD+",
-            "Dolby TrueHD" : "TrueHD",
-            "DTS-ES" : "DTS-ES",
-            "DTS-HD High" : "DTS-HD HRA",
-            "Free Lossless Audio Codec" : "FLAC",
-            "DTS-HD Master Audio" : "DTS-HD MA"
+                #BDINFO AUDIOS
+                "LPCM Audio" : "LPCM",
+                "Dolby Digital Audio" : "DD",
+                "Dolby Digital Plus Audio" : "DD+",
+                # "Dolby TrueHD" : "TrueHD",
+                "Dolby TrueHD Audio" : "TrueHD",
+                "DTS Audio" : "DTS", 
+                "DTS-HD Master Audio" : "DTS-HD MA",
+                "DTS-HD High-Res Audio" : "DTS-HD HRA",
+                "DTS:X Master Audio" : "DTS:X"
+            }
+            audio_extra = {
+                "XLL": "-HD MA",
+                "XLL X": ":X",
+                "ES": "-ES",
+            }
+            format_extra = {
+                "JOC": " Atmos",
+                "16-ch": " Atmos",
+                "Atmos Audio": " Atmos",
+            }
+            format_settings_extra = {
+                "Dolby Surround EX" : "EX"
             }
 
-        
-        search_format = True
-        for key, value in commercial_names.items():
-            if key in commercial:
-                codec = value
-                search_format = False
-            if "Atmos" in commercial or format_extra.get(additional, "") == " Atmos":
-                extra = " Atmos"
-        if search_format:
-            codec = audio.get(format, "") + audio_extra.get(additional, "")
-            extra = format_extra.get(additional, "")
-        format_settings = format_settings_extra.get(format_settings, "")
-        if format_settings == "EX" and chan == "5.1":
-            format_settings = "EX"
-        else:
-            format_settings = ""
+            commercial_names = {
+                "Dolby Digital" : "DD",
+                "Dolby Digital Plus" : "DD+",
+                "Dolby TrueHD" : "TrueHD",
+                "DTS-ES" : "DTS-ES",
+                "DTS-HD High" : "DTS-HD HRA",
+                "Free Lossless Audio Codec" : "FLAC",
+                "DTS-HD Master Audio" : "DTS-HD MA"
+                }
 
-        if codec == "":
-            codec = format
-        
-        if format.startswith("DTS"):
-            if additional.endswith("X"):
-                codec = "DTS:X"
-                chan = f"{int(channels) - 1}.1"
-        if format == "MPEG Audio":
-            codec = mi['media']['track'][2].get('CodecID_Hint', '')
+            
+            search_format = True
+            for key, value in commercial_names.items():
+                if key in commercial:
+                    codec = value
+                    search_format = False
+                if "Atmos" in commercial or format_extra.get(additional, "") == " Atmos":
+                    extra = " Atmos"
+            if search_format:
+                codec = audio.get(format, "") + audio_extra.get(additional, "")
+                extra = format_extra.get(additional, "")
+            format_settings = format_settings_extra.get(format_settings, "")
+            if format_settings == "EX" and chan == "5.1":
+                format_settings = "EX"
+            else:
+                format_settings = ""
 
-        
+            if codec == "":
+                codec = format
+            
+            if format.startswith("DTS"):
+                if additional.endswith("X"):
+                    codec = "DTS:X"
+                    chan = f"{int(channels) - 1}.1"
+            if format == "MPEG Audio":
+                codec = mi['media']['track'][2].get('CodecID_Hint', '')
 
-        audio = f"{dual} {codec} {format_settings} {chan}{extra}"
-        audio = ' '.join(audio.split())
-        return audio, chan, has_commentary
+            
+
+            audio = f"{dual} {codec} {format_settings} {chan}{extra}"
+            audio = ' '.join(audio.split())
+            return audio, chan, has_commentary
 
 
     def is_3d(self, mi, bdinfo):
@@ -2103,7 +2553,7 @@ class Prep():
                         no_sample_globs.append(os.path.abspath(f"{path}{os.sep}{file}"))
                 if len(no_sample_globs) == 1:
                     path = meta['filelist'][0]
-        if meta['full_dir'] or meta['is_disc']:
+        if meta['full_dir'] or meta['is_disc'] or meta['is_music']:
             desc = Path(meta['uuid']).stem
             include = ""
             exclude = ['._*', 'description.txt', desc + '.txt']
@@ -2467,11 +2917,15 @@ class Prep():
         type = meta.get('type', "")
         title = meta.get('title',"")
         alt_title = meta.get('aka', "")
+        artist = meta.get('artist', "")
+        album = meta.get('album', "")
         year = meta.get('year', "")
         resolution = meta.get('resolution', "")
         if resolution == "OTHER":
             resolution = ""
         audio = meta.get('audio', "")
+        bit_depth = meta.get('bit_depth', "")
+        bitrate = meta.get('bitrate', "")
         service = meta.get('service', "")
         season = meta.get('season', "")
         cut = meta.get ('cut', "")
@@ -2512,8 +2966,20 @@ class Prep():
             console.log("[cyan]get_name cat/type")
             console.log(f"CATEGORY: {meta['category']}")
             console.log(f"TYPE: {meta['type']}")
+            if meta.get('is_music', False):
+                console.log(f"ARTIST: {meta['artist']}")
+                console.log(f"ALBUM: {meta['album']}")
+                console.log(f"YEAR: {meta['year']}") 
+                if meta.get('source'):          
+                    console.log(f"SOURCE: {meta['source']}")
             console.log("[cyan]get_name meta:")
             console.log(meta)
+
+            
+        # name_notag = ''
+        # name = ''
+        # clean_name = ''
+        # potential_missing = []
 
         #YAY NAMING FUN
         if meta['category'] == "MOVIE": #MOVIE SPECIFIC
@@ -2550,7 +3016,7 @@ class Prep():
                 if meta['is_disc'] == 'BDMV':
                     name = f"{title} {year} {alt_title} {season}{episode} {three_d} {cut} {ratio} {edition} {repack} {resolution} {region} {uhd} {source} {hdr} {video_codec} {audio}"
                     potential_missing = ['edition', 'region', 'distributor']
-                if meta['is_disc'] == 'DVD':
+                elif meta['is_disc'] == 'DVD':
                     name = f"{title} {alt_title} {season}{episode}{three_d} {cut} {ratio} {edition} {repack} {source} {dvd_size} {audio}"
                     potential_missing = ['edition', 'distributor']
                 elif meta['is_disc'] == 'HDDVD':
@@ -2574,20 +3040,33 @@ class Prep():
             elif type == "HDTV": #HDTV
                 name = f"{title} {year} {alt_title} {season}{episode} {episode_title} {part} {cut} {ratio} {edition} {repack} {resolution} {source} {audio} {video_encode}"
                 potential_missing = []
+        elif meta['category'] == "MUSIC": #MUSIC SPECIFIC
+            source = f'{source} ' if source else ''
+            tag = tag or ''
+            ed = f"[{edition}]" if edition else ''
+            bd = f"{bit_depth}bit" if bit_depth else ''  
+            potential_missing = []
 
+            if type in ['ALAC', 'FLAC', 'WAV']:
+                name = f"{artist} - {album} ({year}) {ed} [{source}{type} {bd}]"
+            else:
+                name =  f"{artist} - {album} ({year}) {ed} [{source}{type} {bitrate}]"   
 
-        try:    
+            console.print(f"Debug: Returning: {name}")
+
+        try:   
+            console.print(name) 
             name = ' '.join(name.split())
+            name_notag = name
+            name = name_notag + tag
+            clean_name = self.clean_filename(name)            
         except:
             console.print("[bold red]Unable to generate name. Please re-run and correct any of the following args if needed.")
             console.print(f"--category [yellow]{meta['category']}")
             console.print(f"--type [yellow]{meta['type']}")
             console.print(f"--source [yellow]{meta['source']}")
-
-            exit()
-        name_notag = name
-        name = name_notag + tag
-        clean_name = self.clean_filename(name)
+            name = "Error in Name Generation"
+            # exit()
         return name_notag, name, clean_name, potential_missing
 
 
@@ -3105,7 +3584,7 @@ class Prep():
                         poster = poster[0]
                         generic.write(f"TMDB Poster: {poster.get('raw_url', poster.get('img_url'))}\n")
                         meta['rehosted_poster'] = poster.get('raw_url', poster.get('img_url'))
-                        with open (f"{meta['base_dir']}/tmp/{meta['uuid']}/meta.json", 'w') as metafile:
+                        with open (f"{meta['base_dir']}/tmp/{meta['uuid']}/meta.json", 'w', encoding='utf-8') as metafile:
                             json.dump(meta, metafile, indent=4)
                             metafile.close()
                     else:
@@ -3342,3 +3821,4 @@ class Prep():
                     if show.get('externals', {}).get('tvdb', '0') != None:
                         tvdbID = show.get('externals', {}).get('tvdb', '0')
         return tvmazeID, imdbID, tvdbID
+    
