@@ -19,7 +19,7 @@ import traceback
 import time
 import random
 from packaging.version import Version
-from src.console import console, log
+from src.console import console, log, set_log_level
 from rich.markdown import Markdown
 from rich.style import Style
 from rich.prompt import Prompt, Confirm
@@ -141,6 +141,9 @@ async def do_the_thing(base_dir):
 
     # Parse the command-line arguments and update meta
     meta, help, before_args = parser.parse(sys.argv[1:], meta)
+
+    #LOG LEVEL
+    set_log_level(debug=True) if meta.get('debug') else set_log_level(debug=False)
 
     # If 'reconfig' is set in meta, run reconfigure()
     if meta.get("reconfig", False):
@@ -860,7 +863,7 @@ def dupe_check(dupes, meta, config, skipped_details, path):
 
     def handle_similarity(similarity, meta):
         if similarity == 1.0:
-            console.print(f"[red]Found exact match dupe.[dim](byte-for-byte)[/dim] Aborting..")
+            console.info(f"[red]Found exact name match. Aborting..")
             meta['upload'] = False
             return meta, True  # True indicates skipped
         elif meta['unattended']:
@@ -892,26 +895,58 @@ def dupe_check(dupes, meta, config, skipped_details, path):
         meta_size = meta.get('content_size')
         if meta_size is None:
             meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
-        
+
         log.debug(f"Comparing {name} with size {size} bytes to {meta['clean_name']} with size {meta_size} bytes", meta)
-        
-        if abs(meta_size - size) <= size_tolerance * meta_size:
-            log.debug(f"Size difference is within tolerance: {abs(meta_size - size)} bytes", meta)
+
+        # Define a maximum size tolerance to catch abnormally huge differences
+        max_tolerance = config['AUTO'].get('max_size_tolerance', 25) / 100  # Default to 25%
+
+        if meta_size == size:
+            # Exact size match
+            log.info(f"[red]Exact size match. [dim](byte-for-byte)[/dim] Aborting..")
+            cleaned_dupe_name = preprocess_string(name)
+            # similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
+            return meta, True #Skip Upload
+
+        elif abs(meta_size - size) > max_tolerance * meta_size:
+            # Abnormally huge size difference
+            log.debug(f"Size difference exceeds max tolerance ({max_tolerance * 100:.2f}%): {abs(meta_size - size)} bytes.", meta)
+            console.print(f"[green]Abnormally large size difference detected ({abs(meta_size - size)} bytes). Assuming not a dupe.")
+            return meta, False  # Proceed with upload
+
+        elif abs(meta_size - size) <= size_tolerance * meta_size:
+            # Size is within reasonable tolerance
+            log.debug(f"Size difference within tolerance: {abs(meta_size - size)} bytes.", meta)
             cleaned_dupe_name = preprocess_string(name)
             similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
-            
-            log.debug(f"Similarity calculated: {similarity:.2f} against threshold: {similarity_threshold:.2f}", meta)
-            
-            if similarity >= similarity_threshold:
-                console.print("Similarity is above the threshold.")
-                meta, skipped = handle_similarity(similarity, meta)
-                if skipped:
-                    return meta, True  # True indicates skipped
 
+            if similarity >= similarity_threshold:
+                console.print(f"[yellow]Close size match ({abs(meta_size - size)} bytes difference) with {similarity * 100:.2f}% name similarity.")
+                upload = Confirm.ask(" Upload anyways?")
+                if not upload:
+                    meta['upload'] = False
+                    return meta, True #Skip Upload
+            else:
+                console.print(f"[green]Close size match, but low name similarity ({similarity * 100:.2f}%). Proceeding.")
+
+        else:
+            # Size difference exceeds regular tolerance but is not abnormally large
+            log.debug(f"Size difference exceeds regular tolerance but within max tolerance: {abs(meta_size - size)} bytes.", meta)
+            cleaned_dupe_name = preprocess_string(name)
+            similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
+
+            if similarity >= similarity_threshold:
+                console.print(f"[yellow]Large size difference but high name similarity ({similarity * 100:.2f}%). Treating as potential dupe.")
+                upload = Confirm.ask(" Upload anyways?")
+                if not upload:
+                    meta['upload'] = False
+                    return meta, True #Skip Upload
+            else:
+                console.print(f"[green]Large size difference and low name similarity ({similarity * 100:.2f}%). Proceeding.")
     # If no matches found
     console.print("[yellow]No dupes found above the similarity threshold. Uploading anyways.")
     meta['upload'] = True
-    return meta, False  # False indicates not skipped
+    return meta, False  # Proceed with upload
 
 
 def extract_size_from_torrent(base_dir, uuid):

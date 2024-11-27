@@ -7,11 +7,12 @@ import os
 import re
 import langcodes
 import platform
+import logging
 from datetime import datetime
 from rich.pretty import Pretty
 
 from src.trackers.COMMON import COMMON
-from src.console import console
+from src.console import console, log, set_log_level
 
 
 class LDU():
@@ -127,7 +128,7 @@ class LDU():
                 type_id = '3'    
         return type_id
 
-    async def get_res_id(self, resolution, is_music):
+    async def get_res_id(self, resolution):
         resolution_id = {
             '8640p':'10', 
             '4320p': '1', 
@@ -141,8 +142,8 @@ class LDU():
             '480p': '8', 
             '480i': '9'
             }.get(resolution, '10')
-        if is_music:
-            resolution_id = None
+        # if is_music:
+        #     resolution_id = None
         return resolution_id
 
     ###############################################################
@@ -154,7 +155,7 @@ class LDU():
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         cat_id = await self.get_cat_id(meta['category'], meta.get('genres', ''), meta.get('keywords', ''), meta.get('service', ''), meta.get('edition', ''), meta)
         type_id = await self.get_type_id(meta['type'],meta['edition'])
-        resolution_id = await self.get_res_id(meta['resolution'], meta.get('is_music', False))
+        resolution_id = await self.get_res_id(meta['resolution'])#, meta.get('is_music', False))
         await common.unit3d_edit_desc(meta, self.tracker)
         region_id = await common.unit3d_region_ids(meta.get('region'))
         distributor_id = await common.unit3d_distributor_ids(meta.get('distributor'))
@@ -183,30 +184,37 @@ class LDU():
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
         ldu_name = meta['name'] if meta.get('is_music', False) else await self.get_name(meta)
+        nfo_file = meta.get('nfo_file', None)
+        nfo = open(nfo_file, 'r', encoding='utf-8').read() if nfo_file else None
         data = {
-            'name' : ldu_name,
-            'description' : desc,
-            'mediainfo' : mi_dump,
-            'bdinfo' : bd_dump, 
-            'category_id' : cat_id,
-            'type_id' : type_id,
-            'resolution_id' : resolution_id,
-            'tmdb' : meta.get('tmdb', 0),
-            'imdb' : meta.get('imdb_id', 0).replace('tt', ''),
-            'tvdb' : meta.get('tvdb_id', 0),
-            'mal' : meta.get('mal_id', 0),
-            'igdb' : 0,
-            'anonymous' : anon,
-            'stream' : int(meta.get('stream', False)),
-            'sd' : meta['sd'],
-            'keywords' : meta['keywords'],
-            'personal_release' : int(meta.get('personalrelease', False)),
-            'internal' : 0,
-            'featured' : 0,
-            'free' : 0,
-            'doubleup' : 0,
-            'sticky' : 0,
+            'name': ldu_name,
+            'description': desc,
+            'nfo': nfo,
+            'mediainfo': mi_dump,
+            'category_id': cat_id,
+            'type_id': type_id,
+            'tmdb': meta.get('tmdb', 0),
+            'imdb': meta.get('imdb_id', 0).replace('tt', ''),
+            'tvdb': meta.get('tvdb_id', 0),
+            'mal': meta.get('mal_id', 0),
+            'igdb': 0,
+            'anonymous': anon,
+            'stream': int(meta.get('stream', False)),
+            'sd': meta['sd'],
+            'keywords': meta['keywords'],
+            'personal_release': int(meta.get('personalrelease', False)),
+            'internal': 0,
+            'featured': 0,
+            'free': 0,
+            'doubleup': 0,
+            'sticky': 0,
         }
+
+        if not meta.get('is_music', False):
+            data.update({
+                'resolution_id': resolution_id,
+                'bdinfo': bd_dump,
+            })
         # Internal
         if self.config['TRACKERS'][self.tracker].get('internal', False):
             if meta['tag'] != "" and (meta['tag'][1:] in self.config['TRACKERS'][self.tracker].get('internal_groups', [])):
@@ -515,28 +523,42 @@ class LDU():
         console.print("[yellow]Searching for existing torrents on site...")
         params = {
             'api_token': self.config['TRACKERS'][self.tracker]['api_key'].strip(),
-            'tmdbId': meta['tmdb'],
-            'categories[]': await self.get_cat_id(meta['category'], meta.get('genres', ''), meta.get('keywords', ''), meta.get('service', ''), meta.get('edition', ''), meta),
+            'categories[]': await self.get_cat_id(
+                meta['category'], meta.get('genres', ''), meta.get('keywords', ''), 
+                meta.get('service', ''), meta.get('edition', ''), meta
+            ),
             'types[]': await self.get_type_id(meta['type'], meta['edition']),
-            'resolutions[]': await self.get_res_id(meta['resolution'], meta.get('is_music', False)),
-            'name': ""
+            'name': meta.get('album', '') if meta.get('is_music', False) else ""
         }
-        if meta.get('edition', "") != "":
-            params['name'] = params['name'] + f" {meta['edition']}"
+
+        if not meta.get('is_music', False):
+            params.update({
+                'tmdbId': meta['tmdb'],
+                'resolutions[]': await self.get_res_id(meta['resolution'])#, meta.get('is_music', False))
+            })
+
+            if meta.get('edition'):
+                params['name'] = f"{meta['edition']}".strip()
+
         try:
-            response = requests.get(url=self.search_url, params=params)
-            response = response.json()
-            for each in response['data']:
+            response = requests.get(url=self.search_url, params=params).json()
+            for each in response.get('data', []):
                 result = each['attributes']['name']
-                split_result = re.split(r'(-\w*\])', result)
-                if len(split_result) > 1:
-                    result = split_result[0] + split_result[1]
                 size = each['attributes']['size']
+
+                # Extract the main part of the name using regex
+                match = re.split(r'(-\w*\])', result)
+                if len(match) > 1:
+                    result = match[0] + match[1]
+                
+                # Filter results and populate dupes
                 if "🔥Eternal" not in result:
                     dupes[result] = size
+        except requests.exceptions.RequestException as req_err:
+            log.error(f'[bold red]Request error while searching for torrents: {req_err}')
         except Exception as e:
-            console.print(f'[bold red]Unable to search for existing torrents on site. Either the site is down or your API key is incorrect. Error: {e}')
+            log.error(f'[bold red]Unexpected error during search: {e}')
             await asyncio.sleep(5)
 
+        log.debug(f'[blue]Dupe List[/blue]:\n {dupes}')
         return dupes
-
