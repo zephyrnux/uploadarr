@@ -104,7 +104,7 @@ class COMMON():
                         await descfile.write(f"[center][img]{album_back}[/img][/center]\n\n")
                 proof = meta.get('album_proof')
                 if proof:
-                    await descfile.write(f"[center][spoiler=Proof][img=500]{proof}[/img][/spoiler][/center]\n\n")
+                    await descfile.write(f"[center][spoiler=Proof][center][img=500]{proof}[/img][/center][/spoiler][/center]\n\n")
 
 
                 mbid = meta.get('mbid', False)
