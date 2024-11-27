@@ -40,7 +40,7 @@ class DiscogsAPI:
         genres = release_data.get("genres", [])
         styles = release_data.get("styles", [])
         
-        new_keywords = ", ".join(genres + styles)
+        new_keywords = ", ".join(genres + styles).replace(' & ', ' ')
         if new_keywords:  
             if meta.get('keywords'):
                 meta['keywords'] += ", " + new_keywords

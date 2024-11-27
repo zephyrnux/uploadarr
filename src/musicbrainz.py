@@ -239,13 +239,9 @@ class MusicBrainzAPI:
                 discogs_url = relation["url"].get("resource")
                 if discogs_url:
                     meta['discogs_url'] = discogs_url
-                    # match = re.search(r"discogs\.com/release/(\d+)", discogs_url)
-                    # if match:
-                    #     meta['discogs_id'] = match.group(1)
-                    # else:
-                    #     match = re.search(r"discogs\.com/master/(\d+)", discogs_url)
-                    #     if match:
-                    #         meta['discogs_id'] = match.group(1)
+                    match = re.search(r"discogs\.com/release/(\d+)", discogs_url)
+                    if match:
+                        meta['discogs_id'] = match.group(1)
             elif relation.get("type") == "allmusic" and "url" in relation:
                 allmusic_url = relation["url"].get("resource")
                 if allmusic_url:
