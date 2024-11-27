@@ -19,7 +19,7 @@ import traceback
 import time
 import random
 from packaging.version import Version
-from src.console import console
+from src.console import console, log
 from rich.markdown import Markdown
 from rich.style import Style
 from rich.prompt import Prompt, Confirm
@@ -254,11 +254,11 @@ async def do_the_thing(base_dir):
         meta['path'] = path
         meta['uuid'] = None
         try:
-            with open(f"{base_dir}/tmp/{os.path.basename(path)}/meta.json") as f:
+            with open(f"{base_dir}/tmp/{os.path.basename(path)}/meta.json", encoding='utf-8') as f:
                 saved_meta = json.load(f)
                 for key, value in saved_meta.items():
                     overwrite_list = [
-                        'base_dir', 'path', 'trackers', 'dupe', 'debug', 'anon', 'category', 'type', 'screens', 'nohash', 'manual_edition', 'imdb', 'tmdb_manual', 'mal', 'manual', 
+                        'base_dir', 'path', 'trackers', 'dupe', 'debug', 'anon', 'category', 'type', 'screens', 'nohash', 'manual_edition', 'imdb', 'tmdb_manual', 'mbid_manual', 'mal', 'manual', 
                         'hdb', 'ptp', 'blu', 'no_season', 'no_aka', 'no_year', 'no_dub', 'no_tag', 'no_seed', 'client', 'desclink', 'descfile', 'desc', 'draft', 'region', 'freeleech', 
                         'personalrelease', 'unattended', 'season', 'episode', 'torrent_creation', 'qbit_tag', 'qbit_cat', 'skip_imghost_upload', 'imghost', 'manual_source', 'webdv', 'hardcoded-subs'
                     ]
@@ -298,7 +298,7 @@ async def do_the_thing(base_dir):
                 raise ValueError("Name values are None")
         except Exception as e:
             skipped_files += 1
-            skipped_details.append((path, f'Error getting name: {str(e)}'))
+            skipped_details.append((path, f'Error getting name: {str(e)} [red]DEBUG TEST'))
             continue
 
         if meta.get('image_list', False) in (False, []) and meta.get('skip_imghost_upload', False) == False:
@@ -332,13 +332,16 @@ async def do_the_thing(base_dir):
             trackers = config['TRACKERS']['default_trackers']
         if "," in trackers:
             trackers = trackers.split(',')
-        with open (f"{meta['base_dir']}/tmp/{meta['uuid']}/meta.json", 'w') as f:
-            json.dump(meta, f, indent=4)
+        with open (f"{meta['base_dir']}/tmp/{meta['uuid']}/meta.json", 'w', encoding='utf-8') as f:
+            json.dump(meta, f, ensure_ascii=False, indent=4)
             f.close()
         confirm = get_confirmation(meta)  
         while not confirm:
             # help.print_help()
-            console.print("Input args that need correction e.g.(--tag NTb --category tv --tmdb 12345)")  
+            if meta.get('is_music', False):
+                console.print("Input args that need correction e.g.(--tag PMEDIA --mbid e7bb5806-36bb-45a7-b6ea-0b6de4eed94b)") 
+            else:    
+                console.print("Input args that need correction e.g.(--tag NTb --category tv --tmdb 12345)")  
             console.print("Enter 'skip' if no correction needed", style="dim")
             editargs = Prompt.ask("")
             if editargs.lower() == 'skip':
@@ -392,7 +395,8 @@ async def do_the_thing(base_dir):
                     skipped_details.append((path, f"Banned Group on {tracker_class.tracker}"))
                     continue
                 dupes = await tracker_class.search_existing(meta)
-                dupes = await common.filter_dupes(dupes, meta)
+                if not meta.get('is_music', False):
+                    dupes = await common.filter_dupes(dupes, meta)
                 meta, skipped = dupe_check(dupes, meta, config, skipped_details, path)                    
                 if skipped:
                     skipped_files += 1
@@ -754,11 +758,20 @@ def get_confirmation(meta):
     console.print(f"Prep material saved to {meta['base_dir']}/tmp/{meta['uuid']}")
     console.print()
 
-    db_info = [
-        f"[bold]Title[/bold]: {meta['title']} ({meta['year']})\n",
-        f"[bold]Overview[/bold]: {meta['overview']}\n",
-        f"[bold]Category[/bold]: {meta['category']}\n",
-    ]
+    if meta['is_music']:
+        db_info = [
+            f"[bold]Album[/bold]: {meta['album']} ({meta['year']})",
+            f"[bold]Artist[/bold]: {meta['artist']}",
+            f"[bold]Category[/bold]: {meta['category']}",
+        ]
+        if meta.get('mbid'):
+            db_info.append(f"\n[bold]MBID[/bold]: https://musicbrainz.org/release/{meta['mbid']}")
+    else: 
+        db_info = [
+            f"[bold]Title[/bold]: {meta['title']} ({meta['year']})\n",
+            f"[bold]Overview[/bold]: {meta['overview']}\n",
+            f"[bold]Category[/bold]: {meta['category']}\n",
+        ]
 
     if int(meta.get('tmdb', 0)) != 0:
         db_info.append(f"TMDB: https://www.themoviedb.org/{meta['category'].lower()}/{meta['tmdb']}")
@@ -798,6 +811,11 @@ def get_confirmation(meta):
     return confirm
 
 def dupe_check(dupes, meta, config, skipped_details, path):
+    if meta.get('dupe', False):
+        console.print("[yellow]Skipping duplicate check as requested.")
+        meta['upload'] = True   
+        return meta, False  # False indicates not skipped
+    
     if not dupes:
         console.print("[green]No dupes found")
         meta['upload'] = True   
@@ -875,14 +893,14 @@ def dupe_check(dupes, meta, config, skipped_details, path):
         if meta_size is None:
             meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
         
-        debug_print(f"Comparing {name} with size {size} bytes to {meta['clean_name']} with size {meta_size} bytes", meta)
+        log.debug(f"Comparing {name} with size {size} bytes to {meta['clean_name']} with size {meta_size} bytes", meta)
         
         if abs(meta_size - size) <= size_tolerance * meta_size:
-            debug_print(f"Size difference is within tolerance: {abs(meta_size - size)} bytes", meta)
+            log.debug(f"Size difference is within tolerance: {abs(meta_size - size)} bytes", meta)
             cleaned_dupe_name = preprocess_string(name)
             similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
             
-            debug_print(f"Similarity calculated: {similarity:.2f} against threshold: {similarity_threshold:.2f}", meta)
+            log.debug(f"Similarity calculated: {similarity:.2f} against threshold: {similarity_threshold:.2f}", meta)
             
             if similarity >= similarity_threshold:
                 console.print("Similarity is above the threshold.")
@@ -895,42 +913,6 @@ def dupe_check(dupes, meta, config, skipped_details, path):
     meta['upload'] = True
     return meta, False  # False indicates not skipped
 
-
-
-    # for name, size in dupes.items():
-    #     if isinstance(size, str) and "GB" in size:
-    #         size = float(size.replace(" GB", "")) * (1024 ** 3)  # Convert GB to bytes
-    #         # meta_size = meta.get('content_size')
-    #         # if meta_size is None:
-    #         #     meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
-    #         # console.print(f"Comparing {name} with size {size} bytes to {meta['clean_name']} with size {meta_size} bytes")
-    #     elif isinstance(size, (int, float)) and size != 0:
-    #         meta_size = meta.get('content_size')
-    #         # if meta_size is None:
-    #         #     meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
-    #         size = int(size)   
-    #         # console.print(f"Comparing {name} with size {size} bytes to {meta['clean_name']} with size {meta_size} bytes")
-    #         if abs(meta_size - size) <= size_tolerance * meta_size:
-    #             cleaned_dupe_name = preprocess_string(name)
-    #             similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
-    #             if similarity >= similarity_threshold:
-    #                 meta, skipped = handle_similarity(similarity, meta)
-    #                 if skipped:
-    #                     return meta, True  # True indicates skipped
-    #     else:
-    #         cleaned_dupe_name = preprocess_string(name)
-    #         similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
-    #         console.print(f"Similarity calculated: {similarity:.2f} against threshold: {similarity_threshold:.2f}")
-
-    #         if similarity >= similarity_threshold:
-    #             console.print("Similarity is above the threshold.")
-    #             meta, skipped = handle_similarity(similarity, meta)
-    #             if skipped:
-    #                 return meta, True  # True indicates skipped
-
-    # console.print("[yellow]No dupes found above the similarity threshold. Uploading anyways.")
-    # meta['upload'] = True
-    # return meta, False  # False indicates not skipped
 
 def extract_size_from_torrent(base_dir, uuid):
     torrent_path = f"{base_dir}/tmp/{uuid}/BASE.torrent"
@@ -996,9 +978,6 @@ def get_missing(meta):
 
     console.print()
     return
-
-def debug_print(message, meta):
-    console.print(message)
 
 def print_banner():
     ascii_art = r"""

@@ -2,9 +2,10 @@ import argparse
 import urllib.parse
 import os
 import datetime
+import re
 import traceback
 
-from src.console import console
+from src.console import console, set_log_level
 
 class Args():
     """
@@ -12,6 +13,14 @@ class Args():
     """
     def __init__(self, config):
         self.config = config
+
+    UUID_PATTERN = r'^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$'
+
+    @staticmethod
+    def validate_mbid(mbid):
+        if not re.match(Args.UUID_PATTERN, mbid):
+            raise argparse.ArgumentTypeError("Invalid MBID format. Please provide a valid release MBID without quote or removal of -")
+        return mbid
 
     def parse(self, args, meta):
         oldArgs = args
@@ -31,6 +40,8 @@ class Args():
         parser.add_argument('-tmdb', '--tmdb', nargs='*', required=False, help="TMDb ID", type=str, dest='tmdb_manual')
         parser.add_argument('-imdb', '--imdb', nargs='*', required=False, help="IMDb ID", type=str)
         parser.add_argument('-mal', '--mal', nargs='*', required=False, help="MAL ID", type=str)
+        parser.add_argument('-mbid', '--mbid', nargs='?', help="MusicBrainz Release ID", type=self.validate_mbid, dest='mbid_manual')
+        parser.add_argument('-discogs', '--discogs', nargs='*', required=False, help="Discogs Release ID", type=str, dest='discogs_id')
         parser.add_argument('-g', '--tag', nargs='*', required=False, help="Group Tag", type=str)
         parser.add_argument('-serv', '--service', nargs='*', required=False, help="Streaming Service", type=str)
         parser.add_argument('-dist', '--distributor', nargs='*', required=False, help="Disc Distributor e.g.(Criterion, BFI, etc.)", type=str)
@@ -51,7 +62,7 @@ class Args():
         parser.add_argument('-d', '--desc', nargs='*', required=False, help=r'\"[b]Custom Description[/b]\"')
         parser.add_argument('-pb', '--desclink', nargs='*', required=False, help=r'\"https://pastebin.com/URL\"')
         parser.add_argument('-df', '--descfile', nargs='*', required=False, help=r'\"\path\to\description.txt\"')
-        parser.add_argument('-aid', '--auto-insert-desc', dest='auto_desc', action='store_true', help='Uses (file or season folder).txt or decription.txt existing in upload path')        
+        parser.add_argument('-aid', '--auto-insert-desc', dest='auto_desc', action='store_true', help='Uses (file or season folder).txt or description.txt existing in upload path')        
         parser.add_argument('-ih', '--imghost', nargs='*', required=False, help="Image Host", choices=['imgbb', 'ptpimg', 'imgbox', 'pixhost', 'lensdump', 'ptscreens', 'oeimg'])
         parser.add_argument('-siu', '--skip-imagehost-upload', dest='skip_imghost_upload', action='store_true', required=False, help="Skip Uploading to an image host")
         parser.add_argument('-th', '--torrenthash', nargs='*', required=False, help="Torrent Hash to re-use from your client's session directory")
@@ -91,6 +102,13 @@ class Args():
 
         args, before_args = parser.parse_known_args(oldArgs)
         args = vars(args)
+
+        # Set log level
+        if args.get('debug', False):
+            set_log_level(debug=True)
+        else:
+            set_log_level(debug=False)
+
 
         # Handle full auto mode
         if args.get('full_auto', False):
@@ -177,6 +195,7 @@ class Args():
                 meta[key] = meta.get(key, None)
             if key in ('trackers'):
                 meta[key] = value
+
 
         return meta, parser, before_args
 
