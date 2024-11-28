@@ -26,8 +26,33 @@ logging.basicConfig(
 # Get a logger instance
 log = logging.getLogger(__name__)
 
+# def set_log_level(debug=False):
+#     if debug:
+#         logging.getLogger().setLevel(logging.DEBUG)
+#     else:
+#         logging.getLogger().setLevel(logging.INFO)
+
 def set_log_level(debug=False):
-    if debug:
-        logging.getLogger().setLevel(logging.DEBUG)
-    else:
-        logging.getLogger().setLevel(logging.INFO)
+    level = logging.DEBUG if debug else logging.INFO
+
+    # Update the root logger level
+    root_logger = logging.getLogger()
+    root_logger.setLevel(level)
+
+    # Update the level for all handlers of the root logger
+    for handler in root_logger.handlers:
+        handler.setLevel(level)
+
+    # Ensure all other loggers respect the new level
+    for logger_name in logging.root.manager.loggerDict:
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(level)
+        logger.propagate = True  # Ensure messages bubble up to the root logger
+        for handler in logger.handlers:
+            handler.setLevel(level)
+
+    # Ensure RichHandler is updated
+    for handler in root_logger.handlers:
+        if isinstance(handler, RichHandler):
+            handler.setLevel(level)
+
