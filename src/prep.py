@@ -875,7 +875,7 @@ class Prep():
                     if discogs_id_match:
                         discogs_id = discogs_id_match.group(1)
                         meta['discogs_id'] = discogs_id
-                        log.degug(f"Extracted Discogs ID from master URL: {discogs_id}")
+                        log.debug(f"Extracted Discogs ID from master URL: {discogs_id}")
                     else:
                         log.error("Failed to extract Discogs ID from master release URL.")
                 else:
