@@ -31,12 +31,10 @@ class DiscogsAPI:
         return None
 
     def extract_metadata(self, release_data: Dict[str, Any], meta: Dict[str, Any]) -> None:
-        """Extract relevant metadata from Discogs release data and populate meta."""
-        
+        """Extract relevant metadata from Discogs release data and populate meta."""        
         formats = release_data.get("formats", [])
         if formats and not meta.get('source'): 
             meta['source'] = formats[0].get("name", "").upper()
-
         genres = release_data.get("genres", [])
         styles = release_data.get("styles", [])
         
@@ -50,8 +48,7 @@ class DiscogsAPI:
         if not meta.get('tracklist'):
             tracklist = release_data.get("tracklist", [])
             if tracklist:
-                meta['tracklist'] = {}
-                
+                meta['tracklist'] = {}               
                 for track in tracklist:
                     position = track.get("position", "")
                     
@@ -95,5 +92,5 @@ class DiscogsAPI:
             async with session.get(url, headers=headers) as response:
                 if response.status == 200:
                     return await response.json()
-                print(f"Discogs API Error when fetching master data: {response.status}")
+                log.error(f"Discogs API Error when fetching master data: {response.status}")
                 return None

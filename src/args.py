@@ -103,13 +103,6 @@ class Args():
         args, before_args = parser.parse_known_args(oldArgs)
         args = vars(args)
 
-        # Set log level
-        if args.get('debug', False):
-            set_log_level(debug=True)
-        else:
-            set_log_level(debug=False)
-
-
         # Handle full auto mode
         if args.get('full_auto', False):
             args['unattended'] = args['auto_desc'] = True 
