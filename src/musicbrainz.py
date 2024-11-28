@@ -44,7 +44,7 @@ class MusicBrainzAPI:
         """Search for releases (albums) asynchronously."""
         query = f"release:{title}"
         if artist:
-            query += f"?artist:{artist}"
+            query += f"ANDartist:{artist}"
         params = {"query": query, "fmt": "json", "limit": str(limit), "offset": str(offset)}
         return await self._async_request("release", params=params)
 
