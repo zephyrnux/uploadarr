@@ -2,17 +2,14 @@
 # import discord
 import asyncio
 import requests
-from difflib import SequenceMatcher
-import os
 import re
 import langcodes
 import platform
-import logging
 from datetime import datetime
 from rich.pretty import Pretty
 
 from src.trackers.COMMON import COMMON
-from src.console import console, log, set_log_level
+from src.console import console, log
 
 
 class LDU():
@@ -142,8 +139,6 @@ class LDU():
             '480p': '8', 
             '480i': '9'
             }.get(resolution, '10')
-        # if is_music:
-        #     resolution_id = None
         return resolution_id
 
     ###############################################################
@@ -155,7 +150,7 @@ class LDU():
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         cat_id = await self.get_cat_id(meta['category'], meta.get('genres', ''), meta.get('keywords', ''), meta.get('service', ''), meta.get('edition', ''), meta)
         type_id = await self.get_type_id(meta['type'],meta['edition'])
-        resolution_id = await self.get_res_id(meta['resolution'])#, meta.get('is_music', False))
+        resolution_id = await self.get_res_id(meta['resolution'])
         await common.unit3d_edit_desc(meta, self.tracker)
         region_id = await common.unit3d_region_ids(meta.get('region'))
         distributor_id = await common.unit3d_distributor_ids(meta.get('distributor'))
@@ -182,14 +177,15 @@ class LDU():
                 url_string += f"[url=torrent-banner={backdrop} ] [/url]"
             desc += url_string        
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
-        files = {'torrent': open_torrent}
-        ldu_name = meta['name'] if meta.get('is_music', False) else await self.get_name(meta)
         nfo_file = meta.get('nfo_file', None)
-        nfo = open(nfo_file, 'r', encoding='utf-8').read() if nfo_file else None
+        files = {'torrent': open_torrent}
+        if nfo_file:
+            open_nfo = open(nfo_file, 'rb') #various encodings best to open in binary
+            files['nfo'] = open_nfo
+        ldu_name = meta['name'] if meta.get('is_music', False) else await self.get_name(meta)
         data = {
             'name': ldu_name,
             'description': desc,
-            'nfo': nfo,
             'mediainfo': mi_dump,
             'category_id': cat_id,
             'type_id': type_id,
@@ -377,17 +373,13 @@ class LDU():
         return lang_tag + " " + sub_lang_tag
 
 
-
-    def get_basename(self, meta):
-        path = next(iter(meta['filelist']), meta['path'])
-        return os.path.basename(path)
    
     async def get_name(self, meta):
-        # Have to agree with whoever made HUNO's script
-        # was easier to rebuild name with Prep.get_name() and mofidy 
-        # than to attempt to edit the name thereafter - thanks for the tip
-
-        basename = self.get_basename(meta)
+        """
+        Have to agree with whoever made HUNO's script
+        was easier to rebuild name with Prep.get_name() and mofidy 
+        than to attempt to edit the name thereafter - thanks for the tip!
+        """
         type = meta.get('type', "")
         title = meta.get('title',"")
         alt_title = meta.get('aka', "")
@@ -534,7 +526,7 @@ class LDU():
         if not meta.get('is_music', False):
             params.update({
                 'tmdbId': meta['tmdb'],
-                'resolutions[]': await self.get_res_id(meta['resolution'])#, meta.get('is_music', False))
+                'resolutions[]': await self.get_res_id(meta['resolution'])
             })
 
             if meta.get('edition'):

@@ -110,6 +110,10 @@ class Prep():
             video_files = [f for f in filtered_files if any(f.lower().endswith(ext) for ext in ['.mkv', '.mp4', '.ts'])]
             audio_files = [f for f in filtered_files if any(f.lower().endswith(ext) for ext in ['.mp3', '.flac', '.wav', '.m4a', '.aac', '.alac'])]
             log_file = [f for f in filtered_files if any(f.lower().endswith(ext) for ext in ['.log'])]
+            nfo_file = [f for f in filtered_files if any(f.lower().endswith(ext) for ext in ['.nfo'])]
+            
+            if nfo_file:
+                meta['nfo_file'] = os.path.join(meta['path'], nfo_file[0])
 
             if audio_files or log_file:
                 meta['is_music'] = True
