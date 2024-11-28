@@ -903,7 +903,7 @@ def dupe_check(dupes, meta, config, skipped_details, path):
 
         if meta_size == size:
             # Exact size match
-            log.info(f"[red]Exact size match. [dim](byte-for-byte)[/dim] Aborting..")
+            log.info(f"[red]Exact size match. [dim](byte-for-byte)[/dim] Aborting..", meta)
             cleaned_dupe_name = preprocess_string(name)
             # similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
             return meta, True #Skip Upload
@@ -911,8 +911,6 @@ def dupe_check(dupes, meta, config, skipped_details, path):
         elif abs(meta_size - size) > max_tolerance * meta_size:
             # Abnormally huge size difference
             log.debug(f"Size difference exceeds max tolerance ({max_tolerance * 100:.2f}%): {abs(meta_size - size)} bytes.", meta)
-            console.print(f"[green]Abnormally large size difference detected ({abs(meta_size - size)} bytes). Assuming not a dupe.")
-            return meta, False  # Proceed with upload
 
         elif abs(meta_size - size) <= size_tolerance * meta_size:
             # Size is within reasonable tolerance
@@ -921,13 +919,13 @@ def dupe_check(dupes, meta, config, skipped_details, path):
             similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
 
             if similarity >= similarity_threshold:
-                console.print(f"[yellow]Close size match ({abs(meta_size - size)} bytes difference) with {similarity * 100:.2f}% name similarity.")
+                log.debug(f"[yellow]Close size match ({abs(meta_size - size)} bytes difference) with {similarity * 100:.2f}% name similarity.")
                 upload = Confirm.ask(" Upload anyways?")
                 if not upload:
                     meta['upload'] = False
                     return meta, True #Skip Upload
             else:
-                console.print(f"[green]Close size match, but low name similarity ({similarity * 100:.2f}%). Proceeding.")
+                log.debug(f"[green]Close size match, but low name similarity ({similarity * 100:.2f}%). Proceeding.")
 
         else:
             # Size difference exceeds regular tolerance but is not abnormally large
@@ -936,7 +934,7 @@ def dupe_check(dupes, meta, config, skipped_details, path):
             similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
 
             if similarity >= similarity_threshold:
-                console.print(f"[yellow]Large size difference but high name similarity ({similarity * 100:.2f}%). Treating as potential dupe.")
+                log.debug(f"[yellow]Large size difference but high name similarity ({similarity * 100:.2f}%). Treating as potential dupe.")
                 upload = Confirm.ask(" Upload anyways?")
                 if not upload:
                     meta['upload'] = False
