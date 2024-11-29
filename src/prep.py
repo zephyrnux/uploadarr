@@ -851,84 +851,46 @@ class Prep():
             if any(word in catalog_number.lower() for word in LABEL_WORDS):
                 log.debug(f"Excluded as label or descriptor: {catalog_number}")
                 return None
-            
+
         if not catalog_number:
-            catalog_match_title = re.search(r'\[([A-Za-z0-9\s,]+)\]', album_fname)
-            if catalog_match_title:
-                catalog_number = catalog_match_title.group(1).strip()
-                log.debug(f"Found catalog number in square brackets: {catalog_number}")
-                parts = catalog_number.split(',')
+            catalog_match = re.search(r'\{([^}]+)\}', album_fname)
+            if catalog_match:
+                catalog_candidate = catalog_match.group(1).strip()
+                parts = [part.strip() for part in catalog_candidate.split(',') if part.strip()]
                 
-                # First, try to find a valid alphanumeric catalog number
                 for part in parts:
-                    part = part.strip()
-                    if re.search(r'\w', part) and not any(word in part.lower() for word in LABEL_WORDS):
+                    if not any(word in part.lower() for word in LABEL_WORDS):
                         catalog_number = part
-                        log.debug(f"Selected catalog number: {catalog_number}")
+                        log.debug(f"Found valid catalog number: {catalog_number}")
                         break
                 else:
-                    # If no valid alphanumeric part is found, take the first part anyway
-                    catalog_number = parts[0].strip()
-                    log.debug(f"Fallback catalog number: {catalog_number}")
+                    log.debug(f"No valid catalog number found from parts: {parts}")
+            
+            if not catalog_number:
+                catalog_match_title = re.search(r'\[([A-Za-z0-9\s,]+)\]', album_fname)
+                if catalog_match_title:
+                    catalog_candidate = catalog_match_title.group(1).strip()
+                    parts = [part.strip() for part in catalog_candidate.split(',') if part.strip()]
+                    
+                    for part in parts:
+                        if re.search(r'\w', part) and not any(word in part.lower() for word in LABEL_WORDS):
+                            catalog_number = part
+                            log.debug(f"Selected valid catalog number: {catalog_number}")
+                            break
+                    else:
+                        log.debug(f"No valid catalog number found from parts: {parts}")
 
-                # Exclude if it contains known label-related words (e.g., "records", "music")
-                if any(word in catalog_number.lower() for word in LABEL_WORDS):
-                    log.debug(f"Excluded as label or descriptor: {catalog_number}")
-                    return None
-
-        # If a catalog number was found, check if it contains any exclusion keywords (e.g., 'WEB', 'FLAC')
+        # Check for exclusion keywords in the selected catalog number
         if catalog_number and any(excl in catalog_number.lower() for excl in EXCLUSION_KEYWORDS):
             log.debug(f"Excluded due to keyword in catalog number: {catalog_number}")
             return None
         
-        # Return the cleaned catalog number (remove spaces or dashes)
+        # Return the cleaned catalog number
         if catalog_number:
             return re.sub(r'[ -]', '', catalog_number.strip())
         
         log.debug("No catalog number found.")
         return None
-
-        # catalog_match = re.search(r'\{([^}]+)\}', album_fname)
-        # if catalog_match:
-        #     catalog_number = catalog_match.group(1).strip()
-        #     log.debug(f"Found catalog number in curly braces: {catalog_number}")
-            
-        #     # Avoid extracting as catalog number if it looks like a label or descriptor
-        #     if any(word in catalog_number.lower() for word in LABEL_WORDS):
-        #         log.debug(f"Excluded as label or descriptor: {catalog_number}")
-        #         return None
-            
-        #     return re.sub(r'[ -]', '', catalog_number)
-
-        # # Look for catalog number in square brackets (e.g., [SUM3304, Sumerian]) in the title
-        # catalog_match_title = re.search(r'\[([A-Z0-9]+(?:, [A-Za-z]+)?)\]', album_fname)
-        # if catalog_match_title:
-        #     catalog_number = catalog_match_title.group(1).strip()
-        #     log.debug(f"Found catalog number in square brackets: {catalog_number}")
-
-        #     # Now apply exclusion logic only to the catalog number part (e.g., "SUM3304")
-        #     if any(excl in catalog_number.lower() for excl in EXCLUSION_KEYWORDS):
-        #         log.debug(f"Excluded due to exclusion keyword in catalog number: {catalog_number}")
-        #         return None
-            
-        #     # Further check to exclude cases with known formats that aren't catalog numbers (like bitrate or frequency)
-        #     if re.search(r'\d{2,}-\d{1,}kHz|\d{2,}Bit|\d{2,}kbps', catalog_number):  # Ignore things like "44.1kHz" or "24Bit"
-        #         log.debug(f"Excluded due to bitrate/frequency format: {catalog_number}")
-        #         return None
-
-        #     return re.sub(r'[ -]', '', catalog_number)
-
-        # # If not found, check lowercased keys for variations like 'catalog_number', 'catno', 'catalog', 'labelno'
-        # extra_lower = {k.lower(): v for k, v in extra.items()}
-        # found_in_extra = extra_lower.get('catalog_number', None) or extra_lower.get('catno', None) or extra_lower.get('catalog', None) or extra_lower.get('labelno', None)
-        # if found_in_extra:
-        #     log.debug(f"Found catalog number in extra (lowercased keys): {found_in_extra}")
-        #     return re.sub(r'[ -]', '', found_in_extra)
-
-        # log.debug("No catalog number found.")
-        # return None
-
-
 
     async def process_with_discogs(self, meta: Dict[str, Any]) -> None:
         """
