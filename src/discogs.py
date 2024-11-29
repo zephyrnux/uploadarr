@@ -32,9 +32,9 @@ class DiscogsAPI:
 
     def extract_metadata(self, release_data: Dict[str, Any], meta: Dict[str, Any]) -> None:
         """Extract relevant metadata from Discogs release data and populate meta."""        
-        formats = release_data.get("formats", [])
-        if formats and not meta.get('source'): 
-            meta['source'] = formats[0].get("name", "").upper()
+        # formats = release_data.get("formats", [])
+        # if formats and not meta.get('source'): 
+        #     meta['source'] = formats[0].get("name", "").upper()
         genres = release_data.get("genres", [])
         styles = release_data.get("styles", [])
         

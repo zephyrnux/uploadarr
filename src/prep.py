@@ -607,7 +607,7 @@ class Prep():
         for file in os.listdir(path):
             full_path = os.path.join(path, file)
             if os.path.isfile(full_path) and any(file.lower().endswith(ext) for ext in ['.mp3', '.flac', '.wav', '.m4a', '.aac', '.alac']):
-                if not (file.lower().endswith('sample.mp3') or file.lower().startswith('!sample')):
+                if not os.path.basename(full_path).startswith('._') and not (file.lower().endswith('sample.mp3') or file.lower().startswith('!sample')):
                     filelist.append(full_path)
         return filelist
 
@@ -647,8 +647,9 @@ class Prep():
         album_fname = album_fname.replace('&', 'AANDD')
         normalized_af = re.sub(r'[^a-zA-Z0-9\sAANDD]', ' ', album_fname)
         normalized_af = normalized_af.replace('AANDD', '&')
-        meta['source'] = self.get_music_source(normalized_af)
-        meta['tag'] = self.extract_tag(album_fname)
+        meta['source'] = meta.get('format', self.get_music_source(normalized_af))
+        user_tag = meta.get('tag')
+        meta['tag'] = user_tag if user_tag else self.extract_tag(album_fname)
 
         track = next((track for track in mi['media']['track'] if track['@type'] == 'General'), None)
         if track:

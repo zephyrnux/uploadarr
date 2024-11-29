@@ -156,6 +156,10 @@ class MusicBrainzAPI:
             if meta['barcode'] in ['', None, 0] or 'barcode' not in meta:
                 meta['barcode'] = release.get('barcode', '')
 
+            media_format = release.get('media', [{}])[0].get('format', '')
+            if not meta.get('source'):
+                meta['source'] = media_format    
+
             meta['tracklist'] = {}
             for medium in release.get('media', []):
                 disc_number = medium.get('position', '1')
