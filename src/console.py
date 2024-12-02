@@ -8,8 +8,8 @@ log_colors = Theme({
     'logging.level.debug': 'bold blue',
     'logging.level.info': 'green',
     'logging.level.warning': 'bold yellow',
-    'logging.level.error': 'red',
-    'logging.level.critical': 'bold red',
+    'logging.level.error': 'bold red',
+    'logging.level.critical': 'bold bright_white on red',
 })
 
 # Initialize the console with the logging theme
@@ -20,17 +20,12 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(message)s",
     datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True, show_time=False, markup=True, console=console)]  
+    handlers=[RichHandler(rich_tracebacks=True, show_time=False, markup=True, console=console)]
 )
 
 # Get a logger instance
 log = logging.getLogger(__name__)
 
-# def set_log_level(debug=False):
-#     if debug:
-#         logging.getLogger().setLevel(logging.DEBUG)
-#     else:
-#         logging.getLogger().setLevel(logging.INFO)
 
 def set_log_level(debug=False):
     level = logging.DEBUG if debug else logging.INFO
@@ -55,4 +50,3 @@ def set_log_level(debug=False):
     for handler in root_logger.handlers:
         if isinstance(handler, RichHandler):
             handler.setLevel(level)
-
