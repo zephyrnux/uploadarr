@@ -185,7 +185,7 @@ class MusicBrainzAPI:
 
             media_format = release.get('media', [{}])[0].get('format', '')
             if not meta.get('source'):
-                meta['source'] = media_format    
+                meta['source'] = media_format.replace('Digital Media', 'WEB')   
 
             meta['tracklist'] = {}
             for medium in release.get('media', []):
