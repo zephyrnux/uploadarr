@@ -83,9 +83,10 @@ class RHD():
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         rhd_name = await self.get_name(meta)
+        manual_name = meta.get('manual_name')
         files = {'torrent': open_torrent}
         data = {
-            'name' : rhd_name,
+            'name' : rhd_name if not manual_name else manual_name,
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump, 

@@ -116,7 +116,8 @@ class TTG():
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         await self.edit_desc(meta)
-        ttg_name = await self.edit_name(meta)
+        manual_name = meta.get('manual_name')
+        ttg_name = await self.edit_name(meta) if not manual_name else manual_name
 
         # FORM
             # type = category dropdown

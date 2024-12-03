@@ -66,6 +66,7 @@ class MTV():
         
         #edit name to match MTV standards
         mtv_name = await self.edit_name(meta)
+        manual_name = meta.get('manual_name')
 
         # anon
         if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
@@ -89,7 +90,7 @@ class MTV():
         data = {
             # 'image': poster,
             'image': '',
-            'title': mtv_name,
+            'title': mtv_name if not manual_name else manual_name,
             'category': cat_id,
             'Resolution': resolution_id,
             'source': source_id,

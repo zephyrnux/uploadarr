@@ -28,7 +28,6 @@ class RF():
         cat_id = await self.get_cat_id(meta['category'])
         type_id = await self.get_type_id(meta['type'])
         resolution_id = await self.get_res_id(meta['resolution'])
-        stt_name = await self.edit_name(meta)
         if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
         else:
@@ -43,7 +42,7 @@ class RF():
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
         data = {
-            'name' : stt_name,
+            'name' : meta['name'],
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump,
@@ -130,12 +129,6 @@ class RF():
                 console.print(f"[red]Failed to close torrent file: {e}[/red]")
 
             return success 
-
-
-
-    async def edit_name(self, meta):
-        stt_name = meta['name']
-        return stt_name
 
     async def get_cat_id(self, category_name):
         category_id = {

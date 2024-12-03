@@ -2473,6 +2473,7 @@ class Prep():
         return image_list
 
     async def get_name(self, meta):
+        manual_name = meta.get('manual_name')
         type = meta.get('type', "")
         title = meta.get('title',"")
         alt_title = meta.get('aka', "")
@@ -2587,6 +2588,7 @@ class Prep():
 
         try:    
             name = ' '.join(name.split())
+            
         except:
             console.print("[bold red]Unable to generate name. Please re-run and correct any of the following args if needed.")
             console.print(f"--category [yellow]{meta['category']}")
@@ -2597,6 +2599,7 @@ class Prep():
         name_notag = name
         name = name_notag + tag
         clean_name = self.clean_filename(name)
+        name = name if not manual_name else manual_name
         return name_notag, name, clean_name, potential_missing
 
 

@@ -528,11 +528,14 @@ class AR():
         
         if not session_cookie:
             raise Exception("Session cookie not found.")
- 
+
+        manual_name = meta.get('manual_name')
+        ar_name = await self.get_name(meta) if not manual_name else manual_name
+
         data = {
             "submit": "true",
             "auth": auth_key, 
-            "type": await self.get_cat_id(meta),
+            "type": ar_name,
             "title": await self.get_name(meta),
             "tags": tags,
             "image": cover,

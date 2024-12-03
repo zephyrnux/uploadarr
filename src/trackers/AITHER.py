@@ -29,7 +29,8 @@ class AITHER():
         cat_id = await self.get_cat_id(meta['category'])
         type_id = await self.get_type_id(meta['type'])
         resolution_id = await self.get_res_id(meta['resolution'])
-        name = await self.edit_name(meta)
+        manual_name = meta.get('manual_name')
+        name = await self.edit_name(meta) if not manual_name else manual_name
         if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
         else:

@@ -82,8 +82,9 @@ class TTR():
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
+        manual_name = meta.get('manual_name')
         data = {
-            'name' : await self.get_name(meta),
+            'name' : await self.get_name(meta) if not manual_name else manual_name,
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump, 

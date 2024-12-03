@@ -192,7 +192,8 @@ class ACM():
         await self.edit_desc(meta)
         region_id = await common.unit3d_region_ids(meta.get('region'))
         distributor_id = await common.unit3d_distributor_ids(meta.get('distributor'))
-        acm_name = await self.edit_name(meta)
+        manual_name = meta.get('manual_name')
+        acm_name = await self.edit_name(meta) if not manual_name else manual_name
         if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
         else:

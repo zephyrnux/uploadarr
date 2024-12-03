@@ -105,9 +105,10 @@ class CBR():
         files = {'torrent': open_torrent}
         name = meta['name']
         uuid = meta['uuid']
+        manual_name = meta.get('manual_name')
+        cbr_name = name if not manual_name else manual_name
         if "DDP" in uuid: 
-            cbr_name = name.replace("DD+", "DDP") 
-        else: cbr_name = name        
+            cbr_name = name.replace("DD+", "DDP")        
         data = {
             'name' : cbr_name,
             'description' : desc,

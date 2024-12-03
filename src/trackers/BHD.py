@@ -31,7 +31,8 @@ class BHD():
         await self.edit_desc(meta)
         tags = await self.get_tags(meta)
         custom, edition = await self.get_edition(meta, tags)
-        bhd_name = await self.edit_name(meta)
+        manual_name = meta.get('manual_name')
+        bhd_name = await self.edit_name(meta) if not manual_name else manual_name
         if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
         else:

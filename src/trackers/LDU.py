@@ -146,6 +146,8 @@ class LDU():
         type_id = await self.get_type_id(meta['type'],meta['edition'])
         resolution_id = await self.get_res_id(meta['resolution'])
         await common.unit3d_edit_desc(meta, self.tracker)
+        ldu_name = await self.get_name(meta)
+        manual_name = meta.get('manual_name')
         region_id = await common.unit3d_region_ids(meta.get('region'))
         distributor_id = await common.unit3d_distributor_ids(meta.get('distributor'))
         if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', "False"):
@@ -174,7 +176,7 @@ class LDU():
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
         data = {
-            'name' : await self.get_name(meta),
+            'name' : ldu_name if not manual_name else manual_name,
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump, 
