@@ -103,8 +103,13 @@ class CBR():
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
+        name = meta['name']
+        uuid = meta['uuid']
+        if "DDP" in uuid: 
+            cbr_name = name.replace("DD+", "DDP") 
+        else: cbr_name = name        
         data = {
-            'name' : meta['name'],
+            'name' : cbr_name,
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump, 
