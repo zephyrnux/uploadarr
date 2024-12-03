@@ -116,7 +116,7 @@ class Prep():
                 for file_name, full_path in all_files.items():
                     ext = os.path.splitext(file_name)[1].lower()
 
-                    if ext in ['.mp3', '.flac', '.wav', '.m4a', '.aac', '.alac']:
+                    if ext in ['.aac', '.alac', '.flac', '.m4a', '.mp3', '.opus', '.wav']:
                         key = file_name
                         meta['filelist'][key] = full_path
                         meta['is_music'] = True
@@ -141,7 +141,7 @@ class Prep():
 
         else:  # Single file scenario
             file_extension = os.path.splitext(meta['path'])[1].lower()
-            if file_extension in ['.mp3', '.flac', '.wav', '.m4a', '.aac', '.alac']:
+            if file_extension in ['.aac', '.alac', '.flac', '.m4a', '.mp3', '.opus', '.wav']:
                 meta['is_music'] = True
                 console.print('[red]Processing as music')
                 await self.process_single_music_file(meta, mode)
@@ -606,7 +606,7 @@ class Prep():
 
                 ext = os.path.splitext(file)[1].lower()
 
-                if ext in ['.mp3', '.flac', '.wav', '.m4a', '.aac', '.alac']:
+                if ext in ['.aac', '.alac', '.flac', '.m4a', '.mp3', '.opus', '.wav']:
                     if not (file.lower().endswith('sample.mp3') or file.lower().startswith('!sample')):
                         if len(file.split()[0]) > 2 and file.split()[0].isdigit(): 
                             file = re.sub(r'^\d{3}-', '01-', file)  # Adjust the track naming for multi-disc albums
