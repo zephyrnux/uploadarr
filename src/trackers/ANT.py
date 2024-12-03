@@ -4,6 +4,7 @@ import asyncio
 import requests
 import json
 import platform
+from pathlib import Path
 from pymediainfo import MediaInfo
 
 from src.trackers.COMMON import COMMON
@@ -66,8 +67,8 @@ class ANT():
         if meta['bdinfo'] is not None:
             bd_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/BD_SUMMARY_00.txt", 'r', encoding='utf-8').read()
             bd_dump = f'[spoiler=BDInfo][pre]{bd_dump}[/pre][/spoiler]'
-            path = os.path.join(meta['bdinfo']['path'], 'STREAM')
-            m2ts = os.path.join(path, meta['bdinfo']['files'][0]['file'])
+            path = Path(meta['bdinfo']['path']) / 'STREAM'
+            m2ts = path / meta['bdinfo']['files'][0]['file']
             media_info_output = str(MediaInfo.parse(m2ts, output="text", full=False))
             mi_dump = media_info_output.replace('\r\n', '\n')
         else:
@@ -88,7 +89,7 @@ class ANT():
                 'media': 'Blu-ray',
                 'releasegroup': str(meta['tag'])[1:],
                 'release_desc': bd_dump,
-                'flagchangereason': "BDMV Uploaded with L4G's Upload Assistant"})
+                'flagchangereason': "BDMV Uploaded with Uploadrr"})
         if meta['scene']:
             # ID of "Scene?" checkbox on upload form is actually "censored"
             data['censored'] = 1
