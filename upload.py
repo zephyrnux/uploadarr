@@ -301,7 +301,9 @@ async def do_the_thing(base_dir):
                 raise ValueError("Name values are None")
         except Exception as e:
             skipped_files += 1
-            skipped_details.append((path, f'Error getting name: {str(e)} [red]DEBUG TEST'))
+            skipped_details.append((path, f'Error getting name: {str(e)}'))
+            if meta['is_music']:
+                log.error("get_name was called")            
             continue
 
         if meta.get('image_list', False) in (False, []) and meta.get('skip_imghost_upload', False) == False:
@@ -769,6 +771,8 @@ def get_confirmation(meta):
         ]
         if meta.get('mbid'):
             db_info.append(f"\n[bold]MBID[/bold]: https://musicbrainz.org/release/{meta['mbid']}")
+        if meta.get('discogs_url'):
+            db_info.append(f"[bold]Discogs[/bold]: {meta['discogs_url']}")
     else: 
         db_info = [
             f"[bold]Title[/bold]: {meta['title']} ({meta['year']})\n",
@@ -896,25 +900,25 @@ def dupe_check(dupes, meta, config, skipped_details, path):
         if meta_size is None:
             meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
 
-        log.debug(f"Comparing {name} with size {size} bytes to {meta['clean_name']} with size {meta_size} bytes", meta)
+        log.debug(f"Comparing {name} with size {size} bytes to {meta['clean_name']} with size {meta_size} bytes")
 
         # Define a maximum size tolerance to catch abnormally huge differences
         max_tolerance = config['AUTO'].get('max_size_tolerance', 25) / 100  # Default to 25%
 
         if meta_size == size:
             # Exact size match
-            log.info(f"[red]Exact size match. [dim](byte-for-byte)[/dim] Aborting..", meta)
+            console.print(f"[red]Exact size match. [dim](byte-for-byte)[/dim] Aborting..")
             cleaned_dupe_name = preprocess_string(name)
             # similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
             return meta, True #Skip Upload
 
         elif abs(meta_size - size) > max_tolerance * meta_size:
             # Abnormally huge size difference
-            log.debug(f"Size difference exceeds max tolerance ({max_tolerance * 100:.2f}%): {abs(meta_size - size)} bytes.", meta)
+            log.debug("Size difference exceeds max tolerance (%.2f%%): %d bytes.", max_tolerance * 100, abs(meta_size - size))
 
         elif abs(meta_size - size) <= size_tolerance * meta_size:
             # Size is within reasonable tolerance
-            log.debug(f"Size difference within tolerance: {abs(meta_size - size)} bytes.", meta)
+            log.debug(f"Size difference within tolerance: {abs(meta_size - size)} bytes.")
             cleaned_dupe_name = preprocess_string(name)
             similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
 
@@ -929,7 +933,7 @@ def dupe_check(dupes, meta, config, skipped_details, path):
 
         else:
             # Size difference exceeds regular tolerance but is not abnormally large
-            log.debug(f"Size difference exceeds regular tolerance but within max tolerance: {abs(meta_size - size)} bytes.", meta)
+            log.debug(f"Size difference exceeds regular tolerance but within max tolerance: {abs(meta_size - size)} bytes.")
             cleaned_dupe_name = preprocess_string(name)
             similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
 

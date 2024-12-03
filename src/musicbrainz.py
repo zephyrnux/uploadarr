@@ -1,12 +1,12 @@
 import asyncio
 import requests
 import json
-import logging
 from typing import List, Dict, Any, Optional
 import re
 from datetime import timedelta
 from urllib.parse import urlencode
-from src.console import log
+from src.console import console, log
+from rich.prompt import Confirm
 
 class MusicBrainzAPI:
     """A class to interact with the MusicBrainz Web Service."""
@@ -99,42 +99,66 @@ class MusicBrainzAPI:
         else:
             log.info(f"No MusicBrainz releases found for catalog number {catalog_number}")
 
-
     async def search_releases_by_title_artist(self, release_title: str, artist_name: str, track_count: int, meta: Dict[str, Any]) -> None:
         log.info(f'[blue]Artist:[/blue] {artist_name}\n[blue]Album:[/blue] {release_title}\n[blue]Tracks:[/blue] {track_count}')
         search_results = await self.search_releases(release_title, artist=artist_name, limit=100)
 
         if 'releases' in search_results:
-            # First, filter for exact track-count matches
-            exact_matches = [
-                release for release in search_results['releases']
-                if 'track-count' in release and int(release['track-count']) == track_count
-                and any(ac['name'].lower() == artist_name.lower() for ac in release.get('artist-credit', []))
-            ]
+            artist_names = [name.strip().lower() for name in artist_name.split('&')]
 
-            # Fallback: Flexible matches based on artist and approximate track count
+            # First, filter for exact track-count matches
+            exact_matches = []
+            for release in search_results['releases']:
+                track_match = 'track-count' in release and int(release['track-count']) == track_count
+                artist_match = any(
+                    any(artist_name in ac['name'].lower() for artist_name in artist_names)
+                    for ac in release.get('artist-credit', [])
+                )
+
+                if track_match and artist_match:
+                    exact_matches.append(release)
+
+            # Fallback: Flexible matches based on artist
             if not exact_matches:
-                approximate_matches = [
-                    release for release in search_results['releases']
-                    if any(ac['name'].lower() == artist_name.lower() for ac in release.get('artist-credit', []))
-                ]
+                approximate_matches = []
+                for release in search_results['releases']:
+                    artist_match = any(
+                        any(artist_name in ac['name'].lower() for artist_name in artist_names)
+                        for ac in release.get('artist-credit', [])
+                    )
+                    if artist_match:
+                        approximate_matches.append(release)
+
                 if approximate_matches:
                     closest_release = min(
                         approximate_matches,
                         key=lambda x: abs(int(x.get('track-count', 0)) - track_count)
                     )
-                    exact_matches = [closest_release]
+                    # Confirm if fuzzy match
+                    if not meta.get('unattended', False):
+                        release_url = f"https://musicbrainz.org/release/{closest_release['id']}"
+                        console.print(
+                            f"[yellow]Closest match found:[/yellow]\n"
+                            f"[blue]Title:[/blue] {closest_release['title']}\n"
+                            f"[blue]Artist(s):[/blue] {', '.join(ac['name'] for ac in closest_release['artist-credit'])}\n"
+                            f"[blue]Tracks:[/blue] {closest_release.get('track-count', 'Unknown')}\n"
+                            f"[blue]URL:[/blue] {release_url}\n"
+                            f"Is this the correct release? [y/N]"
+                        )
+                        if Confirm.ask("[cyan]Is this the correct release?[/cyan]"):
+                            exact_matches = [closest_release]
 
             # Choose the best match from filtered results
             if exact_matches:
                 correct_release = exact_matches[0]
-                log.debug("Correct release:", correct_release)
+                log.debug(f"Correct release: {correct_release}")
                 meta['mbid'] = correct_release.get('id', '')
                 await self.fetch_musicbrainz_mbid(meta['mbid'], meta)
-            else:                
+            else:
                 log.info(f"No suitable match for {release_title} by {artist_name} with {track_count} tracks.")
         else:
             log.info(f"No MusicBrainz releases found for {release_title} by {artist_name}")
+
 
     async def fetch_musicbrainz_mbid(self, mbid: str, meta: Dict[str, Any]) -> Dict[str, Any]:
         """Asynchronously fetch detailed release information by MBID and populate meta dictionary."""
@@ -147,12 +171,15 @@ class MusicBrainzAPI:
             edition = release.get('disambiguation', '').strip().title()
             corrections = {
                 'itunes': 'iTunes', 
-                ' for ': ' for '
+                ' for ': ' for ',
+                'Cd ': 'CD ',
+                'Th ': 'th ',
             }
             for original, correction in corrections.items():
                 edition = re.sub(r'\b' + re.escape(original) + r'\b', correction, edition, flags=re.IGNORECASE)
-
-            meta['edition'] = edition
+            edition = re.sub(r'(\d)Th', r'\1th', edition)
+            manual_edition = meta.get('manual_edition')
+            meta['edition'] = manual_edition if manual_edition else edition
             if meta['barcode'] in ['', None, 0] or 'barcode' not in meta:
                 meta['barcode'] = release.get('barcode', '')
 

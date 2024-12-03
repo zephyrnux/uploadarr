@@ -5,9 +5,9 @@ import requests
 import re
 import json
 import aiofiles
-
+from tinytag import TinyTag
 from src.bbcode import BBCODE
-from src.console import console
+from src.console import console, log
 from rich import print
 
 class COMMON():
@@ -132,9 +132,9 @@ class COMMON():
                 genius = meta.get('genius', False)
                 if genius:
                     await descfile.write(f"[center][url={genius}][img=120]https://upload.wikimedia.org/wikipedia/commons/c/cd/Genius-Wordmark.svg[/img][/url][/center]")    
-                                         
+
                 tracks = meta.get('tracklist', {})
-                log_file = meta.get('log_file')
+                log_file = meta.get('log_files')
 
                 if tracks:
                     await descfile.write("\n[code][h5]TRACKLIST[/h5]\n")
@@ -142,20 +142,21 @@ class COMMON():
                         for disc, disc_tracks in tracks.items():
                             await descfile.write(f"[u]{disc}[/u]\n")
 
-                            # Calculate the maximum track length for this disc
                             max_track_length = max(len(track) for track in disc_tracks)
 
                             for track, time in disc_tracks.items():
                                 track_length = len(track)
-
-                                # Calculate the padding needed based on the longest track
-                                # Ensure there's at least a 2 character buffer between the track name and the timestamp
                                 padding_length = max(0, max_track_length - track_length + 2)
 
                                 # Write the track name with appropriate padding
                                 await descfile.write(f"{track}")
                                 await descfile.write(" " * padding_length)
                                 await descfile.write(f"[{time}]\n")
+
+                            if len(log_file) > 1 and len(log_file) >= list(tracks.keys()).index(disc) + 1:
+                                log_contents = await self.read_log_file(log_file[list(tracks.keys()).index(disc)])
+                                if log_contents:
+                                    await descfile.write(f"\n[spoiler=log][code]{log_contents}[/code][/spoiler]\n")
 
                             await descfile.write("\n")  # Add a newline for separation between discs
                     else:
@@ -166,20 +167,12 @@ class COMMON():
                             await descfile.write(" " * length)
                             await descfile.write(f"[{time}]\n")
 
-                    if log_file:
-                        log_contents = await self.read_log_file(log_file)
-                        if log_contents:
-                            await descfile.write(f"\n[spoiler=log][code]{log_contents}[/code][/spoiler]")
+                        if log_file:
+                            log_contents = await self.read_log_file(log_file[0])
+                            if log_contents:
+                                await descfile.write(f"\n[spoiler=log][code]{log_contents}[/code][/spoiler]")
 
-                    # Close the TRACKLIST [code] block after the log
                     await descfile.write("[/code]\n")
-
-                elif log_file:
-                    # Handle the case where there are no tracks but a log exists
-                    log_contents = await self.read_log_file(log_file)
-                    if log_contents:
-                        await descfile.write(f"\n[spoiler=log][code]{log_contents}[/code][/spoiler]")
-
 
                 if album_cover:
                     await descfile.write(f"[url=torrent-cover={album_cover} ][/url]")    
