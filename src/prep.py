@@ -90,7 +90,7 @@ class Prep():
             filelist={},
             user_images=[],
             log_files=[],
-            nfo_file=[],
+            nfo_file='',
             uuid=meta.get('uuid') or os.path.basename(meta['path'])  
         )
 
@@ -124,7 +124,7 @@ class Prep():
                         meta['user_images'].append(full_path)   
                     elif ext == '.nfo':
                         if not meta.get('nfo_file'):
-                            meta['nfo_file'].append(full_path)
+                            meta['nfo_file'] = full_path
                     elif ext == '.log':
                         meta['log_files'].append(full_path)
 
@@ -573,7 +573,7 @@ class Prep():
             for key in meta['filelist'].keys()
         ) and not any(key.startswith("BASE/") for key in meta['filelist'].keys())
 
-        log.debug(f"[blue]Has disc folders: {has_disc_folders}") #CAN PROBABLY REMOVE
+        log.debug(f"[blue]Has disc folders: {has_disc_folders}")
 
         for key, path in meta['filelist'].items():
             if isinstance(key, str):
@@ -581,25 +581,24 @@ class Prep():
 
                 if key.startswith("BASE/"):
                     file = key.replace("BASE/", "")
-                    track_match = re.match(r'(\d+)(?:[\s.-])?(.*)', file)
+                    track_match = re.match(r'([A-Z]|\d+)(?:[\s.-])?(.*)', file, re.IGNORECASE)
                     if track_match:
                         track_num = track_match.group(1)
                         rest_of_file = track_match.group(2).strip()
                     else:
                         log.warning(f"[yellow]Could not extract track number from: {file}")
-                        continue 
+                        continue
 
-                    if len(track_num) == 3 and track_num.isdigit():  # Multi-disc indication
-                        disc_num = track_num[0] 
-                        disc = f"Disc {int(disc_num)}" 
+                    if len(track_num) == 3 and track_num.isdigit():
+                        disc_num = track_num[0]
+                        disc = f"Disc {int(disc_num)}"
                         track = track_num[1:]
                         file_parts = file.split('-')
-                        file = '-'.join([track] + file_parts[1:])  # Correct track number
+                        file = '-'.join([track] + file_parts[1:])
                         log.debug(f"[yellow]Detected multi-disc album: {disc}, File: {file}")
                     else:
-                        disc = "Disc 1" 
+                        disc = "Disc 1"
                         log.debug(f"[yellow]Detected single disc album: {disc}, File: {file}")
-
 
                 else:
                     disc, file = key.split('/', 1) if '/' in key else ("Disc 1", key)
@@ -608,8 +607,8 @@ class Prep():
 
                 if ext in ['.aac', '.alac', '.flac', '.m4a', '.mp3', '.opus', '.wav']:
                     if not (file.lower().endswith('sample.mp3') or file.lower().startswith('!sample')):
-                        if len(file.split()[0]) > 2 and file.split()[0].isdigit(): 
-                            file = re.sub(r'^\d{3}-', '01-', file)  # Adjust the track naming for multi-disc albums
+                        if len(file.split()[0]) > 2 and file.split()[0].isdigit():
+                            file = re.sub(r'^\d{3}-', '01-', file)
                             log.debug(f"[purple]Adjusted file for multi-disc: {file}")
                         tracks.append((f"{disc}", file, path))
                         log.debug(f"[green]Added music file: {disc}, File: {file}")
@@ -618,22 +617,40 @@ class Prep():
                 disc = "Disc 1"
                 file = key
 
+        # Check for alphanumeric track numbers to set source and adjust disc label
+        has_alpha_tracks = any(re.match(r'^[A-Z]\d*$', os.path.splitext(x[1])[0].split()[0], re.IGNORECASE) for x in tracks)
+        if has_alpha_tracks:
+            meta['source'] = 'VINYL'
+            tracks = [(disc.replace("Disc 1", "Record"), file, path) for disc, file, path in tracks]
+        
+        #Sort tracks
         def sort_key(x):
-            disc_num = re.search(r'\d+', x[0].split()[-1])  # Look for the number in the disc part
+            disc_num = re.search(r'\d+', x[0].split()[-1])
             disc_number = int(disc_num.group()) if disc_num else 1  # Default to 1 if no number found
-            track_num = int(re.match(r'\d+', os.path.splitext(x[1])[0].split()[0]).group())  # Track number extraction
-            return (disc_number, track_num)
+            
+            track_part = os.path.splitext(x[1])[0].split()[0]
+            match = re.match(r'^([A-Z])?(\d+)(?:[\s\.\-_\,](\d+))?', track_part, re.IGNORECASE)
+            
+            if match:
+                letter, number, sub_number = match.groups()
+                primary = (ord(letter.upper()) - ord('A') + 1) * 1000 if letter else 0
+                secondary = int(number or '0') * 10
+                tertiary = int(sub_number or '0')
+                return (disc_number, primary + secondary + tertiary)
+            elif track_part.isdigit():
+                return (disc_number, int(track_part))
+            else:
+                return (disc_number, 999)
 
-        tracks.sort(key=sort_key)
 
         # Handle cover and proof images
+
         front_cover = ['front', 'cover', 'album', 'disc1', 'cd1']
         back_covers = ['back_cover', 'rear', 'backside', 'back']
 
         for path in meta['user_images']:
-            file = os.path.basename(path).lower().replace(' ', '') 
+            file = os.path.basename(path).lower().replace(' ', '')
 
-            # Proof can be any format, because api doesnt support image-cover current hack must be jpg or jpeg
             if 'proof' in file:
                 proof = path
                 log.debug(f"[magenta]Assigned proof image: {proof}")
@@ -648,17 +665,17 @@ class Prep():
                 log.debug(f"[yellow]Assigned back cover image: {back_cover}")
                 continue
 
-            if cover is None: 
+            if cover is None:
                 if any(variant in file for variant in front_cover):
                     cover = path
                     log.debug(f"[cyan]Found cover image: {cover}")
-                    continue 
+                    continue
 
             if cover is None and 'proof' not in file:
-                cover = path  # Fallback
+                cover = path
                 log.debug(f"[cyan]Fallback cover image: {cover}")
 
-
+        tracks.sort(key=sort_key)
         log.debug(f"[blue]Sorted tracks: {tracks}")
         return tracks, cover, back_cover, proof
 
@@ -782,31 +799,50 @@ class Prep():
 
         await self.process_with_discogs(meta)
 
-        # Check if album cover is not set
-        if not meta.get('album_cover'):
-            user_cover = meta.get('user_cover')
-            if user_cover and os.path.isfile(user_cover) and user_cover.lower().endswith('.jpg'):
-                console.print(f"[yellow]Uploading user cover image: {user_cover}")
-                
-                # Prepare parameters for upload_screens
-                image_list, _ = self.upload_screens(meta, 1, 1, 0, 1, [user_cover], {})
-                
-                if image_list:
-                    meta['album_cover'] = image_list[0]['raw_url']
-                    console.print(f"[green]Successfully uploaded and set album cover: {meta['album_cover']}")
-                else:
-                    console.print("[red]Failed to upload album cover.")
+        self.upload_proof_covers(meta, 'album_cover', 'user_cover', ('.jpg', '.jpeg'))
+        self.upload_proof_covers(meta, 'album_back', 'back_cover')
+        self.upload_proof_covers(meta, 'album_proof', 'user_proof')
 
-        proof_image = meta.get('user_proof')
-        if proof_image and os.path.isfile(proof_image) and proof_image.lower().endswith(('.jpg', '.jpeg')):
-            console.print(f"[yellow]Uploading proof image: {proof_image}")
-            proof_list, _ = self.upload_screens(meta, 1, 1, 0, 1, [proof_image], {})
+        # # Check if album cover is not set
+        # if not meta.get('album_cover'):
+        #     user_cover = meta.get('user_cover')
+        #     if user_cover and os.path.isfile(user_cover) and user_cover.lower().endswith('.jpg'):
+        #         console.print(f"[yellow]Uploading user cover image: {user_cover}")
+                
+        #         # Prepare parameters for upload_screens
+        #         image_list, _ = self.upload_screens(meta, 1, 1, 0, 1, [user_cover], {})
+                
+        #         if image_list:
+        #             meta['album_cover'] = image_list[0]['raw_url']
+        #             console.print(f"[green]Successfully uploaded and set album cover: {meta['album_cover']}")
+        #         else:
+        #             console.print("[red]Failed to upload album cover.")
+
+        # if not meta.get('album_back'):
+        #     back_cover = meta.get('back_cover')
+        #     if back_cover and os.path.isfile(back_cover):
+        #         console.print(f"[yellow]Uploading back cover image: {back_cover}")
+                
+        #         # Prepare parameters for upload_screens
+        #         image_list, _ = self.upload_screens(meta, 1, 1, 0, 1, [back_cover], {})
+                
+        #         if image_list:
+        #             meta['album_cover'] = image_list[0]['raw_url']
+        #             console.print(f"[green]Successfully uploaded and set back cover: {meta['back_cover']}")
+        #         else:
+        #             console.print("[red]Failed to upload back cover.")
+
+
+        # proof_image = meta.get('user_proof')
+        # if proof_image and os.path.isfile(proof_image) and proof_image.lower().endswith(('.jpg', '.jpeg')):
+        #     console.print(f"[yellow]Uploading proof image: {proof_image}")
+        #     proof_list, _ = self.upload_screens(meta, 1, 1, 0, 1, [proof_image], {})
             
-            if proof_list:
-                meta['album_proof'] = proof_list[0]['raw_url']
-                console.print(f"[green]Successfully uploaded and set proof image: {meta['album_proof']}")
-            else:
-                console.print("[red]Failed to upload proof image.")
+        #     if proof_list:
+        #         meta['album_proof'] = proof_list[0]['raw_url']
+        #         console.print(f"[green]Successfully uploaded and set proof image: {meta['album_proof']}")
+        #     else:
+        #         console.print("[red]Failed to upload proof image.")
 
         if not meta.get('tracklist', {}):
             log.debug('[magenta]MANUAL TRACKLIST')
@@ -850,9 +886,22 @@ class Prep():
 
         log.debug('Finishing process_music, retunring meta')
         return meta
-    
+
+    def upload_proof_covers(self, meta, image_key, file_key, file_exts=('jpg', '.jpeg')):
+        image_path = meta.get(file_key)
+        if image_path and os.path.isfile(image_path) and image_path.lower().endswith(file_exts):
+            console.print(f"[yellow]Uploading {file_key.replace('_', ' ')} image: {image_path}")
+            
+            image_list, _ = self.upload_screens(meta, 1, 1, 0, 1, [image_path], {})
+            
+            if image_list:
+                meta[image_key] = image_list[0]['raw_url']
+                console.print(f"[green]Successfully uploaded and set {file_key.replace('_', ' ')} image: {meta[image_key]}")
+            else:
+                console.print(f"[red]Failed to upload {file_key.replace('_', ' ')} image.")
+
+
     async def try_search_method(self, meta, mb, method_name, search_func):
-        """Try to search with the given method and update meta if successful."""
         try:
             if method_name == "barcode":
                 barcode = meta.get('barcode')
@@ -3072,6 +3121,7 @@ class Prep():
         return image_list
 
     async def get_name(self, meta):
+        manual_name = meta.get('manual_name')
         type = meta.get('type', "")
         title = meta.get('title',"")
         alt_title = meta.get('aka', "")
@@ -3213,13 +3263,14 @@ class Prep():
             else:
                 name =  f"{artist} - {album} ({year}) {ed} [{source}{type} {bitrate}]"   
 
-
-        try:   
-            console.print(name) 
+        test = name if not manual_name else manual_name
+        try:  
+            console.print(test) 
             name = ' '.join(name.split())
             name_notag = name
             name = name_notag + tag
-            clean_name = self.clean_filename(name)            
+            clean_name = self.clean_filename(name)
+            name = name if not manual_name else manual_name             
         except:
             console.print("[bold red]Unable to generate name. Please re-run and correct any of the following args if needed.")
             console.print(f"--category [yellow]{meta['category']}")
