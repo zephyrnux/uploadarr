@@ -214,6 +214,18 @@ config = {
             #"qbit_tag": "HP",
         },
 
+        "HHD" : {
+            "api_key" : "HHD_API_KEY",
+            "announce_url" : "https://homiehelpdesk.net/announce/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : "\n[center][size=7][b]PLEASE SEED HOMIES[/b][/size][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",  
+            "pr_signature": "\n [center][b][size=6]PERSONAL RELEASE[/size][/b][/center] \n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",	
+            #"qbit_tag": "HHD",	
+        },
+
+
         "HUNO" : {
             "api_key" : "HUNO_API_KEY",
             "announce_url" : "https://hawke.uno/announce/Custom_Announce_URL",
