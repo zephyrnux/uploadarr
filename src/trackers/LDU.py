@@ -146,6 +146,7 @@ class LDU():
     ###############################################################
 
     async def upload(self, meta):
+        is_music = meta.get('is_music', False)
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         cat_id = await self.get_cat_id(meta['category'], meta.get('genres', ''), meta.get('keywords', ''), meta.get('service', ''), meta.get('edition', ''), meta)
@@ -182,7 +183,7 @@ class LDU():
         if nfo_file:
             open_nfo = open(nfo_file, 'rb') #various encodings best to open in binary
             files['nfo'] = open_nfo
-        ldu_name = meta['name'] if meta.get('is_music', False) else await self.get_name(meta)
+        ldu_name = meta['name'] if (is_music or meta.get('manual_title')) else await self.get_name(meta)
         data = {
             'name': ldu_name,
             'description': desc,
@@ -190,7 +191,7 @@ class LDU():
             'category_id': cat_id,
             'type_id': type_id,
             'tmdb': meta.get('tmdb', 0),
-            'imdb': meta.get('imdb_id', 0).replace('tt', ''),
+            'imdb': meta.get('imdb_id', 0).replace('tt', '') if not is_music else 0,
             'tvdb': meta.get('tvdb_id', 0),
             'mal': meta.get('mal_id', 0),
             'igdb': 0,
@@ -206,7 +207,7 @@ class LDU():
             'sticky': 0,
         }
 
-        if not meta.get('is_music', False):
+        if not is_music:
             data.update({
                 'resolution_id': resolution_id,
                 'bdinfo': bd_dump,
