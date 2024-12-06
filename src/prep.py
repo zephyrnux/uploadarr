@@ -750,7 +750,7 @@ class Prep():
 
         track = next((track for track in mi['media']['track'] if track['@type'] == 'General'), None)
         if track:
-            meta['type'] = track.get('Format')
+            meta['type'] = track.get('Format').replace('MPEG Audio', 'MP3')
             meta['duration'] = track.get('Duration', 'Unknown')
             meta['artist'] = track.get('Performer', track.get('Album_Performer', None))
             meta['album'] = track.get('Album', None)
