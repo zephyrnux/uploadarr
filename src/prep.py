@@ -116,7 +116,7 @@ class Prep():
                 for file_name, full_path in all_files.items():
                     ext = os.path.splitext(file_name)[1].lower()
 
-                    if ext in ['.aac', '.alac', '.flac', '.m4a', '.mp3', '.opus', '.wav']:
+                    if ext in ['.aac', 'ac3', '.alac', '.eac3', '.flac', '.m4a', '.mp3', '.ogg', '.ogm', '.oga', '.ogv', '.ogx', '.opus', '.spx', '.wav']:
                         key = file_name
                         meta['filelist'][key] = full_path
                         meta['is_music'] = True
@@ -605,7 +605,7 @@ class Prep():
 
                 ext = os.path.splitext(file)[1].lower()
 
-                if ext in ['.aac', '.alac', '.flac', '.m4a', '.mp3', '.opus', '.wav']:
+                if ext in ['.aac', 'ac3', '.alac', '.flac', '.m4a', '.mp3', '.ogg', '.ogm', '.oga', '.ogv', '.ogx', '.opus', '.spx', '.wav']:
                     if not (file.lower().endswith('sample.mp3') or file.lower().startswith('!sample')):
                         if len(file.split()[0]) > 2 and file.split()[0].isdigit():
                             file = re.sub(r'^\d{3}-', '01-', file)
@@ -699,7 +699,7 @@ class Prep():
                             meta['user_proof'] = full_path
                             break  # Only need one proof, likely not needed as singles mostly digital
 
-            if not self.has_sufficient_music_metadata(meta):
+            if not self.has_sufficient_music_metadata(meta) or meta.get('mbid_manual'):
                 await self.process_music(meta, meta['base_dir'])
             
             meta = await self.gen_desc(meta)
@@ -750,9 +750,9 @@ class Prep():
 
         track = next((track for track in mi['media']['track'] if track['@type'] == 'General'), None)
         if track:
-            meta['type'] = track.get('Format').replace('MPEG Audio', 'MP3')
+            meta['type'] = (track.get('Format').replace('MPEG Audio', 'MP3').replace('-', '')).upper()
             meta['duration'] = track.get('Duration', 'Unknown')
-            meta['artist'] = track.get('Performer', track.get('Album_Performer', None))
+            meta['artist'] = track.get('Album_Performer', track.get('Performer', None))
             meta['album'] = track.get('Album', None)
             recorded_date = track.get('Recorded_Date', track.get('Released_Date', track.get('Year', None)))
             if recorded_date and '-' in recorded_date:
@@ -762,7 +762,7 @@ class Prep():
                 meta['year'] = recorded_date
                 meta['release_date'] = ''
             extra = track.get('extra', {}) if track else {}
-            meta['artist'] = meta['artist'] or extra.get('Performer', None)
+            meta['artist'] = meta['artist'] or extra.get('ARTISTS', extra.get('Performer', None))
             meta['album'] = meta['album'] or extra.get('Album', None)
             meta['year'] = meta['year'] or extra.get('Year', extra.get('Recorded_Date', extra.get('Released_Date', None)))
             
@@ -777,7 +777,7 @@ class Prep():
             meta['bitrate'] = audio_track.get('BitRate_String', '').replace('/', '').replace(' ', '') 
 
         meta['catalog_number'] = self.extract_catalog_number(meta['uuid'], extra)
-        mbid = meta.get('mbid_manual') or meta.get('mbid')
+        mbid =  meta.get('mbid_manual') or meta.get('mbid')
         if mbid:
             await mb.fetch_musicbrainz_mbid(mbid, meta)
         else:
@@ -802,47 +802,6 @@ class Prep():
         self.upload_proof_covers(meta, 'album_cover', 'user_cover', ('.jpg', '.jpeg'))
         self.upload_proof_covers(meta, 'album_back', 'back_cover')
         self.upload_proof_covers(meta, 'album_proof', 'user_proof')
-
-        # # Check if album cover is not set
-        # if not meta.get('album_cover'):
-        #     user_cover = meta.get('user_cover')
-        #     if user_cover and os.path.isfile(user_cover) and user_cover.lower().endswith('.jpg'):
-        #         console.print(f"[yellow]Uploading user cover image: {user_cover}")
-                
-        #         # Prepare parameters for upload_screens
-        #         image_list, _ = self.upload_screens(meta, 1, 1, 0, 1, [user_cover], {})
-                
-        #         if image_list:
-        #             meta['album_cover'] = image_list[0]['raw_url']
-        #             console.print(f"[green]Successfully uploaded and set album cover: {meta['album_cover']}")
-        #         else:
-        #             console.print("[red]Failed to upload album cover.")
-
-        # if not meta.get('album_back'):
-        #     back_cover = meta.get('back_cover')
-        #     if back_cover and os.path.isfile(back_cover):
-        #         console.print(f"[yellow]Uploading back cover image: {back_cover}")
-                
-        #         # Prepare parameters for upload_screens
-        #         image_list, _ = self.upload_screens(meta, 1, 1, 0, 1, [back_cover], {})
-                
-        #         if image_list:
-        #             meta['album_cover'] = image_list[0]['raw_url']
-        #             console.print(f"[green]Successfully uploaded and set back cover: {meta['back_cover']}")
-        #         else:
-        #             console.print("[red]Failed to upload back cover.")
-
-
-        # proof_image = meta.get('user_proof')
-        # if proof_image and os.path.isfile(proof_image) and proof_image.lower().endswith(('.jpg', '.jpeg')):
-        #     console.print(f"[yellow]Uploading proof image: {proof_image}")
-        #     proof_list, _ = self.upload_screens(meta, 1, 1, 0, 1, [proof_image], {})
-            
-        #     if proof_list:
-        #         meta['album_proof'] = proof_list[0]['raw_url']
-        #         console.print(f"[green]Successfully uploaded and set proof image: {meta['album_proof']}")
-        #     else:
-        #         console.print("[red]Failed to upload proof image.")
 
         if not meta.get('tracklist', {}):
             log.debug('[magenta]MANUAL TRACKLIST')
