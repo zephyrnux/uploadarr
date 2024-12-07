@@ -798,9 +798,9 @@ def get_confirmation(meta):
     return confirm
 
 def dupe_check(dupes, meta, config, skipped_details, path):
-    def debug_print(message):
+    def debug_print(message, *args):
         if meta.get('debug', False):
-            console.print(message)
+            console.print(message % args)
 
     if meta.get('dupe', False):
         console.print("[yellow]Skipping duplicate check as requested.")
