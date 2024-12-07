@@ -798,6 +798,10 @@ def get_confirmation(meta):
     return confirm
 
 def dupe_check(dupes, meta, config, skipped_details, path):
+    def debug_print(message):
+        if meta.get('debug', False):
+            console.print(message)
+
     if meta.get('dupe', False):
         console.print("[yellow]Skipping duplicate check as requested.")
         meta['upload'] = True   
@@ -994,9 +998,6 @@ def get_missing(meta):
 
     console.print()
     return
-
-def debug_print(message, meta):
-    console.print(message)
 
 def print_banner():
     ascii_art = r"""
