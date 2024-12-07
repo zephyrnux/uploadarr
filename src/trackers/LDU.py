@@ -116,7 +116,8 @@ class LDU():
             'ALAC': '8',
             'AC3': '9',
             'WAVE': '14',
-            'OGG': '14'            
+            'OGG': '14',
+            'MPEG4': '14',            
             }.get(type, '0')
         if type == 'ENCODE':
             if 'upscale' in edition.lower() or 'ai' in edition.lower():
