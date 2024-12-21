@@ -3249,12 +3249,13 @@ class Prep():
             imdb_info['plot'] = info.get('plot', [''])[0]
             imdb_info['genres'] = ', '.join(info.get('genres', ''))
             imdb_info['soundmix'] = info.get('sound mix')
+            imdb_info['countries_of_origin'] = info.get('countries', [])
             imdb_info['original_language'] = info.get('language codes')
             if isinstance(imdb_info['original_language'], list):
                 if len(imdb_info['original_language']) > 1:
                     imdb_info['original_language'] = None
                 elif len(imdb_info['original_language']) == 1:
-                    imdb_info['original_language'] = imdb_info['original_language'][0]
+                    imdb_info['original_language'] = imdb_info['original_language'][0]        
             if imdb_info['cover'] == '':
                 imdb_info['cover'] = meta.get('poster', '')
             if len(info.get('directors', [])) >= 1:

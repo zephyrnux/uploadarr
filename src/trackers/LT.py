@@ -65,17 +65,22 @@ class LT():
     def get_subs_or_cast(self, meta):
         media_info = meta.get('mediainfo')
         is_disc = meta.get('is_disc', False)
+        imdb_info = meta.get('imdb_info', {})
 
-        if is_disc == 'BDMV':
-            disc = meta['discs'][0]
-            subtitles = disc['bdinfo'].get('subtitles', [])
+        if is_disc:
+            if imdb_info.get('original_language', '').lower() == 'es' and 'Spain' in imdb_info.get('countries_of_origin', []):
+                return ' [CAST]'
             
-            if 'spanish' in subtitles.lower():
-                return ' [SUBS]'
+            # Check for subtitles in BDMV discs
+            if is_disc == 'BDMV':
+                disc = meta['discs'][0]
+                subtitles = disc['bdinfo'].get('subtitles', [])
+                
+                if 'spanish' in [s.lower() for s in subtitles]:
+                    return ' [SUBS]'
             return ''
 
         else:
-
             if not media_info or 'media' not in media_info:
                 return ''
 
@@ -84,16 +89,20 @@ class LT():
             
             # Check for Spanish audio tracks
             for track in audio_tracks:
-                language = track.get('Language_String', '').lower()
+                lang = track.get('Language', '')
+                lang_string2 = track.get('Language_String2', '').lower()                
                 title = track.get('Title', '').lower()
                 
-                if language in ['spanish', 'es']:
-                    if any(title.find(word) != -1 for word in ['comment', 'director', 'review']):
-                        return ''
-                    if any(title.find(word) != -1 for word in ['cast', 'euro', 'españa', 'spain']):
+                if not any(title.find(word) != -1 for word in ['comment', 'director', 'review']):
+                    if lang == 'es-ES':
                         return ' [CAST]'
-                    return ''
-
+                    if lang in ('es-419', 'es-CO' ,'es-AR','es-MX'):
+                        return ''
+                    if lang_string2 == 'es':                        
+                        if any(title.find(word) != -1 for word in ['cast', 'euro', 'españa', 'spain']) or 'Spain' in imdb_info.get('countries_of_origin', []):
+                            return ' [CAST]'
+                        return ''
+                
             # Check for Spanish subtitles if no Spanish audio
             for track in text_tracks:
                 language = track.get('Language_String', '').lower()
