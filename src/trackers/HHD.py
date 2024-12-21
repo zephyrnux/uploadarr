@@ -46,7 +46,7 @@ class HHD():
             'AC3':'11',
             'AAC':'12',
             'MP3':'13',
-            'Linux':'16",
+            'Linux':'16',
             'Windows':'15',
             'Mac':'14',
             'Other':'7'
