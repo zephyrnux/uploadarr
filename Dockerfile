@@ -11,7 +11,7 @@ RUN python3 -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 
 # change workdir
-WORKDIR Uploadrr
+WORKDIR /app
 
 # install reqs
 COPY requirements.txt .

@@ -116,6 +116,7 @@ class TTG():
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         await self.edit_desc(meta)
+        manual_name = meta.get('manual_name')
         ttg_name = await self.edit_name(meta)
 
         # FORM
@@ -148,7 +149,7 @@ class TTG():
                 'MAX_FILE_SIZE' : '4000000',
                 'team' : '',
                 'hr' : 'no',
-                'name' : ttg_name,
+                'name' : manual_name or ttg_name,
                 'type' : await self.get_type_id(meta),
                 'descr' : ttg_desc.rstrip(),
                 

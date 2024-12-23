@@ -31,7 +31,8 @@ class BHD():
         await self.edit_desc(meta)
         tags = await self.get_tags(meta)
         custom, edition = await self.get_edition(meta, tags)
-        bhd_name = await self.edit_name(meta)
+        manual_name = meta.get('manual_name')
+        bhd_name = manual_name or await self.edit_name(meta)
         if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
         else:
@@ -287,3 +288,88 @@ class BHD():
         if meta['category'] == "TV" and meta.get('tv_pack', 0) == 0 and meta.get('episode_title_storage', '').strip() != '' and meta['episode'].strip() != '':
             name = name.replace(meta['episode'], f"{meta['episode']} {meta['episode_title_storage']}", 1)
         return name
+
+
+    async def edit_desc(self, meta):
+        base_path = f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt"
+        tracker_desc_path = f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt"
+        
+        with open(base_path, 'r') as base_file:
+            base = base_file.read()
+
+        # Determine which signature to use
+        use_global_sigs = self.config["DEFAULT"].get("use_global_sigs", False)
+        if use_global_sigs:
+            signature = self.config["DEFAULT"].get("global_sig")
+            anon_signature = self.config["DEFAULT"].get("global_anon_sig")
+            pr_signature = self.config["DEFAULT"].get("global_pr_sig")
+            anon_pr_sig = self.config["DEFAULT"].get("global_anon_pr_sig")
+            if not all([signature, anon_signature, pr_signature, anon_pr_sig]):
+                print("[bold][red]WARN[/red]: Global signatures are enabled but not provided in config.[/bold]")                
+        else:
+            signature = self.config["TRACKERS"][self.tracker].get("signature")
+            anon_signature = self.config["TRACKERS"][self.tracker].get("anon_signature")
+            pr_signature = self.config["TRACKERS"][self.tracker].get("pr_signature")
+            anon_pr_sig = self.config["TRACKERS"][self.tracker].get("anon_pr_signature")
+            if not all([signature, anon_signature, pr_signature, anon_pr_sig]):
+                print("[bold][red]WARN[/red]: Global Signatures are turned off, but no signature is provided for selected tracker.[/bold]")
+
+        if meta["personalrelease"]:
+            if meta["anon"] != 0 or self.config["TRACKERS"][self.tracker].get("anon", False):
+                signature_to_use = anon_pr_sig
+            else:
+                signature_to_use = pr_signature
+        else:
+            if meta["anon"] != 0 or self.config["TRACKERS"][self.tracker].get("anon", False):
+                signature_to_use = anon_signature
+            else:
+                signature_to_use = signature
+
+        with open(tracker_desc_path, 'w') as desc:
+            # Process discs only if they exist
+            if meta.get('discs'):
+                discs = meta['discs']
+                for disc in discs:
+                    disc_type = disc.get('type')
+                    
+                    if disc_type == "DVD":
+                        # Write DVD VOB MediaInfo
+                        desc.write(f"[spoiler=VOB MediaInfo][code]{disc.get('vob_mi')}[/code][/spoiler]\n")
+                    
+                    elif disc_type == "BDMV" and len(discs) > 1:
+                        # Write BDMV MediaInfo for subsequent discs
+                        desc.write(f"[spoiler={disc.get('name', 'BDINFO')}][code]{disc.get('summary')}[/code][/spoiler]\n")
+                    
+                    elif disc_type == "DVD" and len(discs) > 1:
+                        # Write DVD MediaInfo for other DVD discs
+                        desc.write(f"{disc.get('name')}:\n")
+                        desc.write(f"[spoiler={os.path.basename(disc['vob'])}][code]{disc.get('vob_mi')}[/code][/spoiler] ")
+                        desc.write(f"[spoiler={os.path.basename(disc['ifo'])}][code]{disc.get('ifo_mi')}[/code][/spoiler]\n")
+                    
+                    elif disc_type == "HDDVD":
+                        # Write HDDVD MediaInfo
+                        desc.write(f"{disc.get('name')}:\n")
+                        desc.write(f"[spoiler={os.path.basename(disc['largest_evo'])}][code]{disc.get('evo_mi')}[/code][/spoiler]\n")
+            
+            desc.write(base.replace("[img]", "[img width=300]"))
+
+            # Add images if available
+            if meta.get('image_list'):
+                images = meta['image_list']
+                screens_count = int(meta['screens']) if meta.get('screens') else len(images)
+                
+                if images:
+                    desc.write("[center]")
+                    for image in images[:screens_count]:
+                        web_url, img_url = image.get('web_url'), image.get('img_url')
+                        if web_url and img_url:
+                            desc.write(f"[url={web_url}][img width=350]{img_url}[/img][/url]")
+                    desc.write("[/center]")
+            
+            # Add the determined signature
+            if signature_to_use:
+                desc.write(f"\n{signature_to_use}")
+
+            desc.write(base.replace("[img=", "[img width=]"))    
+
+        return

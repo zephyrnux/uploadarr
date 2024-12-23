@@ -131,7 +131,7 @@ class AR():
         desc = desc.replace("[center]", "[align=center]").replace("[/center]", "[/align]")
         desc = desc.replace("[left]", "[align=left]").replace("[/left]", "[/align]")
         desc = desc.replace("[right]", "[align=right]").replace("[/right]", "[/align]")
-        # desc = desc.replace("[code]", "[quote]").replace("[/code]", "[/quote]")
+        desc = desc.replace("[code]", "[pre]").replace("[/code]", "[/pre]")
         desc = desc.replace("[note]", "[quote]").replace("[/note]", "[/quote]")
         return desc
  
@@ -509,14 +509,14 @@ class AR():
                 print("Invalid image link. Please enter a link that ends with .jpg, .png, or .gif.")
                 cover = None    
  
-        # Handle keywords
-        keywords = meta.get('keywords')
-        if keywords:
-            keywords = ', '.join(tag.strip('.') for tag in (item.replace(' ', '.') for item in keywords.split(',')))
-            keywords = re.sub(r'\.{2,}', '.', keywords)
+        # Tag Compilation
+        genres = meta.get('genres')
+        if genres:
+            genres = ', '.join(tag.strip('.') for tag in (item.replace(' ', '.') for item in genres.split(',')))
+            genres = re.sub(r'\.{2,}', '.', genres)
  
         imdb_id = meta.get('imdb_id', '')
-        tags = f"tt{imdb_id}, {keywords}" if imdb_id else keywords
+        tags = f"tt{imdb_id}, {genres}" if imdb_id else genres
  
         # Get initial response and extract auth key
         initial_response = await self.get_initial_response()
@@ -528,11 +528,14 @@ class AR():
         
         if not session_cookie:
             raise Exception("Session cookie not found.")
- 
+
+        manual_name = meta.get('manual_name')
+        ar_name = await self.get_name(meta) if not manual_name else manual_name
+
         data = {
             "submit": "true",
             "auth": auth_key, 
-            "type": await self.get_cat_id(meta),
+            "type": ar_name,
             "title": await self.get_name(meta),
             "tags": tags,
             "image": cover,

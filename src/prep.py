@@ -2,6 +2,7 @@
 import sys
 from src.args import Args
 from src.console import console, log
+from src.discparse import DiscParse
 from src.exceptions import *
 from src.trackers.PTP import PTP
 from src.trackers.BLU import BLU
@@ -10,6 +11,7 @@ from src.trackers.COMMON import COMMON
 from src.musicbrainz import MusicBrainzAPI
 from src.discparse import DiscParse
 from src.discogs import DiscogsAPI
+
 
 try:
     import aiofiles
@@ -1842,19 +1844,23 @@ class Prep():
             # Fetch logos from the images endpoint
             logo_response = movie.images()
             logos = logo_response.get('logos', [])
-            english_logos = [logo for logo in logos if logo.get('iso_639_1') == 'en']
-
-            # English Logo Bias
-            if english_logos:
-                first_logo = english_logos[0] 
-            else:
-                first_logo = logos[0] if logos else None  
+            first_logo = next((logo for logo in logos if logo.get('iso_639_1') == 'en'), None) or (logos[0] if logos else None)
 
             if first_logo:
                 logo_path = first_logo['file_path']
                 meta['logo'] = f"https://image.tmdb.org/t/p/original{logo_path}"
             else:
-                meta['logo'] = None 
+                meta['logo'] = None
+
+            #Get backdrop for non-tmdb linked categories
+            backdrop_response = movie.images()
+            backdrops = backdrop_response.get('backdrops', [])  
+            first_backdrop = next((backdrop for backdrop in backdrops if backdrop.get('iso_639_1') == 'en'), None) or (backdrops[0] if backdrops else None)
+            if first_backdrop:
+                backdrop_path = first_backdrop['file_path']
+                meta['backdrop'] = f"https://image.tmdb.org/t/p/original{backdrop_path}"
+            else:
+                meta['backdrop'] = None
 
             meta['overview'] = response['overview']
             meta['tmdb_type'] = 'Movie'
@@ -1919,20 +1925,24 @@ class Prep():
 
             logo_response = tv.images() 
             logos = logo_response.get('logos', [])
-            english_logos = [logo for logo in logos if logo.get('iso_639_1') == 'en']
-
-            # English Logo Bias
-            if english_logos:
-                first_logo = english_logos[0] 
-            else:
-                first_logo = logos[0] if logos else None  
+            first_logo = next((logo for logo in logos if logo.get('iso_639_1') == 'en'), None) or (logos[0] if logos else None)
 
             if first_logo:
                 logo_path = first_logo['file_path']
                 meta['logo'] = f"https://image.tmdb.org/t/p/original{logo_path}"
             else:
-                meta['logo'] = None    
-            
+                meta['logo'] = None 
+                
+            #Get backdrop for non-tmdb linked categories
+            backdrop_response = tv.images()
+            backdrops = backdrop_response.get('backdrops', [])
+            first_backdrop = next((backdrop for backdrop in backdrops if backdrop.get('iso_639_1') == 'en'), None) or (backdrops[0] if backdrops else None)
+            if first_backdrop:
+                backdrop_path = first_backdrop['file_path']
+                meta['backdrop'] = f"https://image.tmdb.org/t/p/original{backdrop_path}"
+            else:
+                meta['backdrop'] = None
+
         if meta['poster'] not in (None, ''):
             meta['poster'] = f"https://image.tmdb.org/t/p/original{meta['poster']}"
 
@@ -3230,6 +3240,7 @@ class Prep():
             name = name_notag + tag
             clean_name = self.clean_filename(name)
             name = name if not manual_name else manual_name             
+            
         except:
             console.print("[bold red]Unable to generate name. Please re-run and correct any of the following args if needed.")
             console.print(f"--category [yellow]{meta['category']}")
@@ -3886,12 +3897,13 @@ class Prep():
             imdb_info['plot'] = info.get('plot', [''])[0]
             imdb_info['genres'] = ', '.join(info.get('genres', ''))
             imdb_info['soundmix'] = info.get('sound mix')
+            imdb_info['countries_of_origin'] = info.get('countries', [])
             imdb_info['original_language'] = info.get('language codes')
             if isinstance(imdb_info['original_language'], list):
                 if len(imdb_info['original_language']) > 1:
                     imdb_info['original_language'] = None
                 elif len(imdb_info['original_language']) == 1:
-                    imdb_info['original_language'] = imdb_info['original_language'][0]
+                    imdb_info['original_language'] = imdb_info['original_language'][0]        
             if imdb_info['cover'] == '':
                 imdb_info['cover'] = meta.get('poster', '')
             if len(info.get('directors', [])) >= 1:

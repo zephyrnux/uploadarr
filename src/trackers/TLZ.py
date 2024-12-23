@@ -9,27 +9,13 @@ from src.trackers.COMMON import COMMON
 from src.console import console
 
 
-class UNIT3D_TEMPLATE():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
-
-    ###############################################################
-    ########                    EDIT ME                    ########
-    ###############################################################
-
-    # ALSO EDIT CLASS NAME ABOVE
-
+class TLZ():
     def __init__(self, config):
         self.config = config
-        self.tracker = 'Abbreviated'
-        self.source_flag = 'Source flag for .torrent'
-        self.upload_url = 'https://domain.tld/api/torrents/upload'
-        self.search_url = 'https://domain.tld/api/torrents/filter'
+        self.tracker = 'TLZ'
+        self.source_flag = 'TLZ'
+        self.upload_url = 'https://tlzdigital.com/api/torrents/upload'
+        self.search_url = 'https://tlzdigital.com/api/torrents/filter'
         self.banned_groups = [""]
         pass
     
@@ -37,19 +23,35 @@ class UNIT3D_TEMPLATE():
         category_id = {
             'MOVIE': '1', 
             'TV': '2', 
+            'MUSIC' : '3'
             }.get(category_name, '0')
         return category_id
 
-    async def get_type_id(self, type):
-        type_id = {
-            'DISC': '1', 
-            'REMUX': '2',
-            'WEBDL': '4', 
-            'WEBRIP': '5', 
-            'HDTV': '6',
-            'ENCODE': '3'
-            }.get(type, '0')
+    async def get_type_id(self, type, cat, tv_pack, original_language):
+        try:
+            if original_language is not 'en':
+                type_id = '13'
+            elif cat == 'TV':
+                if tv_pack:
+                    type_id = '4'
+                else:
+                    type_id = '3'    
+            elif cat == 'MOVIE':
+                type_id = '1'            
+            elif type in ['MP3', 'FLAC', 'OTHER']:
+                type_id = {
+                    'MP3': '5',
+                    'FLAC': '6',
+                    'OTHER': '12',
+                }.get(type, '14')
+            else:
+                raise ValueError(f"Invalid type: {type}")
+
+        except ValueError:
+            type_id = '12'
+
         return type_id
+
 
     async def get_res_id(self, resolution):
         resolution_id = {
@@ -75,7 +77,7 @@ class UNIT3D_TEMPLATE():
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         cat_id = await self.get_cat_id(meta['category'])
-        type_id = await self.get_type_id(meta['type'])
+        type_id = await self.get_type_id(meta['type'], meta['category'], meta.get('tv_pack'), meta.get('original_language', ''))
         resolution_id = await self.get_res_id(meta['resolution'])
         await common.unit3d_edit_desc(meta, self.tracker)
         region_id = await common.unit3d_region_ids(meta.get('region'))
@@ -94,7 +96,7 @@ class UNIT3D_TEMPLATE():
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
-        manual_name = meta.get('manual_name')
+        manual_name = meta.get('manual_name', None)
         data = {
             'name' : manual_name or meta['name'],
             'description' : desc,
@@ -192,7 +194,7 @@ class UNIT3D_TEMPLATE():
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip(),
             'tmdbId' : meta['tmdb'],
             'categories[]' : await self.get_cat_id(meta['category']),
-            'types[]' : await self.get_type_id(meta['type']),
+            'types[]' : await self.get_type_id(meta['type'], meta['category'], meta.get('tv_pack'), meta.get('original_language', '')),
             'resolutions[]' : await self.get_res_id(meta['resolution']),
             'name' : ""
         }

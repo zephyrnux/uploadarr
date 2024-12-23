@@ -39,14 +39,34 @@ class NBL():
     async def upload(self, meta):
         if meta['category'] != 'TV':
             console.print("[red]Only TV Is allowed at NBL")
-            return
+            return False
+
+        if (meta.get('tvmaze_id', 0) == 0 or meta.get('tvmaze_id') is None):
+            if not meta.get('auto_queue', False):
+                while True:
+                    tvmaze_id_input = console.input("[yellow]Please enter a valid TVMaze ID[/yellow] [dim](or type `skip` to skip): ").strip()
+                    
+                    if tvmaze_id_input.lower() == 'skip':
+                        console.print("[yellow]User skipped entering TVMaze ID.")
+                        return False                    
+                    try:
+                        tvmaze_id = int(tvmaze_id_input)
+                        meta['tvmaze_id'] = tvmaze_id
+                        break 
+                    except ValueError:
+                        console.print("[red]Invalid TVMaze ID entered. Please enter a valid integer.")
+
+            else:
+                console.print("[yellow]No valid TVMaze ID..")
+                return False
+            
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
 
         if meta['bdinfo'] != None:
             mi_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/BD_SUMMARY_00.txt", 'r', encoding='utf-8').read()
         else:
-            mi_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/MEDIAINFO.txt", 'r', encoding='utf-8').read()[:-65].strip()
+            mi_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/MEDIAINFO_CLEANPATH.txt", 'r', encoding='utf-8').read()[:-65].strip()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'file_input': open_torrent}
         data = {
@@ -57,39 +77,34 @@ class NBL():
             'ignoredupes' : 'on'
         }
 
-        if not meta['debug']:
-            success = 'Unknown'
-            try:
-                response = requests.post(url=self.upload_url, files=files, data=data)
-                response.raise_for_status()                
+        if meta['debug']:
+            console.print(f'[blue]Data 2 Send[/blue]: \n {data}')
+            return False
+        
+        success = 'Unknown'
+        try:
+            response = requests.post(url=self.upload_url, files=files, data=data)
+
+            if response.ok:
                 response_json = response.json()
-                success = response_json.get('success', False)
-                data = response_json.get('data', {})
-            except Exception as e:
-                console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
-            if success == 'Unknown':
-                console.print("[bold yellow]Status of upload is unknown, please go check..")
+
+                if 'message' in response_json:
+                    console.print(response_json.get('message', response_json))
+                    success = True
+                elif 'error' in response_json:
+                    console.print(f"[red]Error: {response_json['error']}")
+                    success = False
+            else:
+                console.print(response)
+                console.print(response.text)
                 success = False
-            elif success:
-                console.print("[bold green]Torrent uploaded successfully!")
-            else:
-                console.print("[bold red]Torrent upload failed.")
+        
+        except Exception:
+            console.print_exception()
+            console.print("[bold yellow]It may have uploaded, go check")
 
-            if data:
-                if 'name' in data and 'The name has already been taken.' in data['name']:
-                    console.print("[red]Name has already been taken.")
-                if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
-                    console.print("[red]Info hash has already been taken.")                
-            else:
-                console.print("[cyan]Request Data:")
-                console.print(data)
-    
-            try:
-                open_torrent.close()
-            except Exception as e:
-                console.print(f"[red]Failed to close torrent file: {e}[/red]")
-
-            return success 
+        open_torrent.close()
+        return success
 
 
     async def search_existing(self, meta):

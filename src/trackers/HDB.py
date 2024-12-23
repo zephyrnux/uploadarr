@@ -208,6 +208,7 @@ class HDB():
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         await self.edit_desc(meta)
+        manual_name = meta.get('manual_name')
         hdb_name = await self.edit_name(meta)
         cat_id = await self.get_type_category_id(meta)
         codec_id = await self.get_type_codec_id(meta)
@@ -250,7 +251,7 @@ class HDB():
                 'file' : (f"{torrentFileName}.torrent", torrentFile, "application/x-bittorent")
             }
             data = {
-                'name' : hdb_name,
+                'name' : hdb_name if not manual_name else manual_name,
                 'category' : cat_id,
                 'codec' : codec_id,
                 'medium' : medium_id,

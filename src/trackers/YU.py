@@ -9,27 +9,13 @@ from src.trackers.COMMON import COMMON
 from src.console import console
 
 
-class UNIT3D_TEMPLATE():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
-
-    ###############################################################
-    ########                    EDIT ME                    ########
-    ###############################################################
-
-    # ALSO EDIT CLASS NAME ABOVE
-
+class YU():
     def __init__(self, config):
         self.config = config
-        self.tracker = 'Abbreviated'
-        self.source_flag = 'Source flag for .torrent'
-        self.upload_url = 'https://domain.tld/api/torrents/upload'
-        self.search_url = 'https://domain.tld/api/torrents/filter'
+        self.tracker = 'YU'
+        self.source_flag = 'UNIT3D'
+        self.upload_url = 'https://yu-scene.net/api/torrents/upload'
+        self.search_url = 'https://yu-scene.net/api/torrents/filter'
         self.banned_groups = [""]
         pass
     
@@ -37,17 +23,23 @@ class UNIT3D_TEMPLATE():
         category_id = {
             'MOVIE': '1', 
             'TV': '2', 
+            'MUSIC': '8',
             }.get(category_name, '0')
         return category_id
 
-    async def get_type_id(self, type):
+    async def get_type_id(self, type, is_disc):
+        if is_disc == 'DVD':
+            type = 'DVD'    
         type_id = {
-            'DISC': '1', 
+            'DISC': '17', 
+            'DVD': '7',
             'REMUX': '2',
             'WEBDL': '4', 
             'WEBRIP': '5', 
             'HDTV': '6',
-            'ENCODE': '3'
+            'ENCODE': '3',
+            'FLAC': '16',
+            'MP3': '9',
             }.get(type, '0')
         return type_id
 
@@ -75,7 +67,7 @@ class UNIT3D_TEMPLATE():
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         cat_id = await self.get_cat_id(meta['category'])
-        type_id = await self.get_type_id(meta['type'])
+        type_id = await self.get_type_id(meta['type'], meta.get('is_disc'))
         resolution_id = await self.get_res_id(meta['resolution'])
         await common.unit3d_edit_desc(meta, self.tracker)
         region_id = await common.unit3d_region_ids(meta.get('region'))
@@ -94,7 +86,7 @@ class UNIT3D_TEMPLATE():
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
-        manual_name = meta.get('manual_name')
+        manual_name = meta.get('manual_name', None)
         data = {
             'name' : manual_name or meta['name'],
             'description' : desc,
@@ -139,7 +131,7 @@ class UNIT3D_TEMPLATE():
         }
         
         if meta['debug']:
-            console.print(f"[blue]DATA 2 SEND[/blue]:")
+            console.print(f"[blue][b]DATA 2 SEND[/b][/blue]:")
             console.print(Pretty(data))
 
         else:
@@ -192,7 +184,7 @@ class UNIT3D_TEMPLATE():
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip(),
             'tmdbId' : meta['tmdb'],
             'categories[]' : await self.get_cat_id(meta['category']),
-            'types[]' : await self.get_type_id(meta['type']),
+            'types[]' : await self.get_type_id(meta['type'], meta.get('is_disc')),
             'resolutions[]' : await self.get_res_id(meta['resolution']),
             'name' : ""
         }

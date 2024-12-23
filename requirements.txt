@@ -8,7 +8,9 @@ deluge-client
 ffmpeg-python
 guessit
 Jinja2
-langcodes
+language-data<=1.2.0; python_version<='3.8'
+langcodes<=3.4.0; python_version<='3.8'
+langcodes; python_version>'3.8'
 nest_asyncio
 packaging
 pyimgbox

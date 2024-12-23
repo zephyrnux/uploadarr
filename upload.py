@@ -40,7 +40,7 @@ import importlib
 ### Add below + api or http list ###
 ####################################
 tracker_data = {
-    'api': ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'CBR', 'FNP', 'HUNO', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PSS', 'PTT', 'RF', 'R4E', 'RHD', 'RTF', 'SN', 'TTR', 'ULCX', 'UTP'],
+    'api': ['ACM', 'AITHER', 'ANT', 'BHD', 'BHDTV', 'BLU', 'CBR', 'FNP', 'HHD', 'HUNO', 'ITA', 'JPTV', 'LCD', 'LDU', 'LST', 'LT', 'MB', 'NBL', 'OE', 'OINK', 'OTW', 'PSS', 'PTT', 'RF', 'R4E', 'RHD', 'RTF', 'SHRI', 'SN', 'SP', 'TLZ', 'TTR', 'TOCA', 'ULCX', 'UTP', 'YU'],
     'http': ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG'],
     'other': ['AR', 'PTP', 'THR', 'TL']
  }
@@ -261,7 +261,7 @@ async def do_the_thing(base_dir):
                 saved_meta = json.load(f)
                 for key, value in saved_meta.items():
                     overwrite_list = [
-                        'base_dir', 'path', 'trackers', 'dupe', 'debug', 'anon', 'category', 'type', 'screens', 'nohash', 'manual_edition', 'imdb', 'tmdb_manual', 'mbid_manual', 'mal', 'manual', 
+                        'base_dir', 'path', 'trackers', 'dupe', 'debug', 'anon', 'category', 'type', 'screens', 'nohash', 'manual_edition', 'imdb', 'tmdb_manual', 'mbid_manual', 'mal', 'manual', 'manual_name', 
                         'hdb', 'ptp', 'blu', 'no_season', 'no_aka', 'no_year', 'no_dub', 'no_tag', 'no_seed', 'client', 'desclink', 'descfile', 'desc', 'draft', 'region', 'freeleech', 
                         'personalrelease', 'unattended', 'season', 'episode', 'torrent_creation', 'qbit_tag', 'qbit_cat', 'skip_imghost_upload', 'imghost', 'manual_source', 'webdv', 'hardcoded-subs'
                     ]
@@ -515,7 +515,7 @@ async def do_the_thing(base_dir):
                         continue
                     dupes = await bhd.search_existing(meta)
                     dupes = await common.filter_dupes(dupes, meta)
-                    meta, skipped = dupe_check(dupes, meta)
+                    meta, skipped = dupe_check(dupes, meta, config, skipped_details, path)
                     if skipped:
                         skipped_files += 1
                         skipped_details.append((path, tracker))

@@ -274,7 +274,8 @@ class PTER():
         if not os.path.exists(desc_file):
             await self.edit_desc(meta)
         
-        pter_name = await self.edit_name(meta)
+        manual_name = meta.get('manual_name')
+        pter_name = await self.edit_name(meta) if not manual_name else manual_name
        
         if meta['bdinfo'] != None:
             mi_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/BD_SUMMARY_00.txt", 'r', encoding='utf-8')

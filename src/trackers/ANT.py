@@ -4,6 +4,7 @@ import asyncio
 import requests
 import json
 import platform
+from pathlib import Path
 from pymediainfo import MediaInfo
 
 from src.trackers.COMMON import COMMON
@@ -66,10 +67,24 @@ class ANT():
         if meta['bdinfo'] is not None:
             bd_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/BD_SUMMARY_00.txt", 'r', encoding='utf-8').read()
             bd_dump = f'[spoiler=BDInfo][pre]{bd_dump}[/pre][/spoiler]'
-            path = os.path.join(meta['bdinfo']['path'], 'STREAM')
-            m2ts = os.path.join(path, meta['bdinfo']['files'][0]['file'])
-            media_info_output = str(MediaInfo.parse(m2ts, output="text", full=False))
-            mi_dump = media_info_output.replace('\r\n', '\n')
+            path = Path(meta['bdinfo']['path']) / 'STREAM'
+            longest_file = max(
+                meta['bdinfo']['files'],
+                key=lambda x: x.get('length', 0),
+                default=None
+            )
+            if not longest_file:
+                longest_file = meta['bdinfo']['files'][0]
+            file_name = longest_file['file']
+            base_name, extension = Path(file_name).stem, Path(file_name).suffix
+            file_name = f"{base_name}{extension.lower()}"
+            m2ts = path / file_name
+            if m2ts.exists():
+                media_info_output = str(MediaInfo.parse(m2ts, output="text", full=False))
+                mi_dump = media_info_output.replace('\r\n', '\n')
+            else:
+                console.print(f"[red]File not found: {m2ts}")
+                console.print(f"[yellow]Warning: No MediaInfo found for {m2ts}")
         else:
             mi_dump = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/MEDIAINFO.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
@@ -88,7 +103,7 @@ class ANT():
                 'media': 'Blu-ray',
                 'releasegroup': str(meta['tag'])[1:],
                 'release_desc': bd_dump,
-                'flagchangereason': "BDMV Uploaded with L4G's Upload Assistant"})
+                'flagchangereason': "BDMV Uploaded with Uploadrr"})
         if meta['scene']:
             # ID of "Scene?" checkbox on upload form is actually "censored"
             data['censored'] = 1

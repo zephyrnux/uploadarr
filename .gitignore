@@ -12,3 +12,4 @@ tmp/*
 .wdm/
 venv/*
 .idea/*
+._*

@@ -9,27 +9,13 @@ from src.trackers.COMMON import COMMON
 from src.console import console
 
 
-class UNIT3D_TEMPLATE():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
-
-    ###############################################################
-    ########                    EDIT ME                    ########
-    ###############################################################
-
-    # ALSO EDIT CLASS NAME ABOVE
-
+class TOCA():
     def __init__(self, config):
         self.config = config
-        self.tracker = 'Abbreviated'
-        self.source_flag = 'Source flag for .torrent'
-        self.upload_url = 'https://domain.tld/api/torrents/upload'
-        self.search_url = 'https://domain.tld/api/torrents/filter'
+        self.tracker = 'TOCA'
+        self.source_flag = 'TOCA'
+        self.upload_url = 'https://tocashare.com/api/torrents/upload'
+        self.search_url = 'https://tocashare.com/api/torrents/filter'
         self.banned_groups = [""]
         pass
     
@@ -37,6 +23,7 @@ class UNIT3D_TEMPLATE():
         category_id = {
             'MOVIE': '1', 
             'TV': '2', 
+            'MUSIC': '3',
             }.get(category_name, '0')
         return category_id
 
@@ -47,7 +34,12 @@ class UNIT3D_TEMPLATE():
             'WEBDL': '4', 
             'WEBRIP': '5', 
             'HDTV': '6',
-            'ENCODE': '3'
+            'ENCODE': '3',
+            'FLAC': '7',
+            'ALAC': '8',
+            'AC3': '9',
+            'AAC': '10',
+            'MP3': '11',
             }.get(type, '0')
         return type_id
 
@@ -94,7 +86,7 @@ class UNIT3D_TEMPLATE():
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
-        manual_name = meta.get('manual_name')
+        manual_name = meta.get('manual_name', None)
         data = {
             'name' : manual_name or meta['name'],
             'description' : desc,

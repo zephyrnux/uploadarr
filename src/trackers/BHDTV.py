@@ -64,10 +64,12 @@ class BHDTV():
             if os.path.exists(mi_template):
                 media_info = MediaInfo.parse(video, output="STRING", full=False,
                                              mediainfo_options={"inform": f"file://{mi_template}"})
-
+        name = meta['name'].replace(' ', '.').replace(':.', '.').replace(':', '.').replace('DD+', 'DDP')
+        manual_name = meta.get('manual_name')
+        bhdtv_name = name if not manual_name else manual_name
         data = {
             'api_key': self.config['TRACKERS'][self.tracker]['api_key'].strip(),
-            'name': meta['name'].replace(' ', '.').replace(':.', '.').replace(':', '.').replace('DD+', 'DDP'),
+            'name': bhdtv_name,
             'mediainfo': mi_dump if bd_dump == None else bd_dump,
             'cat': cat_id,
             'subcat': sub_cat_id,

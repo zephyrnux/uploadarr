@@ -6,7 +6,7 @@ import os
 import re
 import platform
 import time
-
+from rich.pretty import Pretty
 from src.trackers.COMMON import COMMON
 from src.console import console
 
@@ -83,9 +83,10 @@ class RHD():
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         rhd_name = await self.get_name(meta)
+        manual_name = meta.get('manual_name')
         files = {'torrent': open_torrent}
         data = {
-            'name' : rhd_name,
+            'name' : rhd_name if not manual_name else manual_name,
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump, 
@@ -118,8 +119,8 @@ class RHD():
         if distributor_id != 0:
             data['distributor_id'] = distributor_id
         if meta.get('category') == "TV":
-            data['season_number'] = meta.get('season_int', '0')
-            data['episode_number'] = meta.get('episode_int', '0')
+            data['season_number'] = int(meta.get('season_int', '0'))
+            data['episode_number'] = int(meta.get('episode_int', '0'))
         headers = {
             'User-Agent': f'Uploadrr / v1.0 ({platform.system()} {platform.release()})'
         }
@@ -129,17 +130,34 @@ class RHD():
 
         if meta['debug']:
             console.print(f'\n[red]RHD NAME:[/red][blue]{rhd_name}')
+            console.print(f"[blue]DATA 2 SEND[/blue]:")
+            console.print(Pretty(data))
 
-        success = 'Unknown'
-        if not meta['debug']:
+        else:
+            success = 'Unknown'
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
-                response.raise_for_status()                
-                response_json = response.json()
-                success = response_json.get('success', False)
-                data = response_json.get('data', {})
-            except Exception as e:
+                if response.status_code >= 200 and response.status_code < 300:
+                    response_json = response.json()
+                    success = response_json.get('success', False)
+                    data = response_json.get('data', {})
+
+                    if not success:
+                        message = response_json.get('message', 'No message provided')
+                        console.print(f"[red]Upload failed: {message}[/red]")
+                        if data:
+                            console.print(f"[cyan]Error details:[/cyan] {data}")
+
+                else:
+                    console.print(f"[red]Encountered HTTP Error: {response.status_code}[/red]")
+                    console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    success = False
+                    data = {}
+
+            except requests.exceptions.RequestException as e:
                 console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
+                success = False
+                data = {}
 
             if success == 'Unknown':
                 console.print("[bold yellow]Status of upload is unknown, please go check..")
@@ -148,22 +166,13 @@ class RHD():
                 console.print("[bold green]Torrent uploaded successfully!")
             else:
                 console.print("[bold red]Torrent upload failed.")
-
-            if data:
-                if 'name' in data and 'The name has already been taken.' in data['name']:
-                    console.print("[red]Name has already been taken.")
-                if 'info_hash' in data and 'The info hash has already been taken.' in data['info_hash']:
-                    console.print("[red]Info hash has already been taken.")                
-            else:
-                console.print("[cyan]Request Data:")
-                console.print(data)
     
             try:
                 open_torrent.close()
             except Exception as e:
                 console.print(f"[red]Failed to close torrent file: {e}[/red]")
 
-        return success 
+            return success 
 
 
     def get_language_tag(self, meta):

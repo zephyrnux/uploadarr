@@ -116,7 +116,8 @@ class HDT():
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         await self.edit_desc(meta)
-        hdt_name = await self.edit_name(meta)
+        manual_name = meta.get('manual_name')
+        hdt_name = await self.edit_name(meta) if not manual_name else manual_name
         cat_id = await self.get_category_id(meta)
 
         # Confirm the correct naming order for HDT

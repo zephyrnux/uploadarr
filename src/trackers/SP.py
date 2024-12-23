@@ -3,54 +3,74 @@ import asyncio
 import requests
 import json
 import os
+import re
 import platform
 from rich.pretty import Pretty
 from src.trackers.COMMON import COMMON
 from src.console import console
 
 
-class UNIT3D_TEMPLATE():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
-
-    ###############################################################
-    ########                    EDIT ME                    ########
-    ###############################################################
-
-    # ALSO EDIT CLASS NAME ABOVE
-
+class SP():
     def __init__(self, config):
         self.config = config
-        self.tracker = 'Abbreviated'
-        self.source_flag = 'Source flag for .torrent'
-        self.upload_url = 'https://domain.tld/api/torrents/upload'
-        self.search_url = 'https://domain.tld/api/torrents/filter'
+        self.tracker = 'SP'
+        self.source_flag = 'seedpool.org'
+        self.upload_url = 'https://seedpool.org/api/torrents/upload'
+        self.search_url = 'https://seedpool.org/api/torrents/filter'
         self.banned_groups = [""]
         pass
     
-    async def get_cat_id(self, category_name):
+    async def get_cat_id(self, category_name, anime, resolution, tv_pack, name):
         category_id = {
             'MOVIE': '1', 
             'TV': '2', 
+            'MUSIC': '5',
             }.get(category_name, '0')
+        if anime:
+            category_id = '6'
+        elif category_name == 'TV':
+            if tv_pack:    
+                category_id = '13'
+            if self.is_sports(name):
+                category_id = '8'   
+        elif resolution == '2160p':
+            category_id = '10'
+        
         return category_id
 
-    async def get_type_id(self, type):
-        type_id = {
-            'DISC': '1', 
-            'REMUX': '2',
-            'WEBDL': '4', 
-            'WEBRIP': '5', 
-            'HDTV': '6',
-            'ENCODE': '3'
-            }.get(type, '0')
-        return type_id
+    def is_sports(self, name):
+        sports_pattern = r'(?:EFL.*|.*mlb.*|.*formula1.*|.*nascar.*|.*nfl.*|.*wrc.*|.*wwe.*|' \
+                        r'.*fifa.*|.*boxing.*|.*rally.*|.*ufc.*|.*ppv.*|.*uefa.*|.*nhl.*|' \
+                        r'.*nba.*|.*motogp.*|.*moto2.*|.*moto3.*|.*gamenight.*|.*darksport.*|' \
+                        r'.*overtake.*)'
 
+        return re.search(sports_pattern, name, re.IGNORECASE) is not None
+
+
+    async def get_type_id(self, type, is_music):
+        try:
+            type_id_map = {
+                'DISC': '1', 
+                'REMUX': '2',
+                'WEBDL': '4', 
+                'WEBRIP': '5', 
+                'HDTV': '6',
+                'ENCODE': '3',
+                'FLAC': '30',
+                'MP3': '31'
+            }
+            type_id = type_id_map.get(type, '0')
+            if type_id == '0':
+                raise ValueError(f"Invalid type: {type}")
+
+            if is_music and type not in ('FLAC', 'MP3'):
+                type_id = '29'
+
+        except ValueError:
+            type_id = '17'
+
+        return type_id
+    
     async def get_res_id(self, resolution):
         resolution_id = {
             '8640p':'10', 
@@ -74,8 +94,8 @@ class UNIT3D_TEMPLATE():
     async def upload(self, meta):
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
-        cat_id = await self.get_cat_id(meta['category'])
-        type_id = await self.get_type_id(meta['type'])
+        cat_id = await self.get_cat_id(meta['category'], meta.get('anime', False), meta['resolution'], meta.get('tv_pack'), meta.get('name_notag'))
+        type_id = await self.get_type_id(meta['type'], meta.get('is_music', False))
         resolution_id = await self.get_res_id(meta['resolution'])
         await common.unit3d_edit_desc(meta, self.tracker)
         region_id = await common.unit3d_region_ids(meta.get('region'))
@@ -94,9 +114,8 @@ class UNIT3D_TEMPLATE():
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
-        manual_name = meta.get('manual_name')
         data = {
-            'name' : manual_name or meta['name'],
+            'name' : meta['name'],
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump, 
@@ -191,8 +210,8 @@ class UNIT3D_TEMPLATE():
         params = {
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip(),
             'tmdbId' : meta['tmdb'],
-            'categories[]' : await self.get_cat_id(meta['category']),
-            'types[]' : await self.get_type_id(meta['type']),
+            'categories[]' : await self.get_cat_id(meta['category'], meta.get('anime', False), meta['resolution'], meta.get('tv_pack'), meta.get('name_notag')),
+            'types[]' : await self.get_type_id(meta['type'], meta.get('is_music', False)),
             'resolutions[]' : await self.get_res_id(meta['resolution']),
             'name' : ""
         }

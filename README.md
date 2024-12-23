@@ -46,7 +46,9 @@ Coffee timeeee.
 | FNP  |    Fear No Peer      |       |
 | HDB  |      HD Bits    |       |
 | HDT  |     HD Torrents     |       |
+| HHD  |      Homie Help Desk    |       |
 | HUNO |      Hawke uno    |       |
+| ITA  |     ItaTorrents     |  Requires Upload Privs  |
 | JPTV |       JPTV Club   |       |
 | LCD  |     Locadora    |       |
 | LDU  |    The Last Digital Underground      |      |
@@ -65,13 +67,17 @@ Coffee timeeee.
 | RF   |    ReelFLiX      |       |
 | RHD  |    RocketHD      |       |
 | RTF  |      RetroFlix    |       |
+| SHRI |     Share Island     |       |
 | SN   |    Swarmazon      |       |
+| SP   |    Seed Pool     |    Requires Upload Privs   |
 | TTG  |     TorrentHR     |       |
-| TL   |     TorrentLeech     |       |
+| TL   |     TorrentLeech     |   Requires Upload Privs    |
+| TLZ   |     The Leach Zone Digital     |   Requires Upload Privs    |
 | TTG  |     To The Glory     |       |
 | TTR  |      Torrent Eros    |       |
 | ULCX |      Upload    |       |
 | UTP  |     Utopia     |       |
+| YU  |     YU-Scene     |       |
 
 </details>
 
@@ -154,4 +160,4 @@ docker run --rm -it --network=host -v /path/to/config.py:/Uploadrr/data/config.p
 ## Aknowledgements
 All credit for the building blocks of the project goes to __L4G__ (and collaborators): [Original Repo Here](https://github.com/L4GSP1KE/Upload-Assistant) 
 
-The reson for a rename isn't to discredit or steal it rather to create a distinction that the project isnt compatible. I've gone coded in some reconfiguration to ake old configs compatible but as time goes on the code will start stray further and further away as code is restructured dependancies dropped and added as needed. I thank everyone for their time and energy in going to improving the old script and this one here. Many hands make light work. :)
+The reson for a rename isn't to discredit or steal it rather to create a distinction that the project isnt compatible. I've gone and coded in a reconfiguration script to make old configs compatible but as time goes on the code will start stray further and further away as code is restructured dependancies dropped and added as needed. I thank everyone for their time and energy in going to improving the old script and this one here. Many hands make light work. :)
