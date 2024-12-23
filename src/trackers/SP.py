@@ -3,6 +3,7 @@ import asyncio
 import requests
 import json
 import os
+import re
 import platform
 from rich.pretty import Pretty
 from src.trackers.COMMON import COMMON
@@ -19,19 +20,32 @@ class SP():
         self.banned_groups = [""]
         pass
     
-    async def get_cat_id(self, category_name, anime, resolution):
+    async def get_cat_id(self, category_name, anime, resolution, tv_pack, name):
         category_id = {
             'MOVIE': '1', 
             'TV': '2', 
             'MUSIC': '5',
             }.get(category_name, '0')
-        
         if anime:
             category_id = '6'
+        elif category_name == 'TV':
+            if tv_pack:    
+                category_id = '13'
+            if self.is_sports(name):
+                category_id = '8'   
         elif resolution == '2160p':
             category_id = '10'
         
         return category_id
+
+    def is_sports(self, name):
+        sports_pattern = r'(?:EFL.*|.*mlb.*|.*formula1.*|.*nascar.*|.*nfl.*|.*wrc.*|.*wwe.*|' \
+                        r'.*fifa.*|.*boxing.*|.*rally.*|.*ufc.*|.*ppv.*|.*uefa.*|.*nhl.*|' \
+                        r'.*nba.*|.*motogp.*|.*moto2.*|.*moto3.*|.*gamenight.*|.*darksport.*|' \
+                        r'.*overtake.*)'
+
+        return re.search(sports_pattern, name, re.IGNORECASE) is not None
+
 
     async def get_type_id(self, type, is_music):
         try:
@@ -80,7 +94,7 @@ class SP():
     async def upload(self, meta):
         common = COMMON(config=self.config)
         await common.edit_torrent(meta, self.tracker, self.source_flag)
-        cat_id = await self.get_cat_id(meta['category'], meta.get('anime', False), meta['resolution'])
+        cat_id = await self.get_cat_id(meta['category'], meta.get('anime', False), meta['resolution'], meta.get('tv_pack'), meta.get('name_notag'))
         type_id = await self.get_type_id(meta['type'], meta.get('is_music', False))
         resolution_id = await self.get_res_id(meta['resolution'])
         await common.unit3d_edit_desc(meta, self.tracker)
@@ -196,7 +210,7 @@ class SP():
         params = {
             'api_token' : self.config['TRACKERS'][self.tracker]['api_key'].strip(),
             'tmdbId' : meta['tmdb'],
-            'categories[]' : await self.get_cat_id(meta['category'], meta.get('anime', False), meta['resolution']),
+            'categories[]' : await self.get_cat_id(meta['category'], meta.get('anime', False), meta['resolution'], meta.get('tv_pack'), meta.get('name_notag')),
             'types[]' : await self.get_type_id(meta['type'], meta.get('is_music', False)),
             'resolutions[]' : await self.get_res_id(meta['resolution']),
             'name' : ""
