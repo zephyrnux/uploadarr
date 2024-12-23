@@ -18,13 +18,14 @@ class PSS():
         self.upload_url = 'https://privatesilverscreen.cc/api/torrents/upload'
         self.search_url = 'https://privatesilverscreen.cc/api/torrents/filter'
         self.signature = None
-        self.banned_groups = ["$andra", "AR", "AROMA", "aXXo", "BRrip", "C4K", "CM8", "core", "CrEwSaDe", "d3g",
-    "DNL", "FaNGDiNG0", "FGT", "FRDS", "FROZEN", "GalaxyRG", "Grym", "GrymLegacy", "HD2DVD", "HDTime",
-    "iPlanet", "KiNGDOM", "Lama", "Leffe", "LycanHD", "MeGusta", "MezRips", "mHD", "msd", "NeXus",
-    "NhaNc3", "nHD", "nikt0", "nSD", "PRODJi", "ProRes", "rarbg", "RCDiVX", "RDN", "SANTi",
-    "STUTTERSHIT", "tigole", "TSP", "TSPxL", "UTR", "ViSION", "WAF", "Will1869", "x0r", "YIFY",
-    "YTS", "ZMNT"
-]
+        self.banned_groups = [
+            "$andra", "AR", "AROMA", "aXXo", "BRrip", "C4K", "CM8", "core", "CrEwSaDe", "d3g",
+            "DNL", "FaNGDiNG0", "FGT", "FRDS", "FROZEN", "GalaxyRG", "Grym", "GrymLegacy", "HD2DVD", 
+            "HDTime", "iPlanet", "KiNGDOM", "Lama", "Leffe", "LycanHD", "MeGusta", "MezRips", "mHD", 
+            "msd", "NeXus", "NhaNc3", "nHD", "nikt0", "nSD", "PRODJi", "ProRes", "rarbg", "RCDiVX", 
+            "RDN", "SANTi", "STUTTERSHIT", "STC", "TSP", "TSPxL", "UTR", "ViSION", "WAF", "Will1869", 
+            "x0r", "YIFY", "YTS", "ZMNT", #EVO not listed because will filter out WEB-DL's which are accceptable 
+        ]
         pass
     
     async def get_cat_id(self, category_name):
