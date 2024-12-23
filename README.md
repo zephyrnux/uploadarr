@@ -69,8 +69,10 @@ Coffee timeeee.
 | RTF  |      RetroFlix    |       |
 | SHRI |     Share Island     |       |
 | SN   |    Swarmazon      |       |
+| SP   |    Seed Pool     |    Requires Upload Privs   |
 | TTG  |     TorrentHR     |       |
 | TL   |     TorrentLeech     |   Requires Upload Privs    |
+| TLZ   |     The Leach Zone Digital     |   Requires Upload Privs    |
 | TTG  |     To The Glory     |       |
 | TTR  |      Torrent Eros    |       |
 | ULCX |      Upload    |       |

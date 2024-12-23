@@ -7,7 +7,7 @@
         ##-----------------------------------------------------##
 
 config = {
-    'version': '1.0.5',
+    'version': '1.0.6',
 	
     "DEFAULT" : {
 
@@ -445,7 +445,6 @@ config = {
             #"qbit_tag": "RTF",		
         },
 
-
         "SHRI": {
             "api_key": "ShareIsland_API_KEY",
             "announce_url": "https://shareisland.org/announce/Custom_Announce_URL",
@@ -468,6 +467,17 @@ config = {
             #"qbit_tag": "SN",		
         },
 
+        "SP": {
+            "api_key": "SeedPool_API_KEY",
+            "announce_url": "https://seedpool.org/announce/Custom_Announce_URL",
+            "anon": True,
+            "signature" : "\n[center][b]PLEASE SEED[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",    
+            "pr_signature": "\n [center][b][size=6]PERSONAL RELEASE[/size][/b][/center] \n[center][b]PLEASE SEED[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "SP",		
+        },
+
         "THR" : {
             "username" : "username",
             "password" : "password",
@@ -483,6 +493,17 @@ config = {
         "TL": {
             "announce_key": "TL_announce_key",
             #"qbit_tag": "TL",
+        },
+
+        "TLZ": {
+            "api_key": "TLZ_API_KEY",
+            "announce_url": "https://tlzdigital.com/announce/Custom_Announce_URL",
+            "anon": True,
+            "signature" : "\n[center][b]PLEASE SEED TLZ[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",    
+            "pr_signature": "\n [center][b][size=6]PERSONAL RELEASE[/size][/b][/center] \n[center][b]PLEASE SEED TLZ[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "TLZ",		
         },
 
     	'TOCA' : {
