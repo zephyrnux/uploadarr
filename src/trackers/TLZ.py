@@ -32,7 +32,7 @@ class TLZ():
             if original_language is not 'en':
                 type_id = '13'
             elif cat == 'TV':
-                if tv_pack == 1 or '1':
+                if tv_pack:
                     type_id = '4'
                 else:
                     type_id = '3'    
@@ -96,8 +96,9 @@ class TLZ():
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
+        manual_name = meta.get('manual_name', None)
         data = {
-            'name' : meta['name'],
+            'name' : manual_name or meta['name'],
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump, 

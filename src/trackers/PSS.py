@@ -91,7 +91,7 @@ class PSS():
         files = {'torrent': open_torrent}
         manual_name = meta.get('manual_name')
         data = {
-            'name' : await self.get_name(meta) if not manual_name else manual_name,
+            'name' : manual_name or await self.get_name(meta),
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump, 

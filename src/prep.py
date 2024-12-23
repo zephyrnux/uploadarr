@@ -2599,7 +2599,7 @@ class Prep():
         name_notag = name
         name = name_notag + tag
         clean_name = self.clean_filename(name)
-        name = name if not manual_name else manual_name
+        name = manual_name or name
         return name_notag, name, clean_name, potential_missing
 
 

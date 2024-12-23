@@ -30,7 +30,6 @@ class AITHER():
         type_id = await self.get_type_id(meta['type'])
         resolution_id = await self.get_res_id(meta['resolution'])
         manual_name = meta.get('manual_name')
-        name = await self.edit_name(meta) if not manual_name else manual_name
         if meta['anon'] != 0 or self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 1
         else:
@@ -45,7 +44,7 @@ class AITHER():
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
         data = {
-            'name' : name,
+            'name' : manual_name or await self.edit_name(meta),
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump, 

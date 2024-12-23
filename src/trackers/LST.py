@@ -99,8 +99,9 @@ class LST():
         
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
         files = {'torrent': open_torrent}
+        manual_name = meta.get('manual_name')
         data = {
-            'name' : meta['name'],
+            'name' : manual_name or meta['name'],
             'description' : desc,
             'mediainfo' : mi_dump,
             'bdinfo' : bd_dump, 
