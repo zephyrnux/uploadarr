@@ -58,11 +58,11 @@ class SP():
                 'ENCODE': '3',
                 'FLAC': '30',
                 'MP3': '31'
-                }.get(type, '0')
-            if type not in type_id_map:
+            }
+            type_id = type_id_map.get(type, '0')
+            if type_id == '0':
                 raise ValueError(f"Invalid type: {type}")
 
-            type_id = type_id_map[type]
             if is_music and type not in ('FLAC', 'MP3'):
                 type_id = '29'
 
