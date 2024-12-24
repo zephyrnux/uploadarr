@@ -369,10 +369,17 @@ async def do_the_thing(base_dir):
             if meta['name'].endswith('DUPE?'):
                 meta['name'] = meta['name'].replace(' DUPE?', '')
             tracker = tracker.replace(" ", "").upper().strip()
+            
             if meta['debug']:
                 debug = "(DEBUG)"
             else:
                 debug = ""
+
+            if tracker not in tracker_list:
+                console.print(f"[bold red]Error:[/bold red] Tracker '{tracker}' not recognized or supported.")
+                skipped_files += 1
+                skipped_details.append((path, f"No such tracker: {tracker}"))
+                continue
 
             if tracker in tracker_data['api']:
                 tracker_class = tracker_class_map[tracker](config=config)
@@ -694,7 +701,7 @@ async def do_the_thing(base_dir):
 
         for reason, files in tracker_skip_map.items():
             reason_text = f"{reason}"
-            reason_style = "bold red" if "banned" in reason.lower() or "rejected" in reason.lower() else "bold yellow"
+            reason_style = "bold red" if "banned" in reason.lower() or "rejected" in reason.lower() or "no such tracker" in reason.lower() else "bold yellow"
             
             path_file_map = {}
             for file, _ in files:
