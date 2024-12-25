@@ -634,6 +634,16 @@ config = {
             # "local_path" : "/LocalPath",
             # "remote_path" : "/RemotePath"
         },
+
+        "transmission":  {
+            'torrent_client': 'transmission',
+            'transmission_url': 'http://localhost:9091', #change ip / port as needed
+            'transmission_user': None,  # if authentication is needed 'user'
+            'transmission_pass': None,  # if authentication is needed 'pass'
+            'torrent_storage_dir': "/.config/transmission-daemon/Torrents/", #Linux use complete path, #Mac: "/Library/Application Support/Transmission/Torrents/"  #Windows: "C:\\Users\\$USER\\AppData\\Local\\transmission\\Torrents" change out $USER
+            'enable_search': True  # if you want to implement search functionality
+        },
+
         "watch" : { #SAMPLE
             "torrent_client" : "watch",
             "watch_folder" : "/Path/To/Watch/Folder",
