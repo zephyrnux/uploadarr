@@ -7,7 +7,7 @@
         ##-----------------------------------------------------##
 
 config = {
-    'version': '1.0.6',
+    'version': '1.0.7',
 	
     "DEFAULT" : {
 
@@ -160,6 +160,17 @@ config = {
             "pr_signature": "\n [center][b][size=6]PERSONAL RELEASE[/size][/b][/center] \n [center][url=https://codeberg.org/CvT/Uploadrr][img=69]https://capybarabr.com/img/capybara.svg[/img][/url][/center]",
             "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
             #"qbit_tag": "CBR",		
+        },
+
+        "EMU" :{
+            "api_key" : "EMU_API_KEY",
+            "announce_url" : "https://emuwarez.it/announce/Custom_Announce_URL",
+            "anon" : False,
+            "signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]", 
+            "pr_signature": "\n [center][b][size=6]PERSONAL RELEASE[/size][/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
+            "anon_pr_signature": "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",
+            #"qbit_tag": "EMU",		
         },
 
 
@@ -374,7 +385,7 @@ config = {
             "username" : "",
             "password" : "",
             "ptgen_api": "",
-            "anon": True,
+            "anon": False,
             #"qbit_tag": "PTER",
         },
 
@@ -437,7 +448,7 @@ config = {
             "api_key": "get_it_by_running_/api/ _login_command_from_ https://retroflix.club/api/doc",
             "announce_url": "get_from_upload_page",
             # "tag": "RetroFlix, nd",
-            "anon": True,
+            "anon": False,
             "signature" : "\n[center][b]PLEASE SEED RetroFlix FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",    
             "pr_signature": "\n [center][b][size=6]PERSONAL RELEASE[/size][/b][/center] \n[center][b]PLEASE SEED RTF FAMILY[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
@@ -448,7 +459,7 @@ config = {
         "SHRI": {
             "api_key": "ShareIsland_API_KEY",
             "announce_url": "https://shareisland.org/announce/Custom_Announce_URL",
-            "anon": True,
+            "anon": False,
             "signature" : "\n[center][b]PLEASE SEED ShareIsland[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",    
             "pr_signature": "\n [center][b][size=6]PERSONAL RELEASE[/size][/b][/center] \n[center][b]PLEASE SEED ShareIsland[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
@@ -470,7 +481,7 @@ config = {
         "SP": {
             "api_key": "SeedPool_API_KEY",
             "announce_url": "https://seedpool.org/announce/Custom_Announce_URL",
-            "anon": True,
+            "anon": False,
             "signature" : "\n[center][b]PLEASE SEED[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",    
             "pr_signature": "\n [center][b][size=6]PERSONAL RELEASE[/size][/b][/center] \n[center][b]PLEASE SEED[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
@@ -498,7 +509,7 @@ config = {
         "TLZ": {
             "api_key": "TLZ_API_KEY",
             "announce_url": "https://tlzdigital.com/announce/Custom_Announce_URL",
-            "anon": True,
+            "anon": False,
             "signature" : "\n[center][b]PLEASE SEED TLZ[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",
             "anon_signature" : "\n[center][url=https://codeberg.org/CvT/Uploadrr][img=40]https://i.ibb.co/n0jF73x/hacker.png[/img][/url][/center]",    
             "pr_signature": "\n [center][b][size=6]PERSONAL RELEASE[/size][/b][/center] \n[center][b]PLEASE SEED TLZ[/b][/center]\n[center][url=https://codeberg.org/CvT/Uploadrr][img=400]https://i.ibb.co/2NVWb0c/uploadrr.webp[/img][/url][/center]",

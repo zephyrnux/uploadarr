@@ -43,11 +43,12 @@ Coffee timeeee.
 | BHDTV|     Beyond HD TV     |       |
 | BLU  |     Blutopia     |       |
 | CBR  |     Capybara BR     |       |
+| EMU  |     eMuwarez     |       |
 | FL   |      File List    |       |
 | FNP  |    Fear No Peer      |       |
 | HDB  |      HD Bits    |       |
 | HDT  |     HD Torrents     |       |
-| HHD  |      Homie Help Desk    |       |
+| HHD  |      Homie Help Desk    |   Requires Upload Privs    |
 | HUNO |      Hawke uno    |       |
 | ITA  |     ItaTorrents     |  Requires Upload Privs  |
 | JPTV |       JPTV Club   |       |
