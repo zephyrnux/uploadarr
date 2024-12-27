@@ -13,10 +13,19 @@ class YU():
     def __init__(self, config):
         self.config = config
         self.tracker = 'YU'
-        self.source_flag = 'UNIT3D'
+        self.source_flag = 'YUSCENE'
         self.upload_url = 'https://yu-scene.net/api/torrents/upload'
         self.search_url = 'https://yu-scene.net/api/torrents/filter'
-        self.banned_groups = [""]
+        self.banned_groups = [
+            "3LTON", "$andra", "ARc", "AROMA", "aXXo", "BDP", "C4K", "CM8", "CMCT", "core",
+            "CrEwSaDe", "d3g", "DeadFish", "DNL", "ELiTE", "FaNGDiNG0", "FGT", "FRDS", "FROZEN", 
+            "FUM", "GalaxyRG", "Grym", "GrymLegacy", "HD2DVD", "HDTime", "ION10", "iPlanet", "JIVE",
+            "KiNGDOM", "Lama", "Leffe", "LOAD", "LycanHD", "MeGusta", "MezRips", "mHD", "mRS", "msd", 
+            "NeXus", "NhaNc3", "nHD", "nikt0", "nSD", "PandaRG", "PRODJi", "ProRes", "QxR", "RARBG", 
+            "RCDiVX", "RDN", "SANTi", "SPiRiT", "STUTTERSHIT", "STC", "TM", "TSP", "TSPxL", "UTR", "ViSION", 
+            "WAF", "Will1869", "x0r", "XS", "YIFY", "YTS", "ZKBL", "ZmN", "ZMNT"
+        ]
+
         pass
     
     async def get_cat_id(self, category_name):
