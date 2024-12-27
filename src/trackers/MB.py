@@ -94,7 +94,11 @@ class MB():
             bd_dump = None
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
+        nfo_file = meta.get('nfo_file', None)
         files = {'torrent': open_torrent}
+        if nfo_file:
+            open_nfo = open(nfo_file, 'rb') 
+            files['nfo'] = open_nfo
         data = {
             'name' : meta['name'],
             'description' : desc,

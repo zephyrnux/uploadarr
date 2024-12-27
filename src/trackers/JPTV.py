@@ -94,9 +94,13 @@ class JPTV():
             # bd_dump = None
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
+        nfo_file = meta.get('nfo_file', None)
         files = {'torrent': open_torrent}
+        if nfo_file:
+            open_nfo = open(nfo_file, 'rb') 
+            files['nfo'] = open_nfo
         data = {
-            'name' : jptv_name if not manual_name else manual_name,
+            'name' : manual_name or jptv_name,
             'description' : desc,
             'mediainfo' : mi_dump,
             # 'bdinfo' : bd_dump, 
@@ -129,8 +133,8 @@ class JPTV():
         if distributor_id != 0:
             data['distributor_id'] = distributor_id
         if meta.get('category') == "TV":
-            data['season_number'] = meta.get('season_int', '0')
-            data['episode_number'] = meta.get('episode_int', '0')
+            data['season_number'] = int(meta.get('season_int', '0'))
+            data['episode_number'] = int(meta.get('episode_int', '0'))
         headers = {
             'User-Agent': f'Uploadrr ({platform.system()} {platform.release()})'
         }
@@ -146,6 +150,7 @@ class JPTV():
             success = 'Unknown'
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
+                
                 if response.status_code >= 200 and response.status_code < 300:
                     response_json = response.json()
                     success = response_json.get('success', False)
@@ -158,30 +163,43 @@ class JPTV():
                             console.print(f"[cyan]Error details:[/cyan] {data}")
 
                 else:
-                    console.print(f"[red]Encountered HTTP Error: {response.status_code}[/red]")
-                    console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    try:
+                        from bs4 import BeautifulSoup
+                        soup = BeautifulSoup(response.text, 'html.parser')
+                        error_heading = soup.find(class_='error__heading')
+                        error_body = soup.find(class_='error__body')
+                        
+                        if error_heading and error_body:
+                            console.print(f"[red]{error_heading.text.strip()}[/red]")
+                            console.print(f"[b][yellow]{error_body.text.strip()}[/yellow][/b]")
+                        else:
+                            console.print(f"[red]Encountered HTTP Error: {response.status_code}[/red]")
+                            console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    except Exception as parse_error:
+                        console.print(f"[red]Failed to parse error response: {parse_error}[/red]")
+                        console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    
                     success = False
                     data = {}
 
             except requests.exceptions.RequestException as e:
-                console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
-                success = False
+                console.print(f"[red]Encountered Error: {e}[/red]")
                 data = {}
 
             if success == 'Unknown':
                 console.print("[bold yellow]Status of upload is unknown, please go check..")
-                success = False
+
             elif success:
                 console.print("[bold green]Torrent uploaded successfully!")
             else:
                 console.print("[bold red]Torrent upload failed.")
-    
+            
             try:
                 open_torrent.close()
             except Exception as e:
                 console.print(f"[red]Failed to close torrent file: {e}[/red]")
 
-            return success 
+            return success
 
 
 

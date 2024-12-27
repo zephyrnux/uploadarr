@@ -16,7 +16,14 @@ class HHD():
         self.source_flag = 'HHD'
         self.upload_url = 'https://homiehelpdesk.net/api/torrents/upload'
         self.search_url = 'https://homiehelpdesk.net/api/torrents/filter'
-        self.banned_groups = ['aXXo, BONE, BRrip, CM8, CrEwSaDe, CTFOH, dAV1nci, d3g, DNL, FaNGDiNG0, GalaxyTV, HD2DVD, HDTime, iHYTECH, ION10, iPlanet, KiNGDOM, LAMA, MeGusta, mHD, mSD, NaNi, NhaNc3, nHD, nikt0, nSD, OFT, PRODJi, RARBG, Rifftrax, SANTi, SasukeducK, ShAaNiG, Sicario, STUTTERSHIT, TGALAXY, TORRENTGALAXY, TSP, TSPxL, ViSION, VXT, WAF, WKS, x0r, YAWNiX, YIFY, YTS, PSA']
+        self.banned_groups = [
+                            "aXXo", "BONE", "BRrip", "CM8", "CrEwSaDe", "CTFOH", "dAV1nci", "d3g", "DNL", 
+                            "FaNGDiNG0", "GalaxyTV", "HD2DVD", "HDTime", "iHYTECH", "ION10", "iPlanet", "KiNGDOM", 
+                            "LAMA", "MeGusta", "mHD", "mSD", "NaNi", "NhaNc3", "nHD", "nikt0", "nSD", "OFT", 
+                            "PRODJi", "RARBG", "Rifftrax", "SANTi", "SasukeducK", "ShAaNiG", "Sicario", "STUTTERSHIT", 
+                            "TGALAXY", "TORRENTGALAXY", "TSP", "TSPxL", "ViSION", "VXT", "WAF", "WKS", "x0r", 
+                            "YAWNiX", "YIFY", "YTS", "PSA"
+                        ]
         pass
     
     async def get_cat_id(self, category_name):
@@ -90,7 +97,11 @@ class HHD():
             bd_dump = None
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}]{meta['clean_name']}.torrent", 'rb')
+        nfo_file = meta.get('nfo_file', None)
         files = {'torrent': open_torrent}
+        if nfo_file:
+            open_nfo = open(nfo_file, 'rb') 
+            files['nfo'] = open_nfo
         manual_name = meta.get('manual_name', None)
         data = {
             'name' : manual_name or meta['name'],
@@ -143,6 +154,7 @@ class HHD():
             success = 'Unknown'
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
+                
                 if response.status_code >= 200 and response.status_code < 300:
                     response_json = response.json()
                     success = response_json.get('success', False)
@@ -155,30 +167,43 @@ class HHD():
                             console.print(f"[cyan]Error details:[/cyan] {data}")
 
                 else:
-                    console.print(f"[red]Encountered HTTP Error: {response.status_code}[/red]")
-                    console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    try:
+                        from bs4 import BeautifulSoup
+                        soup = BeautifulSoup(response.text, 'html.parser')
+                        error_heading = soup.find(class_='error__heading')
+                        error_body = soup.find(class_='error__body')
+                        
+                        if error_heading and error_body:
+                            console.print(f"[red]{error_heading.text.strip()}[/red]")
+                            console.print(f"[b][yellow]{error_body.text.strip()}[/yellow][/b]")
+                        else:
+                            console.print(f"[red]Encountered HTTP Error: {response.status_code}[/red]")
+                            console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    except Exception as parse_error:
+                        console.print(f"[red]Failed to parse error response: {parse_error}[/red]")
+                        console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    
                     success = False
                     data = {}
 
             except requests.exceptions.RequestException as e:
-                console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
-                success = False
+                console.print(f"[red]Encountered Error: {e}[/red]")
                 data = {}
 
             if success == 'Unknown':
                 console.print("[bold yellow]Status of upload is unknown, please go check..")
-                success = False
+
             elif success:
                 console.print("[bold green]Torrent uploaded successfully!")
             else:
                 console.print("[bold red]Torrent upload failed.")
-    
+            
             try:
                 open_torrent.close()
             except Exception as e:
                 console.print(f"[red]Failed to close torrent file: {e}[/red]")
 
-            return success 
+            return success
 
 
 

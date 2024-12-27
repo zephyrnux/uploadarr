@@ -58,7 +58,11 @@ class BLU():
             bd_dump = None
         desc = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[BLU]DESCRIPTION.txt", 'r', encoding='utf-8').read()
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[BLU]{meta['clean_name']}.torrent", 'rb')
+        nfo_file = meta.get('nfo_file', None) 
         files = {'torrent': ("placeholder.torrent", open_torrent, "application/x-bittorrent")}
+        if nfo_file:
+            open_nfo = open(nfo_file, 'rb') 
+            files['nfo'] = open_nfo       
         data = {
             'name' : blu_name,
             'description' : desc,
@@ -110,6 +114,7 @@ class BLU():
             success = 'Unknown'
             try:
                 response = requests.post(url=self.upload_url, files=files, data=data, headers=headers, params=params)
+                
                 if response.status_code >= 200 and response.status_code < 300:
                     response_json = response.json()
                     success = response_json.get('success', False)
@@ -122,30 +127,43 @@ class BLU():
                             console.print(f"[cyan]Error details:[/cyan] {data}")
 
                 else:
-                    console.print(f"[red]Encountered HTTP Error: {response.status_code}[/red]")
-                    console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    try:
+                        from bs4 import BeautifulSoup
+                        soup = BeautifulSoup(response.text, 'html.parser')
+                        error_heading = soup.find(class_='error__heading')
+                        error_body = soup.find(class_='error__body')
+                        
+                        if error_heading and error_body:
+                            console.print(f"[red]{error_heading.text.strip()}[/red]")
+                            console.print(f"[b][yellow]{error_body.text.strip()}[/yellow][/b]")
+                        else:
+                            console.print(f"[red]Encountered HTTP Error: {response.status_code}[/red]")
+                            console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    except Exception as parse_error:
+                        console.print(f"[red]Failed to parse error response: {parse_error}[/red]")
+                        console.print(f"[blue]Server Response[/blue]: {response.text}")
+                    
                     success = False
                     data = {}
 
             except requests.exceptions.RequestException as e:
-                console.print(f"[red]Encountered Error: {e}[/red]\n[bold yellow]May have uploaded, please go check..")
-                success = False
+                console.print(f"[red]Encountered Error: {e}[/red]")
                 data = {}
 
             if success == 'Unknown':
                 console.print("[bold yellow]Status of upload is unknown, please go check..")
-                success = False
+
             elif success:
                 console.print("[bold green]Torrent uploaded successfully!")
             else:
                 console.print("[bold red]Torrent upload failed.")
-    
+            
             try:
                 open_torrent.close()
             except Exception as e:
                 console.print(f"[red]Failed to close torrent file: {e}[/red]")
 
-            return success 
+            return success
 
 
     async def get_cat_id(self, category_name, edition):
