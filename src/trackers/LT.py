@@ -68,9 +68,6 @@ class LT():
         imdb_info = meta.get('imdb_info', {})
 
         if is_disc:
-            if imdb_info.get('original_language', '').lower() == 'es' and 'Spain' in imdb_info.get('countries_of_origin', []):
-                return ' [CAST]'
-            
             # Check for subtitles in BDMV discs
             if is_disc == 'BDMV':
                 disc = meta['discs'][0]
@@ -93,13 +90,13 @@ class LT():
                 lang_string2 = track.get('Language_String2', '').lower()                
                 title = track.get('Title', '').lower()
                 
-                if not any(title.find(word) != -1 for word in ['comment', 'director', 'review']):
+                if not any(title.find(word) != -1 for word in ['comment', 'director', 'review']) and not 'Spain' in imdb_info.get('countries_of_origin', []):
                     if lang == 'es-ES':
                         return ' [CAST]'
                     if lang in ('es-419', 'es-CO' ,'es-AR','es-MX'):
                         return ''
                     if lang_string2 == 'es':                        
-                        if any(title.find(word) != -1 for word in ['cast', 'euro', 'españa', 'spain']) or 'Spain' in imdb_info.get('countries_of_origin', []):
+                        if any(title.find(word) != -1 for word in ['cast', 'euro', 'españa', 'spain']):
                             return ' [CAST]'
                         return ''
                 
