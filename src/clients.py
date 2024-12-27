@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
-from torf import Torrent
-import xmlrpc.client
+import aiohttp
+import asyncio
+import base64
 import bencode
+import errno
+import json
 import os
 import qbittorrentapi
 from deluge_client import DelugeRPCClient, LocalDelugeRPCClient
-import base64
 from pyrobase.parts import Bunch
-import errno
-import asyncio
-import ssl
 import shutil
+import ssl
 import time
+import xmlrpc.client
+from torf import Torrent
+
 
 
 from src.console import console 
@@ -53,14 +56,17 @@ class Clients():
         console.print(f"[bold green]Adding to {torrent_client}")
         if torrent_client.lower() == "rtorrent":
             path = os.path.dirname(meta['path']) if meta['full_dir'] else meta['path']
-            self.rtorrent(path, torrent_path, torrent, meta, local_path, remote_path, client)
+            await self.rtorrent(path, torrent_path, torrent, meta, local_path, remote_path, client)
         elif torrent_client.lower() == "qbit":
             path = os.path.dirname(meta['path']) if meta['full_dir'] else meta['path']
             await self.qbittorrent(path, torrent, local_path, remote_path, client, meta['is_disc'], meta['filelist'], meta, tracker)
         elif torrent_client.lower() == "deluge":
             if meta['full_dir'] or meta['type'] == "DISC":
                 path = os.path.dirname(meta['path'])
-            self.deluge(meta['path'], torrent_path, torrent, local_path, remote_path, client, meta)
+            await self.deluge(meta['path'], torrent_path, torrent, local_path, remote_path, client, meta)
+        elif torrent_client.lower() == "transmission":
+            path = os.path.dirname(meta['path']) if meta['full_dir'] else meta['path']
+            await self.transmission(path, torrent_path, torrent, meta, local_path, remote_path, client)    
         elif torrent_client.lower() == "watch":
             shutil.copy(torrent_path, client['watch_folder'])
         return
@@ -96,6 +102,10 @@ class Clients():
                 torrenthash = await self.search_qbit_for_torrent(meta, client)
                 if not torrenthash:
                     console.print("[bold yellow]No Valid .torrent found")
+            if torrent_client == 'transmission' and torrenthash == None and client.get('enable_search') == True:
+                torrenthash = await self.search_transmission_for_torrent(meta, client)
+                if not torrenthash:
+                    console.print("[bold yellow]No Valid .torrent found")                  
             if not torrenthash:
                 return None
             torrent_path = f"{torrent_storage_dir}/{torrenthash}.torrent"
@@ -218,17 +228,97 @@ class Clients():
         return None
 
 
+    async def search_transmission_for_torrent(self, meta, client):
+        console.print("[green]Searching Transmission for an existing .torrent")
+        torrent_storage_dir = client.get('torrent_storage_dir', None)
+        
+        if torrent_storage_dir is None:
+            console.print(f"[bold red]Missing torrent_storage_dir for Transmission")
+            return None
+
+        try:
+            async with aiohttp.ClientSession(auth=aiohttp.BasicAuth(client.get('transmission_user'), client.get('transmission_pass'))) as session:
+                # Get all torrents
+                torrents_info = await self.transmission_rpc_call(session, 'torrent-get', {'fields': ['id', 'name', 'hashString', 'downloadDir']})
+                
+                if torrents_info and 'torrents' in torrents_info['arguments']:
+                    for torrent in torrents_info['arguments']['torrents']:
+                        torrent_path = torrent['downloadDir']
+                        local_path, remote_path = await self.remote_path_map(meta)
+                        if local_path.lower() in meta['path'].lower() and local_path.lower() != remote_path.lower():
+                            torrent_path = torrent_path.replace(remote_path, local_path)
+                            torrent_path = torrent_path.replace(os.sep, '/').replace('/', os.sep)
+
+                        if meta['path'] == torrent_path or (meta['is_disc'] is None and len(meta['filelist']) == 1 and torrent_path == os.path.dirname(meta['filelist'][0])):
+                            # Check if this torrent can be reused
+                            valid, _ = await self.is_valid_torrent(meta, f"{torrent_storage_dir}/{torrent['hashString']}.torrent", torrent['hashString'], 'transmission', print_err=False)
+                            if valid:
+                                console.print(f"[green]Found a matching .torrent with hash: [bold yellow]{torrent['hashString']}")
+                                return torrent['hashString']
+            return None
+
+        except aiohttp.ClientError as e:
+            console.print(f"[bold red]Network error when searching Transmission: {e}")
+        except Exception as e:
+            console.print(f"[bold red]Unexpected error: {e}")
+            return None
 
 
+    async def transmission_rpc_call(self, session, method, arguments=None):
+        url = f"{self.config['TORRENT_CLIENTS']['transmission']['transmission_url']}/transmission/rpc"
+        data = {'method': method, 'arguments': arguments or {}}
+        
+        async with session.post(url, json=data) as response:
+            if response.status == 409:
+                session_id = response.headers.get('X-Transmission-Session-Id')
+                if session_id:
+                    headers = {'X-Transmission-Session-Id': session_id}
+                    async with session.post(url, json=data, headers=headers) as response:
+                        return await response.json()
+                else:
+                    console.print("[bold red]Couldn't retrieve session ID from Transmission")
+                    return None
+            elif response.status == 200:
+                return await response.json()
+            else:
+                console.print(f"[bold red]Failed to execute RPC: HTTP {response.status}")
+                return None
+
+    async def transmission(self, path, torrent_path, torrent, meta, local_path, remote_path, client):
+        try:
+            async with aiohttp.ClientSession(auth=aiohttp.BasicAuth(client.get('transmission_user'), client.get('transmission_pass'))) as session:
+                with open(torrent_path, 'rb') as f:
+                    torrent_data = f.read()
+                    if not torrent_data:
+                        console.print("[bold red]Torrent data is empty or the file couldn't be read")
+                        return    
+                isdir = os.path.isdir(path)
+                filelist = meta['filelist']
+                if (not isdir and len(filelist) == 1) or (len(filelist) != 1):
+                    path = os.path.dirname(path)
+
+                if local_path.lower() in path.lower() and local_path.lower() != remote_path.lower():
+                    path = path.replace(local_path, remote_path)
+                    path = path.replace(os.sep, '/')
+
+                data = {
+                    'metainfo': base64.b64encode(torrent_data).decode('ascii'),
+                    'download-dir': path
+                }
+
+                result = await self.transmission_rpc_call(session, 'torrent-add', data)
+                if result and 'result' in result and result['result'] == 'success':
+                    console.print(f"[bold green]Torrent added to Transmission")
+                else:
+                    console.print(f"[bold red]Error from Transmission: {result}")
+
+        except aiohttp.ClientError as e:
+            console.print(f"[bold red]Network error when adding torrent to Transmission: {e}")
+        except Exception as e:
+            console.print(f"[bold red]Unexpected error: {e}")
 
 
-
-
-
-
-
-
-    def rtorrent(self, path, torrent_path, torrent, meta, local_path, remote_path, client):
+    async def rtorrent(self, path, torrent_path, torrent, meta, local_path, remote_path, client):
         rtorrent = xmlrpc.client.Server(client['rtorrent_url'], context=ssl._create_stdlib_context())
         metainfo = bencode.bread(torrent_path)
         try:
@@ -353,7 +443,7 @@ class Clients():
         
 
 
-    def deluge(self, path, torrent_path, torrent, local_path, remote_path, client, meta):
+    async def deluge(self, path, torrent_path, torrent, local_path, remote_path, client, meta):
         client = DelugeRPCClient(client['deluge_url'], int(client['deluge_port']), client['deluge_user'], client['deluge_pass'])
         # client = LocalDelugeRPCClient()
         client.connect()

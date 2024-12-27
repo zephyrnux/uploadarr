@@ -11,7 +11,8 @@ Coffee timeeee.
 
 ## Features
   - **Media Information:** Generates and parses MediaInfo/BDInfo.
-  - **Screenshots:** Generates and uploads screenshots.
+  - **Screenshots:** Generates and uploads screenshots. 
+    - Supported Hosts: imgbb, ptpimg, oeimg, ptscreens, lensdump, pixhost, imgbox
   - **Filename Correction:** Uses srrdb to fix scene filenames.
   - **Descriptions:** Retrieves descriptions from PTP (automatically on filename match or via argument) / BLU (via argument).
   - **Identifiers:** Obtains TMDb/IMDb/MAL identifiers.
@@ -91,11 +92,11 @@ Coffee timeeee.
   - Improved support for Music & Ebooks.
 
 ## Setup
+>[!IMPORTANT]
+> **MediaInfo** and **ffmpeg** must be installed and added to PATH
 1) **Prerequisites:**
    - Python 3.7 or higher, with pip3.
-     - For Python 3.7, install qbittorrent-api==2023.9.53 or a compatible version.
-   - [Mono](https://www.mono-project.com/) is required on Linux systems for BDInfo.
-   - MediaInfo and ffmpeg must be installed.
+   - **[Mono](https://www.mono-project.com/)** is **required** on Linux or MacOS for BDInfo.
 2) **Installation:**
    - **Windows:** Add ffmpeg to PATH. Use [Scoop](https://scoop.sh/) for easy installation or follow this [manual guide](https://windowsloop.com/install-ffmpeg-windows-10/).
    - **Linux:** Install ffmpeg via your package manager.
@@ -143,7 +144,13 @@ python3 upload.py "/home/regedits/torrents/qbittorrent/uploads/Avengers.Age.of.U
 Arguments are optional. For a list of acceptable arguments, use `--help`. For an overview of arguments with descriptions, navigate to the [Uploadrr Arguments List](https://theldu.org/index.php/Uploadrr).
 
 ## Docker Usage
+>[!WARNING] 
+>It has been [reported](https://codeberg.org/CvT/Uploadrr/issues/48) that docker no longer works. Looking into it, no docker expert any/all help always welcome. 
+<details>
+<summary>Archived Docker Usage</summary>
+
 Special thanks to __l1mo__ for the Dockerfile setup and __dare__ for the command. Run the tool using Docker with one of the following commands:
+
 ```
 docker run --rm -it --network=host \
 -v /path/to/config.py:/Uploadrr/data/config.py \
@@ -155,7 +162,7 @@ __OR__
 ```
 docker run --rm -it --network=host -v /path/to/config.py:/Uploadrr/data/config.py -v /path/to/media:/media -v /path/to/BT_backup:/BT_backup codeberg.org/CvT/Uploadrr:master "/path/to/media" --args
 ```
-
+</details>
 
 ## Aknowledgements
 All credit for the building blocks of the project goes to __L4G__ (and collaborators): [Original Repo Here](https://github.com/L4GSP1KE/Upload-Assistant) 
