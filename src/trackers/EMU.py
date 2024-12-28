@@ -216,7 +216,7 @@ class EMU():
         return dupes
 
 
-    def emu_name(meta):
+    def emu_name(self, meta):
         built_name = meta['name']
         title = meta.get('title', '')
         aka = meta.get('aka', "")
